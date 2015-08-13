@@ -14,6 +14,7 @@ def client(request):
         db.session.add(User('user1', 'Secret', 'test1@test.com'))
         db.session.commit()
     client = app.test_client()
+    client._db = db
 
     def finalize():
         # drop the database before the next test

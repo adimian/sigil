@@ -30,6 +30,7 @@ class RegisterValidate(restful.Resource):
             abort(409, 'account alredy activated')
         if md5(user.email) == email:
             user.validated_at = datetime.datetime.utcnow()
+            user.active = True
             db.session.commit()
             user_validated.send(app._get_current_object(), user=user)
 

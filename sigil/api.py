@@ -24,9 +24,11 @@ bcrypt = Bcrypt(app)
 def setup_endpoints():
     logger.info('setting up endpoints')
     from .endpoints.register import Register
+    from .endpoints.validate import RegisterValidate
 
     api = restful.Api(app)
     api.add_resource(Register, '/<string:persona_class>/register')
+    api.add_resource(RegisterValidate, '/validate')
     logger.info('endpoints ready')
 
 setup_endpoints()

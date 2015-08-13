@@ -1,5 +1,7 @@
-from itsdangerous import URLSafeSerializer
+import hashlib
+
 from flask import request, current_app as app
+from itsdangerous import URLSafeSerializer
 
 
 def get_remote_ip():
@@ -17,3 +19,7 @@ def read_token(data, salt):
     serializer = URLSafeSerializer(app.config['SECRET_KEY'],
                                    salt=salt)
     return serializer.loads(data)
+
+
+def md5(string):
+    return hashlib.md5(string.encode('utf-8')).hexdigest()

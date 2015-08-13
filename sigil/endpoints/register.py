@@ -2,6 +2,8 @@ from flask import current_app as app, abort
 from flask_restful import reqparse
 import sqlalchemy
 
+from sigil.utils import md5
+
 from ..api import restful, db
 from ..models import Persona, User
 from ..signals import user_registered
@@ -42,11 +44,10 @@ class Register(restful.Resource):
             message = 'an account with the same name/email already exists'
             abort(409, message)
 
-        token = generate_token(user.id,
+        token = generate_token([user.id, md5(user.email)],
                                salt=app.config['REGISTER_USER_TOKEN_SALT'])
 
         user_registered.send(app._get_current_object(), user=user, token=token)
 
-        return {"status": 1,
-                "token": token}
+        return {"token": token}
 

@@ -38,7 +38,7 @@ class Register(restful.Resource):
             db.session.commit()
             print(user)
         except sqlalchemy.exc.IntegrityError as err:
-            message = 'an account of the same name already exists'
+            message = 'an account with the same name/email already exists'
             abort(409, message)
 
         token = generate_token(user.id,

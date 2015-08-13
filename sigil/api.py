@@ -1,18 +1,13 @@
-import sys
 import logging
+import sys
 
 from flask import Flask
 from flask_bcrypt import Bcrypt
-from flask_login import (login_required,)
 from flask_sqlalchemy import SQLAlchemy
 
 import flask_restful as restful
 
 from .conf import configure
-
-
-class ProtectedResource(restful.Resource):
-    method_decorators = [login_required]
 
 
 app = Flask('sigil')

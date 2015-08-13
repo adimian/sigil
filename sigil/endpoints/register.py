@@ -1,9 +1,11 @@
 from flask import current_app as app, abort
-from sigil.api import restful, Persona, User, db
 from flask_restful import reqparse
-from sigil.signals import user_registered
-from sigil.utils import generate_token
 import sqlalchemy
+
+from ..api import restful, db
+from ..models import Persona, User
+from ..signals import user_registered
+from ..utils import generate_token
 
 
 class Register(restful.Resource):
@@ -36,7 +38,6 @@ class Register(restful.Resource):
         db.session.add(user)
         try:
             db.session.commit()
-            print(user)
         except sqlalchemy.exc.IntegrityError as err:
             message = 'an account with the same name/email already exists'
             abort(409, message)

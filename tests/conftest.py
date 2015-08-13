@@ -1,4 +1,5 @@
-from sigil.api import app, db, Persona, User
+from sigil.api import app, db
+from sigil.models import Persona, User
 from sqlalchemy.orm.exc import NoResultFound
 import pytest
 

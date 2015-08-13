@@ -7,7 +7,7 @@ def configure(app):
     def set_default(key, value):
         config[key] = environ.get(key, value)
 
-    set_default('DEBUG', True)
+    set_default('DEBUG', False)
     set_default('HOST', '0.0.0.0')
     set_default('PORT', 5000)
     set_default('SECRET_KEY', 'secret-key')

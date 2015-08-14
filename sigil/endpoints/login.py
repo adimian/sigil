@@ -33,6 +33,6 @@ class Login(restful.Resource):
             try:
                 user = session.query(Persona).filter_by(api_key=args['key']).one()
             except sqlalchemy.orm.exc.NoResultFound as err:
-                abort(403, 'invalid user')
+                abort(403, 'invalid API key')
         else:
             abort(400, 'no authentication method found')

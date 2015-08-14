@@ -3,7 +3,7 @@ import hashlib
 import uuid
 
 from flask import request, current_app as app, abort
-from itsdangerous import URLSafeSerializer
+from itsdangerous import URLSafeTimedSerializer
 import sqlalchemy
 
 
@@ -13,15 +13,15 @@ def get_remote_ip():
 
 
 def generate_token(data, salt):
-    serializer = URLSafeSerializer(app.config['SECRET_KEY'],
-                                   salt=salt)
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'],
+                                        salt=salt)
     return serializer.dumps(data)
 
 
-def read_token(data, salt):
-    serializer = URLSafeSerializer(app.config['SECRET_KEY'],
-                                   salt=salt)
-    return serializer.loads(data)
+def read_token(data, salt, max_age=None):
+    serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'],
+                                        salt=salt)
+    return serializer.loads(data, max_age=max_age)
 
 
 def md5(string):
@@ -43,11 +43,15 @@ def requires_authentication(func):
         if not token:
             abort(401, 'missing Authentication-Token header')
 
-        from .models import UserSession
+        user_id, _ = read_token(token,
+                                app.config['SESSION_TOKEN_SALT'],
+                                app.config['SESSION_TOKEN_MAX_AGE'])
+
+        from .models import User
         try:
-            session = UserSession.query.filter_by(token=token).one()
+            session = User.query.filter_by(id=user_id).one()
         except sqlalchemy.orm.exc.NoResultFound as err:
-            abort(401, 'session expired')
+            abort(401, 'unknown user')
 
         return func(*args, **kwargs)
     return decorated_view

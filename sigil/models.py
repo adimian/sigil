@@ -85,14 +85,6 @@ class User(UserMixin, AccountMixin, db.Model):
                                                 self.display_name,
                                                 self.id)
 
-
-class UserSession(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(256))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User',
-                           backref=db.backref('sessions', lazy='dynamic'))
-
 #
 # class AppContext(db.Model):
 #     pass

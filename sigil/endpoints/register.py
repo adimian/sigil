@@ -5,7 +5,7 @@ import sqlalchemy
 from sigil.utils import md5
 
 from ..api import restful, db
-from ..models import Persona, User
+from ..models import Persona
 from ..signals import user_registered
 from ..utils import generate_token
 
@@ -17,23 +17,12 @@ class Register(restful.Resource):
         parser.add_argument('name', type=str, required=True)
         parser.add_argument('password', type=str, required=True)
         parser.add_argument('email', type=str, required=True)
-
         parser.add_argument('surname', type=str)
 
         args = parser.parse_args()
 
-        klass = {'persona': Persona,
-                 'user': User}.get(persona_class)
-
-        if not klass:
-            raise Exception('unknown persona type {0}'.format(persona_class))
-
         try:
-            user = klass(name=args['name'],
-                         password=args['password'],
-                         email=args['email'])
-            if isinstance(user, User):
-                    user.surname = args['surname']
+            user = Persona(**args)
         except ValueError as err:
             abort(400, str(err))
 

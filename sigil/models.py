@@ -43,11 +43,21 @@ class Persona(UserMixin, AccountMixin, db.Model):
     email = db.Column(db.String(256), unique=True)
     api_key = db.Column(db.String(256), unique=True)
 
-    def __init__(self, name, password, email):
+    # user fields
+    jpeg_photo = db.Column(db.LargeBinary)
+    surname = db.Column(db.String(256))
+    display = db.Column(db.String(256))
+
+    phone_number = db.Column(db.String(256))
+    mobile_number = db.Column(db.String(256))
+    home_number = db.Column(db.String(256))
+
+    def __init__(self, name, password, email, surname=None):
         super(Persona, self).__init__()
         self.name = name
         self.password = password
         self.email = email
+        self.surname = surname
 
         api_key = new_api_key()
         while self.__class__.query.filter_by(api_key=api_key).all():
@@ -64,27 +74,13 @@ class Persona(UserMixin, AccountMixin, db.Model):
 
     @property
     def sn(self):
-        return self.name
+        return self.surname or self.name
 
     @property
     def display_name(self):
-        return '{0} {1}'.format(self.name, self.sn)
+        return self.display or '{0} {1}'.format(self.name, self.sn)
 
     def __repr__(self):
         return '<{0} object: {1} [{2}]>'.format(self.__class__.__name__,
                                                 self.display_name,
                                                 self.id)
-
-
-class User(Persona):
-    jpeg_photo = db.Column(db.LargeBinary)
-    surname = db.Column(db.String(256))
-
-    phone_number = db.Column(db.String(256))
-    mobile_number = db.Column(db.String(256))
-    home_number = db.Column(db.String(256))
-
-    @property
-    def sn(self):
-        return self.surname
-

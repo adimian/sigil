@@ -1,5 +1,5 @@
 from sigil.api import app, db
-from sigil.models import Persona, User
+from sigil.models import Persona
 from sqlalchemy.orm.exc import NoResultFound
 import pytest
 
@@ -11,8 +11,8 @@ def client(request):
     try:
         Persona.query.filter_by(name='me').one()
     except NoResultFound:
-        db.session.add(Persona('app1', 'Secret', 'test@test.com'))
-        db.session.add(User('user1', 'Secret', 'test1@test.com'))
+        db.session.add(Persona('user1', 'Secret', 'test@test.com'))
+        db.session.add(Persona('user2', 'Secret', 'test1@test.com'))
         db.session.commit()
     client = app.test_client()
     client._db = db

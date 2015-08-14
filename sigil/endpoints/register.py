@@ -5,14 +5,14 @@ import sqlalchemy
 from sigil.utils import md5
 
 from ..api import restful, db
-from ..models import Persona
+from ..models import User
 from ..signals import user_registered
 from ..utils import generate_token
 
 
 class Register(restful.Resource):
 
-    def post(self, persona_class):
+    def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str, required=True)
         parser.add_argument('password', type=str, required=True)
@@ -22,7 +22,7 @@ class Register(restful.Resource):
         args = parser.parse_args()
 
         try:
-            user = Persona(**args)
+            user = User(**args)
         except ValueError as err:
             abort(400, str(err))
 

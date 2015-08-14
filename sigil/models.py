@@ -27,7 +27,7 @@ class AccountMixin(object):
         return False
 
 
-class Persona(UserMixin, AccountMixin, db.Model):
+class User(UserMixin, AccountMixin, db.Model):
     # accounting fields
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Text)
@@ -53,7 +53,7 @@ class Persona(UserMixin, AccountMixin, db.Model):
     home_number = db.Column(db.String(256))
 
     def __init__(self, name, password, email, surname=None):
-        super(Persona, self).__init__()
+        super(User, self).__init__()
         self.name = name
         self.password = password
         self.email = email

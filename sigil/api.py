@@ -28,7 +28,7 @@ def setup_endpoints():
     from .endpoints.login import Login
 
     api = restful.Api(app)
-    api.add_resource(Register, '/<string:persona_class>/register')
+    api.add_resource(Register, '/user/register')
     api.add_resource(RegisterValidate, '/validate')
     api.add_resource(Login, '/<string:context>/login')
     logger.info('endpoints ready')

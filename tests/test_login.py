@@ -1,12 +1,12 @@
 import json
-from sigil.models import Persona
+from sigil.models import User
 
 
 def preload_user(client):
     session = client._db.session
-    user = Persona(name='eric',
-                   password='secret',
-                   email='eric@adimian.com')
+    user = User(name='eric',
+                password='secret',
+                email='eric@adimian.com')
     user.active = True
     session.add(user)
     session.commit()

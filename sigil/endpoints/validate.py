@@ -5,7 +5,7 @@ from flask_restful import reqparse
 import itsdangerous
 
 from ..api import restful, db
-from ..models import Persona
+from ..models import User
 from ..signals import user_validated
 from ..utils import md5
 from ..utils import read_token
@@ -24,7 +24,7 @@ class RegisterValidate(restful.Resource):
         except itsdangerous.BadSignature as err:
             abort(400, 'invalid token')
 
-        user = db.session.query(Persona).filter_by(id=uid).one()
+        user = db.session.query(User).filter_by(id=uid).one()
 
         if user.validated_at:
             abort(409, 'account alredy activated')

@@ -3,7 +3,7 @@ from flask_restful import reqparse
 import sqlalchemy
 
 from ..api import restful, db
-from ..models import Persona
+from ..models import User
 
 
 class Login(restful.Resource):
@@ -22,7 +22,7 @@ class Login(restful.Resource):
 
         if args['name'] and args['password']:
             try:
-                user = session.query(Persona).filter_by(name=args['name']).one()
+                user = session.query(User).filter_by(name=args['name']).one()
             except sqlalchemy.orm.exc.NoResultFound as err:
                 abort(403, 'invalid user')
             if not user.is_correct_password(args['password']):
@@ -31,7 +31,7 @@ class Login(restful.Resource):
                 abort(403, 'inactive user')
         elif args['key']:
             try:
-                user = session.query(Persona).filter_by(api_key=args['key']).one()
+                user = session.query(User).filter_by(api_key=args['key']).one()
             except sqlalchemy.orm.exc.NoResultFound as err:
                 abort(403, 'invalid API key')
         else:

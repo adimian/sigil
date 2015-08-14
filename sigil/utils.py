@@ -26,5 +26,9 @@ def md5(string):
     return hashlib.md5(string.encode('utf-8')).hexdigest()
 
 
+def sha256(string):
+    return hashlib.sha256(string.encode('utf-8')).hexdigest()
+
+
 def new_api_key():
-    return md5(str(uuid.uuid4()))
+    return sha256(str(uuid.uuid4()))

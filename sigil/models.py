@@ -38,10 +38,10 @@ class Persona(UserMixin, AccountMixin, db.Model):
     validated_at = db.Column(db.DateTime())
 
     # object fields
-    name = db.Column(db.String(255), unique=True)
-    _password = db.Column(db.String(255))
-    email = db.Column(db.String(255), unique=True)
-    api_key = db.Column(db.String(255), unique=True)
+    name = db.Column(db.String(256), unique=True)
+    _password = db.Column(db.String(256))
+    email = db.Column(db.String(256), unique=True)
+    api_key = db.Column(db.String(256), unique=True)
 
     def __init__(self, name, password, email):
         super(Persona, self).__init__()
@@ -78,11 +78,11 @@ class Persona(UserMixin, AccountMixin, db.Model):
 
 class User(Persona):
     jpeg_photo = db.Column(db.LargeBinary)
-    surname = db.Column(db.String(255))
+    surname = db.Column(db.String(256))
 
-    phone_number = db.Column(db.String(255))
-    mobile_number = db.Column(db.String(255))
-    home_number = db.Column(db.String(255))
+    phone_number = db.Column(db.String(256))
+    mobile_number = db.Column(db.String(256))
+    home_number = db.Column(db.String(256))
 
     @property
     def sn(self):

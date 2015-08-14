@@ -26,11 +26,13 @@ def setup_endpoints():
     from .endpoints.register import Register
     from .endpoints.validate import RegisterValidate
     from .endpoints.login import Login
+    from .endpoints.user import User
 
     api = restful.Api(app)
     api.add_resource(Register, '/user/register')
     api.add_resource(RegisterValidate, '/validate')
     api.add_resource(Login, '/<string:context>/login')
+    api.add_resource(User, '/user')
     logger.info('endpoints ready')
 
 setup_endpoints()

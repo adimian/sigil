@@ -19,6 +19,8 @@ def test_login_password(client):
                                           'password': 'secret'})
 
     assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['token']
 
 
 def test_login_password_bad_user(client):

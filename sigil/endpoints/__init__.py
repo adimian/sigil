@@ -1,7 +1,7 @@
-from flask_login import login_required
-
 import flask_restful as restful
+
+from ..utils import requires_authentication
 
 
 class ProtectedResource(restful.Resource):
-    method_decorators = [login_required]
+    method_decorators = [requires_authentication]

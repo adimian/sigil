@@ -1,0 +1,35 @@
+/<context>/login --> {'token': "slfjslfjsdlfk"}
+----
+
+<context>/need {'app key'}-> add/delete "(zone,read) OR (zone, read, pyrene_prod)"
+
+----
+
+<within context>
+(application.permissions, read)
+(application.permissions, write)
+
+# FOLLOWING REQUIRES Authentication-Token #
+
+/teams
+
+/app/register --> {'app-key': "sldfkjslfkjdf"}
+
+/user/key -> {'key': "slfkjsdlfkjslf"}
+
+GET /user/details?name=maarten -> {'name': 'maarten',
+                                   'given_name': 'de paepe',
+                                   'display_name': 'Maarten De Paepe'}
+                  
+GET /user/<context>/permissions?name=maarten -> {'provides': [
+                                                ['zone', 'read', 'pyrene_prod'],
+                                                ['zone', 'write', 'pyrene_prod'],
+                                            ]}
+
+PUT/DELETE /haruba/permissions {'name': 'maarten',
+                                'provides': [
+                                    ['zone', 'read', 'pyrene_prod'],
+                                    ['zone', 'write', 'pyrene_prod'],
+                                    ['application.permissions', 'write'],
+                                    ['application.permissions', 'read'],
+                                ]}

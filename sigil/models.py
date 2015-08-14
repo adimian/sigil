@@ -4,7 +4,7 @@ import logging
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from sigil.utils import new_api_key
+from sigil.utils import random_token
 
 from .api import db, bcrypt
 
@@ -59,9 +59,9 @@ class User(UserMixin, AccountMixin, db.Model):
         self.email = email
         self.surname = surname
 
-        api_key = new_api_key()
+        api_key = random_token()
         while self.__class__.query.filter_by(api_key=api_key).all():
-            api_key = new_api_key()
+            api_key = random_token()
         self.api_key = api_key
 
     @property
@@ -84,3 +84,19 @@ class User(UserMixin, AccountMixin, db.Model):
         return '<{0} object: {1} [{2}]>'.format(self.__class__.__name__,
                                                 self.display_name,
                                                 self.id)
+
+
+class UserSession(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(256))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User',
+                           backref=db.backref('sessions', lazy='dynamic'))
+
+#
+# class AppContext(db.Model):
+#     pass
+#
+#
+# class Need(db.Model):
+#     pass

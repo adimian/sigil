@@ -1,9 +1,10 @@
-from flask import abort
+from flask import abort, request
 from flask_restful import reqparse
 import sqlalchemy
 
 from ..api import restful, db
-from ..models import User
+from ..utils import random_token
+from ..models import User, UserSession
 
 
 class Login(restful.Resource):
@@ -36,3 +37,15 @@ class Login(restful.Resource):
                 abort(403, 'invalid API key')
         else:
             abort(400, 'no authentication method found')
+
+        # handle session
+        user_sessions = UserSession.query.filter_by(user=user).all()
+        for user_session in user_sessions:
+            db.session.delete(user_session)
+
+        new_session = UserSession(user=user, token=random_token())
+        db.session.add(new_session)
+        db.session.commit()
+
+        return {'token': new_session.token}
+

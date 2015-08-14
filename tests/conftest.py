@@ -6,6 +6,7 @@ import pytest
 
 @pytest.fixture(scope='function')
 def client(request):
+    app.config['DEBUG'] = True
     db.create_all()
     try:
         Persona.query.filter_by(name='me').one()

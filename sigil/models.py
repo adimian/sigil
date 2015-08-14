@@ -4,6 +4,8 @@ import logging
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
 
+from sigil.utils import new_api_key
+
 from .api import db, bcrypt
 
 
@@ -39,12 +41,18 @@ class Persona(UserMixin, AccountMixin, db.Model):
     name = db.Column(db.String(255), unique=True)
     _password = db.Column(db.String(255))
     email = db.Column(db.String(255), unique=True)
+    api_key = db.Column(db.String(255), unique=True)
 
     def __init__(self, name, password, email):
         super(Persona, self).__init__()
         self.name = name
         self.password = password
         self.email = email
+
+        api_key = new_api_key()
+        while self.__class__.query.filter_by(api_key=api_key).all():
+            api_key = new_api_key()
+        self.api_key = api_key
 
     @property
     def cn(self):

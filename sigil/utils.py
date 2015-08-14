@@ -1,4 +1,5 @@
 import hashlib
+import uuid
 
 from flask import request, current_app as app
 from itsdangerous import URLSafeSerializer
@@ -23,3 +24,7 @@ def read_token(data, salt):
 
 def md5(string):
     return hashlib.md5(string.encode('utf-8')).hexdigest()
+
+
+def new_api_key():
+    return md5(str(uuid.uuid4()))

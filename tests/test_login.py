@@ -3,12 +3,13 @@ from sigil.models import User
 
 
 def preload_user(client):
+    session = client._db.session
     user = User(name='eric',
                 password='secret',
                 email='eric@adimian.com')
     user.active = True
-    client._db.session.add(user)
-    client._db.session.commit()
+    session.add(user)
+    session.commit()
     return user
 
 
@@ -51,7 +52,12 @@ def test_login_password_2fa(client):
 
 
 def test_token(client):
-    pass
+    user = preload_user(client)
+    client._db.session.commit()
+
+    rv = client.post('/test/login', data={'key': user.api_key})
+
+    assert rv.status_code == 200
 
 
 def test_alias_password(client):

@@ -2,7 +2,8 @@ from functools import wraps
 import hashlib
 import uuid
 
-from flask import request, current_app as app, abort
+from werkzeug.local import LocalProxy
+from flask import request, current_app as app, abort, _request_ctx_stack
 from itsdangerous import URLSafeTimedSerializer
 import sqlalchemy
 
@@ -36,6 +37,11 @@ def random_token():
     return sha256(str(uuid.uuid4()))
 
 
+def _get_user():
+    return getattr(_request_ctx_stack.top, 'user', None)
+current_user = LocalProxy(lambda: _get_user())
+
+
 def requires_authentication(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
@@ -49,9 +55,11 @@ def requires_authentication(func):
 
         from .models import User
         try:
-            session = User.query.filter_by(id=user_id).one()
+            user = User.query.filter_by(id=user_id).one()
         except sqlalchemy.orm.exc.NoResultFound as err:
             abort(401, 'unknown user')
+
+        _request_ctx_stack.top.user = user
 
         return func(*args, **kwargs)
     return decorated_view

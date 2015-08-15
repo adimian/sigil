@@ -1,10 +1,11 @@
-from flask import abort, request, current_app as app
+from flask import abort, current_app as app
 from flask_restful import reqparse
 import sqlalchemy
 
 from ..api import restful, db
-from ..utils import random_token, generate_token
 from ..models import User
+from ..signals import user_login
+from ..utils import random_token, generate_token
 
 
 class Login(restful.Resource):
@@ -41,6 +42,8 @@ class Login(restful.Resource):
         # handle session
         token = generate_token([user.id, random_token()],
                                app.config['SESSION_TOKEN_SALT'])
+
+        user_login.send(app._get_current_object(), user=user)
 
         return {'token': token}
 

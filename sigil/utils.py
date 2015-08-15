@@ -42,6 +42,19 @@ def _get_user():
 current_user = LocalProxy(lambda: _get_user())
 
 
+def requires_anonymous(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        token_name = app.config['SESSION_TOKEN_HEADER']
+        token = request.headers.get(token_name)
+        if token:
+            abort(400,
+                  'anonymous resource, but received {0}'.format(token_name))
+
+        return func(*args, **kwargs)
+    return decorated_view
+
+
 def requires_authentication(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):

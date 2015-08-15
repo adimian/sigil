@@ -4,13 +4,14 @@ import sqlalchemy
 
 from sigil.utils import md5
 
-from ..api import restful, db
+from . import AnonymousResource
+from ..api import db
 from ..models import User
 from ..signals import user_registered
 from ..utils import generate_token
 
 
-class Register(restful.Resource):
+class Register(AnonymousResource):
 
     def post(self):
         parser = reqparse.RequestParser()

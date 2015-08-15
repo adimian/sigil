@@ -2,13 +2,14 @@ from flask import abort, current_app as app
 from flask_restful import reqparse
 import sqlalchemy
 
-from ..api import restful, db
+from . import AnonymousResource
+from ..api import db
 from ..models import User
 from ..signals import user_login
 from ..utils import random_token, generate_token
 
 
-class Login(restful.Resource):
+class Login(AnonymousResource):
 
     def post(self, context):
         session = db.session

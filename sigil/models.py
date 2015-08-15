@@ -38,7 +38,7 @@ class User(UserMixin, AccountMixin, db.Model):
     validated_at = db.Column(db.DateTime())
 
     # object fields
-    name = db.Column(db.String(256), unique=True)
+    username = db.Column(db.String(256), unique=True)
     _password = db.Column(db.String(256))
     email = db.Column(db.String(256), unique=True)
     api_key = db.Column(db.String(256), unique=True)
@@ -52,9 +52,9 @@ class User(UserMixin, AccountMixin, db.Model):
     mobile_number = db.Column(db.String(256))
     home_number = db.Column(db.String(256))
 
-    def __init__(self, name, password, email, surname=None):
+    def __init__(self, username, password, email, surname=None):
         super(User, self).__init__()
-        self.name = name
+        self.username = username
         self.password = password
         self.email = email
         self.surname = surname
@@ -66,19 +66,19 @@ class User(UserMixin, AccountMixin, db.Model):
 
     @property
     def cn(self):
-        return self.name
+        return self.username
 
     @property
     def dn(self):
-        return self.name
+        return self.username
 
     @property
     def sn(self):
-        return self.surname or self.name
+        return self.surname or self.username
 
     @property
     def display_name(self):
-        return self.display or '{0} {1}'.format(self.name, self.sn)
+        return self.display or '{0} {1}'.format(self.username, self.sn)
 
     def __repr__(self):
         return '<{0} object: {1} [{2}]>'.format(self.__class__.__name__,

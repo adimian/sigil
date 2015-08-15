@@ -4,7 +4,7 @@ from sigil.models import User
 
 def preload_user(client):
     session = client._db.session
-    user = User(name='eric',
+    user = User(username='eric',
                 password='secret',
                 email='eric@adimian.com')
     user.active = True
@@ -15,7 +15,7 @@ def preload_user(client):
 
 def test_login_password(client):
     preload_user(client)
-    rv = client.post('/test/login', data={'name': 'eric',
+    rv = client.post('/test/login', data={'username': 'eric',
                                           'password': 'secret'})
 
     assert rv.status_code == 200
@@ -25,7 +25,7 @@ def test_login_password(client):
 
 def test_login_password_bad_user(client):
     preload_user(client)
-    rv = client.post('/test/login', data={'name': 'maarten',
+    rv = client.post('/test/login', data={'username': 'maarten',
                                           'password': 'secret'})
 
     assert rv.status_code == 403
@@ -33,7 +33,7 @@ def test_login_password_bad_user(client):
 
 def test_login_password_bad_pass(client):
     preload_user(client)
-    rv = client.post('/test/login', data={'name': 'eric',
+    rv = client.post('/test/login', data={'username': 'eric',
                                           'password': 'zesecret'})
 
     assert rv.status_code == 403
@@ -43,13 +43,14 @@ def test_login_inactive(client):
     user = preload_user(client)
     user.active = False
     client._db.session.commit()
-    rv = client.post('/test/login', data={'name': 'eric',
+    rv = client.post('/test/login', data={'username': 'eric',
                                           'password': 'secret'})
 
     assert rv.status_code == 403
 
 
 def test_login_password_2fa(client):
+    # TODO: check otp on top of username and password
     pass
 
 

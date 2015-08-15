@@ -13,7 +13,7 @@ class Login(restful.Resource):
         session = db.session
         parser = reqparse.RequestParser()
 
-        parser.add_argument('name', type=str)
+        parser.add_argument('username', type=str)
         parser.add_argument('password', type=str)
         parser.add_argument('totp', type=str)
         # OR
@@ -21,9 +21,9 @@ class Login(restful.Resource):
 
         args = parser.parse_args()
 
-        if args['name'] and args['password']:
+        if args['username'] and args['password']:
             try:
-                user = session.query(User).filter_by(name=args['name']).one()
+                user = session.query(User).filter_by(username=args['username']).one()
             except sqlalchemy.orm.exc.NoResultFound as err:
                 abort(403, 'invalid user')
             if not user.is_correct_password(args['password']):

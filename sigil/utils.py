@@ -45,9 +45,10 @@ current_user = LocalProxy(lambda: _get_user())
 def requires_authentication(func):
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        token = request.headers.get('Authentication-Token')
+        token_name = app.config['SESSION_TOKEN_HEADER']
+        token = request.headers.get(token_name)
         if not token:
-            abort(401, 'missing Authentication-Token header')
+            abort(401, 'missing {0} header'.format(token_name))
 
         user_id, _ = read_token(token,
                                 app.config['SESSION_TOKEN_SALT'],

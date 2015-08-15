@@ -14,7 +14,7 @@ class Register(restful.Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True)
+        parser.add_argument('username', type=str, required=True)
         parser.add_argument('password', type=str, required=True)
         parser.add_argument('email', type=str, required=True)
         parser.add_argument('surname', type=str)
@@ -30,7 +30,7 @@ class Register(restful.Resource):
         try:
             db.session.commit()
         except sqlalchemy.exc.IntegrityError as err:
-            message = 'an account with the same name/email already exists'
+            message = 'an account with the same username/email already exists'
             abort(409, message)
 
         token = generate_token([user.id, md5(user.email)],

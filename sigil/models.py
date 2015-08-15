@@ -45,6 +45,7 @@ class User(UserMixin, AccountMixin, db.Model):
 
     # user fields
     jpeg_photo = db.Column(db.LargeBinary)
+    firstname = db.Column(db.String(256))
     surname = db.Column(db.String(256))
     display = db.Column(db.String(256))
 
@@ -52,12 +53,15 @@ class User(UserMixin, AccountMixin, db.Model):
     mobile_number = db.Column(db.String(256))
     home_number = db.Column(db.String(256))
 
-    def __init__(self, username, password, email, surname=None):
+    @classmethod
+    def by_username(cls, username):
+        return cls.query.filter_by(username=username).one()
+
+    def __init__(self, username, password, email):
         super(User, self).__init__()
         self.username = username
         self.password = password
         self.email = email
-        self.surname = surname
 
         api_key = random_token()
         while self.__class__.query.filter_by(api_key=api_key).all():
@@ -77,8 +81,12 @@ class User(UserMixin, AccountMixin, db.Model):
         return self.surname or self.username
 
     @property
+    def fn(self):
+        return self.firstname or self.username
+
+    @property
     def display_name(self):
-        return self.display or '{0} {1}'.format(self.username, self.sn)
+        return self.display or '{0} {1}'.format(self.fn, self.sn)
 
     def __repr__(self):
         return '<{0} object: {1} [{2}]>'.format(self.__class__.__name__,

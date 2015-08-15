@@ -77,3 +77,17 @@ def requires_authentication(func):
 
         return func(*args, **kwargs)
     return decorated_view
+
+
+@requires_authentication
+def self_or_manager(func):
+    @wraps(func)
+    def decorated_view(*args, **kwargs):
+        target_username = request.values.get('username', None)
+        if (target_username is not None and
+                target_username != current_user.username):
+            # TODO: check permission
+            print('{0} is trying to look at {1}'.format(current_user.username,
+                                                        target_username))
+        return func(*args, **kwargs)
+    return decorated_view

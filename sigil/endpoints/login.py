@@ -11,7 +11,7 @@ from ..utils import random_token, generate_token
 
 class Login(AnonymousResource):
 
-    def post(self, context):
+    def post(self):
         session = db.session
         parser = reqparse.RequestParser()
 

@@ -18,7 +18,6 @@ class Register(AnonymousResource):
         parser.add_argument('username', type=str, required=True)
         parser.add_argument('password', type=str, required=True)
         parser.add_argument('email', type=str, required=True)
-        parser.add_argument('surname', type=str)
 
         args = parser.parse_args()
 

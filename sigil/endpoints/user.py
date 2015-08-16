@@ -16,4 +16,6 @@ class UserDetails(ManagedResource):
 
         return {'firstname': user.fn,
                 'lastname': user.sn,
-                'username': user.username}
+                'username': user.username,
+                'displayname': user.display_name,
+                'id': user.id}

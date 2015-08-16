@@ -2,10 +2,11 @@ from functools import wraps
 import hashlib
 import uuid
 
-from werkzeug.local import LocalProxy
-from flask import request, current_app as app, abort, _request_ctx_stack
+from flask import request, current_app as app, abort, _request_ctx_stack, g
+from flask_principal import Identity, identity_loaded
 from itsdangerous import URLSafeTimedSerializer
 import sqlalchemy
+from werkzeug.local import LocalProxy
 
 
 def get_remote_ip():
@@ -74,6 +75,10 @@ def requires_authentication(func):
             abort(401, 'unknown user')
 
         _request_ctx_stack.top.user = user
+        g.identity = Identity(user.id)
+
+        identity_loaded.send(app._get_current_object(),
+                             identity=g.identity)
 
         return func(*args, **kwargs)
     return decorated_view

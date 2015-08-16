@@ -99,6 +99,10 @@ class User(UserMixin, AccountMixin, db.Model):
     def display_name(self):
         return self.display or '{0} {1}'.format(self.fn, self.sn)
 
+    def provides(self, context):
+        return tuple(p.as_tuple() for p in self.permissions
+                     if p.app_context.name == context)
+
     def __repr__(self):
         return '<{0} object: {1} [{2}]>'.format(self.__class__.__name__,
                                                 self.display_name,

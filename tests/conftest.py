@@ -20,7 +20,6 @@ def client(request):
 
     client = app.test_client()
     client._db = db
-    client._user = u1
 
     with app.app_context():
         client._auth_token = generate_token([u1.id, 'abcdef'],
@@ -35,6 +34,7 @@ def client(request):
     for need in Need.query.all():
         user.permissions.append(need)
     db.session.commit()
+    client._user = user
 
     def finalize():
         # drop the database before the next test

@@ -137,3 +137,7 @@ class Need(db.Model):
             return (self.method, self.value)
         else:
             return (self.method, self.value, self.resource)
+
+    def __repr__(self):
+        return '<Need {}.{}>'.format(self.app_context.name,
+                                     '.'.join(self.as_tuple()))

@@ -3,7 +3,7 @@ import hashlib
 import uuid
 
 from flask import request, current_app as app, abort, _request_ctx_stack, g
-from flask_principal import Identity, identity_loaded
+from flask_principal import Identity, identity_loaded, Permission
 from itsdangerous import URLSafeTimedSerializer
 import sqlalchemy
 from werkzeug.local import LocalProxy
@@ -91,8 +91,7 @@ def self_or_manager(func):
         target_username = request.values.get('username', None)
         if (target_username is not None and
                 target_username != current_user.username):
-            # TODO: check permission
-            print('{0} is trying to look at {1}'.format(current_user.username,
-                                                        target_username))
+            if not Permission(('users', 'read')).can():
+                abort(403, 'you do not have the permission to view other users')
         return func(*args, **kwargs)
     return decorated_view

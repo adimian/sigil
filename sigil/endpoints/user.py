@@ -1,6 +1,6 @@
 from . import ManagedResource, reqparse
-from ..utils import current_user
 from ..models import User
+from ..utils import current_user
 
 
 def get_target_user():

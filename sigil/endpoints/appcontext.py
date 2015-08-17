@@ -1,13 +1,14 @@
-from flask_principal import Permission
-from flask import abort
 from itertools import product
+import json
+
+from flask import abort
+from flask_principal import Permission
+import sqlalchemy
 
 from . import ManagedResource, reqparse, AnonymousResource
-from ..models import AppContext, Need
 from ..api import db, app
+from ..models import AppContext, Need
 from ..utils import current_user, generate_token, read_token, md5
-import sqlalchemy
-import json
 
 MANDATORY_NEEDS = ('permissions',)
 

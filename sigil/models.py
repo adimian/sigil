@@ -117,6 +117,9 @@ class AppContext(db.Model):
     def __init__(self, name):
         self.name = name
 
+    def show(self):
+        return tuple(n.as_tuple() for n in self.needs)
+
 
 class Need(db.Model):
     __table_args__ = (UniqueConstraint('app_id', 'method',

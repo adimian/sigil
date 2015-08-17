@@ -21,7 +21,7 @@ GET /user/details?name=maarten -> {'name': 'maarten',
                                    'given_name': 'de paepe',
                                    'display_name': 'Maarten De Paepe'}
                   
-GET /user/<context>/permissions?name=maarten -> {'provides': [
+GET /<context>/permissions?name=maarten -> {'provides': [
                                                 ['zone', 'read', 'pyrene_prod'],
                                                 ['zone', 'write', 'pyrene_prod'],
                                             ]}

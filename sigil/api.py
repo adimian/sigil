@@ -27,7 +27,7 @@ def setup_endpoints():
     from .endpoints.validate import RegisterValidate
     from .endpoints.login import Login
     from .endpoints.user import UserDetails, UserPermissions
-    from .endpoints.appcontext import ApplicationContext
+    from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
 
     api = restful.Api(app)
     api.add_resource(Register, '/user/register')
@@ -35,6 +35,7 @@ def setup_endpoints():
     api.add_resource(Login, '/login')
     api.add_resource(UserDetails, '/user/details')
     api.add_resource(ApplicationContext, '/app/register')
+    api.add_resource(ApplicationNeeds, '/needs')
     api.add_resource(UserPermissions, '/user/provides')
     logger.info('endpoints ready')
 

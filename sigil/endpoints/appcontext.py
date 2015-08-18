@@ -60,7 +60,8 @@ class ApplicationNeeds(AnonymousResource):
         ctx = self.get_app_context()
 
         for need in set(map(tuple, json.loads(args['needs']))):
-            db.session.add(Need(ctx, *need))
+            if not Need.by_tuple(need):
+                db.session.add(Need(ctx, *need))
         db.session.commit()
 
         return {'needs': ctx.show()}

@@ -133,6 +133,17 @@ class Need(db.Model):
     value = db.Column(db.String(256))
     resource = db.Column(db.String(256))
 
+    @classmethod
+    def by_tuple(cls, need_tuple):
+        method, value = need_tuple[:2]
+        if len(need_tuple) == 2:
+            resource = '*'
+        else:
+            resource = need_tuple[2]
+        return cls.query.filter_by(method=method,
+                                   value=value,
+                                   resource=resource).one
+
     def __init__(self, app_context, method, value, resource=None):
         self.app_context = app_context
         self.method = method

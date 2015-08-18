@@ -1,11 +1,18 @@
-from flask_principal import identity_loaded
-from .utils import current_user
-from .api import app
 from itertools import product
+import logging
+
+from flask_principal import identity_loaded
+
+from .api import app
+from .models import Need
+from .utils import current_user
+
 
 INTERNAL_NEEDS = ('teams', 'users', 'appcontexts')
 
 APP_MANDATORY_NEEDS = ('permissions',)
+
+logger = logging.getLogger(__name__)
 
 
 @identity_loaded.connect_via(app)
@@ -13,6 +20,13 @@ def on_identity_loaded(sender, identity):
     identity.user = current_user
     for need in current_user.permissions:
         identity.provides.add(need.as_tuple())
+
+    if app.config['DEBUG'] and not app.config['TESTING']:
+        logging.warning('running in DEBUG mode, all users automatically '
+                        'get full permissions '
+                        '(do not use this setting in production)')
+        for need in Need.query.all():
+            identity.provides.add(need.as_tuple())
 
 
 def setup_default_permissions():

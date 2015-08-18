@@ -6,15 +6,10 @@ from flask_script import Manager
 @app.before_first_request
 def create_db():
     db.create_all()
+    setup_default_permissions()
 
 
 manager = Manager(app)
 
-
-@manager.command
-def initdb():
-    setup_default_permissions()
-
-
-app.run(host=app.config['HOST'],
-        port=app.config['PORT'])
+if __name__ == "__main__":
+    manager.run()

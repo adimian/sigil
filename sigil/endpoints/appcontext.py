@@ -27,7 +27,10 @@ class ApplicationContext(ManagedResource):
                 need = Need(ctx, *need)
                 db.session.add(need)
                 current_user.permissions.append(need)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except sqlalchemy.exc.IntegrityError as err:
+                abort(409, 'an application with the same name already exists')
 
             return {'application-key': generate_token([ctx.id, md5(ctx.name)],
                                                       salt=app.config['APPLICATION_KEY_SALT'])}

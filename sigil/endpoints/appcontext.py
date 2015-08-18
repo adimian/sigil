@@ -1,5 +1,6 @@
 from itertools import product
 import json
+import logging
 
 from flask import abort
 from flask_principal import Permission
@@ -8,8 +9,11 @@ import sqlalchemy
 from . import ManagedResource, reqparse, AnonymousResource
 from ..api import db, app
 from ..models import AppContext, Need
-from ..utils import current_user, generate_token, read_token, md5
 from ..permissions import APP_MANDATORY_NEEDS
+from ..utils import current_user, generate_token, read_token, md5
+
+
+logger = logging.getLogger(__name__)
 
 
 class ApplicationContext(ManagedResource):
@@ -60,8 +64,12 @@ class ApplicationNeeds(AnonymousResource):
         ctx = self.get_app_context()
 
         for need in set(map(tuple, json.loads(args['needs']))):
-            if not Need.by_tuple(need):
+            if not Need.by_tuple(ctx, need):
                 db.session.add(Need(ctx, *need))
+            else:
+                logger.warning('ignoring add of {} in context {}'
+                               'because it already exists'.format(repr(need),
+                                                                  ctx.name))
         db.session.commit()
 
         return {'needs': ctx.show()}

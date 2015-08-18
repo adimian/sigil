@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from flask_login import UserMixin
+import sqlalchemy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.schema import UniqueConstraint
 
@@ -134,15 +135,19 @@ class Need(db.Model):
     resource = db.Column(db.String(256))
 
     @classmethod
-    def by_tuple(cls, need_tuple):
+    def by_tuple(cls, ctx, need_tuple):
         method, value = need_tuple[:2]
         if len(need_tuple) == 2:
             resource = '*'
         else:
             resource = need_tuple[2]
-        return cls.query.filter_by(method=method,
-                                   value=value,
-                                   resource=resource).one
+        try:
+            return cls.query.filter_by(app_context=ctx,
+                                       method=method,
+                                       value=value,
+                                       resource=resource).one()
+        except sqlalchemy.orm.exc.NoResultFound as err:
+            return None
 
     def __init__(self, app_context, method, value, resource=None):
         self.app_context = app_context

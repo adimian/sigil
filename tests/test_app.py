@@ -18,6 +18,7 @@ def test_expose_needs(client):
 
     needs = (('objects', 'write'),
              ('objects', 'read'),
+             ('objects', 'read'),
              ('objects', 'execute'))
 
     rv = client.post('/needs', data={'needs': json.dumps(needs),

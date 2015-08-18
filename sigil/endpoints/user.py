@@ -39,7 +39,7 @@ class UserPermissions(ManagedResource):
         args = parser.parse_args()
         return {'provides': user.provides(args['context'])}
 
-    def post(self):
+    def update_permissions(self, mode):
         user = get_target_user()
         parser = reqparse.RequestParser()
         parser.add_argument('context', type=str, required=True)
@@ -64,8 +64,17 @@ class UserPermissions(ManagedResource):
                   'permissions {} were not found'.format(repr(request_needs)))
 
         for need in selected_needs:
-            user.permissions.append(need)
+            if mode == 'add':
+                user.permissions.append(need)
+            elif mode == 'delete':
+                user.permissions.remove(need)
 
         db.session.commit()
 
         return {'provides': user.provides(args['context'])}
+
+    def post(self):
+        return self.update_permissions(mode='add')
+
+    def delete(self):
+        return self.update_permissions(mode='delete')

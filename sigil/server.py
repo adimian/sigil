@@ -1,6 +1,6 @@
 from sigil.api import app, db
 from sigil.permissions import setup_default_permissions
-from flask_script import Manager
+from flask_script import Manager, Server
 
 
 @app.before_first_request
@@ -10,6 +10,8 @@ def create_db():
 
 
 manager = Manager(app)
+manager.add_command("runserver", Server(host=app.config['HOST'],
+                                        port=app.config['PORT']))
 
 if __name__ == "__main__":
     manager.run()

@@ -1,0 +1,13 @@
+db:
+  image: postgres
+web:
+  build: .
+  environment:
+    - DEBUG=1
+    - HOST=0.0.0.0
+  volumes:
+    - .:/code
+  ports:
+    - "5000:5000"
+  links:
+    - db

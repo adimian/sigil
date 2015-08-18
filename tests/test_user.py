@@ -39,3 +39,28 @@ def test_set_permissions(client):
     data = json.loads(rv.data.decode('utf-8'))
     assert sorted(data['provides']) == sorted([['permissions', 'read']])
 
+
+def test_delete_permissions(client):
+    rv = client.post('/app/register', data={'name': 'newapp'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/user/permissions',
+                     data={'context': 'newapp',
+                           'username': 'bernard',
+                           'needs': json.dumps([['permissions', 'read'],
+                                                ['permissions', 'write']])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert sorted(data['provides']) == sorted([['permissions', 'read'],
+                                               ['permissions', 'write']])
+
+    rv = client.delete('/user/permissions',
+                       data={'context': 'newapp',
+                             'username': 'bernard',
+                             'needs': json.dumps([['permissions', 'write']])},
+                       headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert sorted(data['provides']) == sorted([['permissions', 'read']])

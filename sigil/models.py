@@ -3,11 +3,11 @@ import logging
 
 from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.sql.schema import UniqueConstraint
 
 from sigil.utils import random_token
 
 from .api import db, bcrypt
-from sqlalchemy.sql.schema import UniqueConstraint
 
 
 logger = logging.getLogger(__name__)

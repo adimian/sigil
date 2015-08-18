@@ -36,7 +36,7 @@ def setup_endpoints():
     api.add_resource(UserDetails, '/user/details')
     api.add_resource(ApplicationContext, '/app/register')
     api.add_resource(ApplicationNeeds, '/needs')
-    api.add_resource(UserPermissions, '/user/provides')
+    api.add_resource(UserPermissions, '/user/permissions')
     logger.info('endpoints ready')
 
 setup_endpoints()

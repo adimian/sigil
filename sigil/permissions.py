@@ -1,15 +1,11 @@
 from flask_principal import identity_loaded
 from .utils import current_user
 from .api import app
+from itertools import product
 
-INTERNAL_NEEDS = (
-                      ('teams', 'read'),
-                      ('teams', 'write'),
-                      ('users', 'read'),
-                      ('users', 'write'),
-                      ('appcontexts', 'read'),
-                      ('appcontexts', 'write'),
-                  )
+INTERNAL_NEEDS = ('teams', 'users', 'appcontexts')
+
+APP_MANDATORY_NEEDS = ('permissions',)
 
 
 @identity_loaded.connect_via(app)
@@ -26,7 +22,7 @@ def setup_default_permissions():
     ctx = AppContext(app.config['ROOT_APP_CTX'])
     session.add(ctx)
 
-    for need in INTERNAL_NEEDS:
+    for need in product(INTERNAL_NEEDS, ('read', 'write')):
         session.add(Need(ctx, *need))
     session.commit()
 

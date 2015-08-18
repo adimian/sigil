@@ -9,8 +9,7 @@ from . import ManagedResource, reqparse, AnonymousResource
 from ..api import db, app
 from ..models import AppContext, Need
 from ..utils import current_user, generate_token, read_token, md5
-
-MANDATORY_NEEDS = ('permissions',)
+from ..permissions import APP_MANDATORY_NEEDS
 
 
 class ApplicationContext(ManagedResource):
@@ -23,7 +22,7 @@ class ApplicationContext(ManagedResource):
             ctx = AppContext(args['name'])
             db.session.add(ctx)
             # give default permissions for the new app to the creator
-            for need in product(MANDATORY_NEEDS,
+            for need in product(APP_MANDATORY_NEEDS,
                                 ('read', 'write')):
                 need = Need(ctx, *need)
                 db.session.add(need)
@@ -72,8 +71,10 @@ class ApplicationNeeds(AnonymousResource):
 
         removed_needs = set(map(tuple, json.loads(args['needs'])))
         for need in Need.query.filter_by(app_context=ctx).all():
-            if need.as_tuple() in removed_needs:
-                db.session.delete(need)
+            nat = need.as_tuple()
+            if nat in removed_needs:
+                if nat[0] not in APP_MANDATORY_NEEDS:
+                    db.session.delete(need)
         db.session.commit()
 
         return {'needs': ctx.show()}

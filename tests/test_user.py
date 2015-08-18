@@ -17,9 +17,25 @@ def test_get_permissions(client):
 
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
-    assert data['provides'] == [['teams', 'read'],
-                                ['teams', 'write'],
-                                ['users', 'read'],
-                                ['users', 'write'],
-                                ['appcontexts', 'read'],
-                                ['appcontexts', 'write']]
+    assert sorted(data['provides']) == sorted([['teams', 'read'],
+                                               ['teams', 'write'],
+                                               ['users', 'read'],
+                                               ['users', 'write'],
+                                               ['appcontexts', 'read'],
+                                               ['appcontexts', 'write']])
+
+
+def test_set_permissions(client):
+    rv = client.post('/app/register', data={'name': 'newapp'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/user/permissions',
+                     data={'context': 'newapp',
+                           'username': 'bernard',
+                           'needs': json.dumps([['permissions', 'read']])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert sorted(data['provides']) == sorted([['permissions', 'read']])
+

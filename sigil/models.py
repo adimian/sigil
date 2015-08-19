@@ -9,6 +9,7 @@ from sqlalchemy.sql.schema import UniqueConstraint
 from sigil.utils import random_token
 
 from .api import db, bcrypt
+from .multifactor import new_user_secret
 
 
 logger = logging.getLogger(__name__)
@@ -37,17 +38,19 @@ permissions = db.Table('permssions',
 
 
 class User(UserMixin, AccountMixin, db.Model):
+    PROTECTED = ('id', 'created_at', 'validated_at',
+                 'must_change_password', 'totp_secret')
     # accounting fields
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.Text)
-
     active = db.Column(db.Boolean(), default=False)
     created_at = db.Column(db.DateTime(),
-                           default=datetime.datetime.utcnow())
+                           default=datetime.datetime.utcnow)
     validated_at = db.Column(db.DateTime())
     must_change_password = db.Column(db.Boolean(), default=True)
+    totp_secret = db.Column(db.String(256), default=new_user_secret)
 
     # object fields
+    description = db.Column(db.Text)
     username = db.Column(db.String(256), unique=True)
     _password = db.Column(db.String(256))
     email = db.Column(db.String(256), unique=True)

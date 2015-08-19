@@ -1,5 +1,6 @@
 import json
 from sigil.models import User
+from sigil.multifactor import get_code
 
 
 def preload_user(client):
@@ -51,8 +52,13 @@ def test_login_inactive(client):
 
 
 def test_login_password_2fa(client):
-    # TODO: check otp on top of username and password
-    pass
+    user = preload_user(client)
+    client.application.config['ENABLE_2FA'] = True
+
+    rv = client.post('/login', data={'username': 'eric',
+                                     'totp': get_code(user.totp_secret),
+                                     'password': 'secret'})
+    assert rv.status_code == 200, str(rv.data)
 
 
 def test_token(client):

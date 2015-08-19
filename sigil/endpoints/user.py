@@ -12,6 +12,7 @@ from ..api import db
 from ..models import AppContext, User, Need
 from ..signals import password_recovered, user_request_password_recovery
 from ..utils import current_user, read_token, md5, generate_token
+from ..multifactor import qr_code_for_user
 
 
 def get_target_user():
@@ -75,7 +76,10 @@ class UpdatePassword(AnonymousResource):
                   'you main e-mail address has been changed since '
                   'the request has been issued, you should start again')
 
-        return {'message': 'password updated !'}
+        response = {'message': 'password updated !'}
+        if app.config['ENABLE_2FA']:
+            response['qrcode'] = qr_code_for_user(user)
+        return response
 
 
 class UserDetails(ManagedResource):

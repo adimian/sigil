@@ -23,5 +23,9 @@ def configure(app):
 
     # 2FA
     set_default('ENABLE_2FA', False)
-    set_default('TOP_LEVEL_DOMAIN', 'docker.dev')
+    set_default('TOTP_MAX_TIME_STEPS', 20)
+    set_default('TOTP_TIME_STEP', 30)
+    set_default('TOTP_EXPIRATION', 30 * 86400)  # 1 month
+    set_default('TOTP_DOMAIN', 'docker.dev')
+
 

@@ -7,6 +7,7 @@ from ..api import db
 from ..models import User
 from ..signals import user_login
 from ..utils import random_token, generate_token
+from ..multifactor import check_code
 
 
 class Login(AnonymousResource):
@@ -34,6 +35,11 @@ class Login(AnonymousResource):
                 abort(403, 'your password needs to be changed now')
             if not user.is_correct_password(args['password']):
                 abort(403, 'invalid password')
+            if app.config['ENABLE_2FA']:
+                if not args['totp']:
+                    abort(400, 'TOTP code required')
+                if not check_code(user.totp_secret, args['totp']):
+                    abort(403, 'invalid TOTP code')
         elif args['key']:
             try:
                 user = session.query(User).filter_by(api_key=args['key']).one()

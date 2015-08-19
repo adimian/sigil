@@ -33,10 +33,11 @@ def setup_default_permissions():
     from .api import app, db
     from .models import AppContext, Need
     session = db.session
-    ctx = AppContext(app.config['ROOT_APP_CTX'])
-    session.add(ctx)
+    if not AppContext.query.filter_by(name=app.config['ROOT_APP_CTX']).first():
+        ctx = AppContext(app.config['ROOT_APP_CTX'])
+        session.add(ctx)
 
-    for need in product(INTERNAL_NEEDS, ('read', 'write')):
-        session.add(Need(ctx, *need))
-    session.commit()
+        for need in product(INTERNAL_NEEDS, ('read', 'write')):
+            session.add(Need(ctx, *need))
+        session.commit()
 

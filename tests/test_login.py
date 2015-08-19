@@ -66,3 +66,13 @@ def test_token(client):
 
 def test_alias_password(client):
     pass
+
+
+def test_recover_account(client):
+    preload_user(client)
+    rv = client.get('/user/recover', data={'email': 'eric@adimian.com'})
+    assert rv.status_code == 200, str(rv.data)
+    session = client._db.session
+    user = session.query(User).filter_by(email='eric@adimian.com').one()
+    assert user.must_change_password is True
+

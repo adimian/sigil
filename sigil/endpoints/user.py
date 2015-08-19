@@ -9,8 +9,8 @@ import sqlalchemy
 from . import ManagedResource, reqparse, AnonymousResource
 from ..api import db
 from ..models import AppContext, User, Need
-from ..signals import password_recovered
-from ..utils import current_user, read_token, md5
+from ..signals import password_recovered, user_request_password_recovery
+from ..utils import current_user, read_token, md5, generate_token
 
 
 def get_target_user():
@@ -26,6 +26,26 @@ def get_target_user():
 
 
 class UpdatePassword(AnonymousResource):
+
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str, required=True)
+        args = parser.parse_args()
+
+        try:
+            user = db.session.query(User).filter_by(email=args['email']).one()
+        except sqlalchemy.orm.exc.NoResultFound as err:
+            abort(404, 'user not found')
+
+        token = generate_token([user.id, md5(user.email)],
+                               salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
+
+        user_request_password_recovery.send(app._get_current_object(),
+                                            user=user,
+                                            token=token)
+        user.must_change_password = True
+        db.session.commit()
+        return {'token': token}
 
     def post(self):
         parser = reqparse.RequestParser()

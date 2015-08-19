@@ -7,7 +7,7 @@ import sqlalchemy
 
 from . import ProtectedResource
 from ..api import db
-from ..models import VirtualGroup, User
+from ..models import VirtualGroup, User, UserTeam
 
 
 class ContainerResource(ProtectedResource):
@@ -70,6 +70,15 @@ class VirtualGroupResource(ContainerResource):
     container_type = VirtualGroup
 
 
+class UserTeamResource(ContainerResource):
+    container_type = UserTeam
+
+
 class VirtualGroupMembers(ContainerMembers):
     container_type = VirtualGroup
     permission_type = ('groups', 'write')
+
+
+class UserTeamMembers(ContainerMembers):
+    container_type = UserTeam
+    permission_type = ('teams', 'write')

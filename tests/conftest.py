@@ -10,6 +10,7 @@ from sigil.utils import generate_token
 def client(request):
     app.config['DEBUG'] = True
     app.config['TESTING'] = True
+    app.config['URL_PREFIX'] = ''
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
     db.create_all()
 

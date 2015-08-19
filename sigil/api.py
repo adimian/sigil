@@ -34,7 +34,7 @@ def setup_endpoints():
     from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
     from .endpoints.containers import VirtualGroupResource, VirtualGroupMembers
 
-    api = restful.Api(app)
+    api = restful.Api(app, prefix=app.config['API_URL_PREFIX'])
     # application
     api.add_resource(ApplicationContext, '/app/register')
     api.add_resource(ApplicationNeeds, '/needs')

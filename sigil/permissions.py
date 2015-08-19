@@ -8,7 +8,7 @@ from .models import Need
 from .utils import current_user
 
 
-INTERNAL_NEEDS = ('teams', 'users', 'appcontexts')
+INTERNAL_NEEDS = ('teams', 'groups', 'users', 'appcontexts')
 
 APP_MANDATORY_NEEDS = ('permissions',)
 

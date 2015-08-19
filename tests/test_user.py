@@ -37,6 +37,8 @@ def test_get_permissions(client):
                                                ['teams', 'write'],
                                                ['users', 'read'],
                                                ['users', 'write'],
+                                               ['groups', 'read'],
+                                               ['groups', 'write'],
                                                ['appcontexts', 'read'],
                                                ['appcontexts', 'write']])
 

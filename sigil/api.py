@@ -32,7 +32,7 @@ def setup_endpoints():
     from .endpoints.user import (UserDetails, UserPermissions,
                                  UpdatePassword, UserCatalog)
     from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
-    from .endpoints.containers import VirtualGroupResource
+    from .endpoints.containers import VirtualGroupResource, VirtualGroupMembers
 
     api = restful.Api(app)
     # application
@@ -48,6 +48,7 @@ def setup_endpoints():
     api.add_resource(UserCatalog, '/user')
     # containers
     api.add_resource(VirtualGroupResource, '/group')
+    api.add_resource(VirtualGroupMembers, '/group/members')
     logger.info('endpoints ready')
 
 setup_endpoints()

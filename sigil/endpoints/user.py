@@ -6,7 +6,7 @@ from flask import current_app as app
 import itsdangerous
 import sqlalchemy
 
-from . import ManagedResource, reqparse, AnonymousResource
+from . import ManagedResource, reqparse, AnonymousResource, ProtectedResource
 from ..api import db
 from ..models import AppContext, User, Need
 from ..signals import password_recovered, user_request_password_recovery
@@ -85,6 +85,18 @@ class UserDetails(ManagedResource):
                 'username': user.username,
                 'displayname': user.display_name,
                 'id': user.id}
+
+
+class UserCatalog(ProtectedResource):
+    def get(self):
+        response = {}
+        users = response['users'] = []
+        for user in User.query.all():
+            users.append({'id': user.id,
+                          'username': user.username,
+                          'display_name': user.display_name})
+
+        return response
 
 
 class UserPermissions(ManagedResource):

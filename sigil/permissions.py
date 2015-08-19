@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
     identity.user = current_user
-    for need in current_user.permissions:
-        identity.provides.add(need.as_tuple())
+    for need in current_user.provides(app.config['ROOT_APP_CTX']):
+        identity.provides.add(need)
 
     if app.config['DEBUG'] and not app.config['TESTING']:
         logging.warning('running in DEBUG mode, all users automatically '

@@ -3,6 +3,7 @@ import json
 
 from flask import abort
 from flask import current_app as app
+from flask_principal import Permission
 import itsdangerous
 import sqlalchemy
 
@@ -89,14 +90,15 @@ class UserDetails(ManagedResource):
 
 class UserCatalog(ProtectedResource):
     def get(self):
-        response = {}
-        users = response['users'] = []
-        for user in User.query.all():
-            users.append({'id': user.id,
-                          'username': user.username,
-                          'display_name': user.display_name})
+        with Permission(('users', 'read')).require():
+            response = {}
+            users = response['users'] = []
+            for user in User.query.all():
+                users.append({'id': user.id,
+                              'username': user.username,
+                              'display_name': user.display_name})
 
-        return response
+            return response
 
 
 class UserPermissions(ManagedResource):

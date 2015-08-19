@@ -28,10 +28,12 @@ class Login(AnonymousResource):
                 user = session.query(User).filter_by(username=args['username']).one()
             except sqlalchemy.orm.exc.NoResultFound as err:
                 abort(403, 'invalid user')
-            if not user.is_correct_password(args['password']):
-                abort(403, 'invalid password')
             if not user.active:
                 abort(403, 'inactive user')
+            if user.must_change_password:
+                abort(403, 'your password needs to be changed now')
+            if not user.is_correct_password(args['password']):
+                abort(403, 'invalid password')
         elif args['key']:
             try:
                 user = session.query(User).filter_by(api_key=args['key']).one()

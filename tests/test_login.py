@@ -5,8 +5,9 @@ from sigil.models import User
 def preload_user(client):
     session = client._db.session
     user = User(username='eric',
-                password='secret',
                 email='eric@adimian.com')
+    user.password = 'secret'
+    user.must_change_password = False
     user.active = True
     session.add(user)
     session.commit()

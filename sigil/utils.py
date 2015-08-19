@@ -38,6 +38,10 @@ def random_token():
     return sha256(str(uuid.uuid4()))
 
 
+def random_password(length=22):
+    return random_token()[:length]
+
+
 def _get_user():
     return getattr(_request_ctx_stack.top, 'user', None)
 current_user = LocalProxy(lambda: _get_user())

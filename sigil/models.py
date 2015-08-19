@@ -45,6 +45,7 @@ class User(UserMixin, AccountMixin, db.Model):
     created_at = db.Column(db.DateTime(),
                            default=datetime.datetime.utcnow())
     validated_at = db.Column(db.DateTime())
+    must_change_password = db.Column(db.Boolean(), default=True)
 
     # object fields
     username = db.Column(db.String(256), unique=True)
@@ -69,10 +70,9 @@ class User(UserMixin, AccountMixin, db.Model):
     def by_username(cls, username):
         return cls.query.filter_by(username=username).one()
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, email):
         super(User, self).__init__()
         self.username = username
-        self.password = password
         self.email = email
 
         api_key = random_token()

@@ -3,5 +3,5 @@ import blinker
 signals = blinker.Namespace()
 
 user_registered = signals.signal("user-registered")
-user_validated = signals.signal("user-validated")
+password_recovered = signals.signal("password-recovered")
 user_login = signals.signal('user-login')

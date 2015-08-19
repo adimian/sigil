@@ -13,8 +13,8 @@ def client(request):
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
     db.create_all()
 
-    u1 = User('alice', 'Secret', 'test@test.com')
-    u2 = User('bernard', 'Secret', 'test1@test.com')
+    u1 = User('alice', 'test@test.com')
+    u2 = User('bernard', 'test1@test.com')
     db.session.add(u1)
     db.session.add(u2)
     db.session.commit()

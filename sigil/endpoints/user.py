@@ -1,12 +1,16 @@
+import datetime
 import json
 
 from flask import abort
+from flask import current_app as app
+import itsdangerous
 import sqlalchemy
 
-from . import ManagedResource, reqparse
+from . import ManagedResource, reqparse, AnonymousResource
 from ..api import db
 from ..models import AppContext, User, Need
-from ..utils import current_user
+from ..signals import password_recovered
+from ..utils import current_user, read_token, md5
 
 
 def get_target_user():
@@ -19,6 +23,38 @@ def get_target_user():
     else:
         user = current_user
     return user
+
+
+class UpdatePassword(AnonymousResource):
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, required=True)
+        parser.add_argument('password', type=str, required=True)
+        args = parser.parse_args()
+
+        try:
+            uid, email = read_token(args['token'],
+                                    salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
+        except itsdangerous.BadSignature as err:
+            abort(400, 'invalid token')
+
+        user = db.session.query(User).filter_by(id=uid).one()
+
+        if not user.must_change_password:
+            abort(409, 'password already updated')
+        if md5(user.email) == email:
+            user.validated_at = datetime.datetime.utcnow()
+            user.password = args['password']
+            user.must_change_password = False
+            db.session.commit()
+            password_recovered.send(app._get_current_object(), user=user)
+        else:
+            abort(400,
+                  'you main e-mail address has been changed since '
+                  'the request has been issued, you should start again')
+
+        return {'message': 'password updated !'}
 
 
 class UserDetails(ManagedResource):

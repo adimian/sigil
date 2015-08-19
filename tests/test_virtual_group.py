@@ -64,3 +64,26 @@ def test_add_bad_group(client):
                            'usernames': json.dumps(['alice', 'bernard'])},
                      headers=client._auth_headers)
     assert rv.status_code == 404, str(rv.data)
+
+
+def test_group_remove_members(client):
+    rv = client.post('/group',
+                     data={'name': 'jabber'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/group/members',
+                     data={'name': 'jabber',
+                           'usernames': json.dumps(['alice', 'bernard'])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.delete('/group/members',
+                       data={'name': 'jabber',
+                             'usernames': json.dumps(['alice'])},
+                       headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    session = client._db.session
+    group = session.query(VirtualGroup).filter_by(name='jabber').one()
+    assert [m.username for m in group.members] == ['bernard']

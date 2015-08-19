@@ -40,6 +40,12 @@ class VirtualGroupMembers(ProtectedResource):
                 abort(404, 'group not found')
 
     def post(self):
+        self.update_members(mode='add')
+
+    def delete(self):
+        self.update_members(mode='delete')
+
+    def update_members(self, mode):
         parser = reqparse.RequestParser()
         parser.add_argument('usernames', type=str, required=True)
         args = parser.parse_args()
@@ -50,6 +56,9 @@ class VirtualGroupMembers(ProtectedResource):
                 user = db.session.query(User).filter_by(username=username).one()
             except sqlalchemy.orm.exc.NoResultFound:
                 abort(404, 'user {} not found'.format(username))
-            group.members.append(user)
 
+            if mode == 'add':
+                group.members.append(user)
+            elif mode == 'delete':
+                group.members.remove(user)
         db.session.commit()

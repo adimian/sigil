@@ -4,6 +4,7 @@ import sys
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from raven.contrib.flask import Sentry
 
 import flask_restful as restful
 
@@ -19,6 +20,9 @@ logger = logging.getLogger(__name__)
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+
+if app.config['SENTRY_DSN']:
+    sentry = Sentry(app)
 
 
 def setup_endpoints():

@@ -6,6 +6,7 @@ web:
     - DEBUG=1
     - HOST=0.0.0.0
     - SQLALCHEMY_DATABASE_URI=postgres://postgres@db
+    - SENTRY_DSN=https://2d79967d03cb4cec85988bc42dd6bbc8:0e1a27aeb00144718d92627185b2154c@sentry.adimian.com/9
   volumes:
     - .:/code
   ports:

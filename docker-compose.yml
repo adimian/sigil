@@ -5,6 +5,7 @@ nginx:
   image: nginx
   volumes:
    - ./nginx.conf:/etc/nginx/conf.d/default.conf
+   - ./ui:/app
   ports:
    - "80:80"
   links:

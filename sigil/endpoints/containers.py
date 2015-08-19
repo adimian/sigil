@@ -1,7 +1,9 @@
 import json
 
+from flask import abort
 from flask_principal import Permission
 from flask_restful import reqparse
+import sqlalchemy
 
 from . import ProtectedResource
 from ..api import db
@@ -17,7 +19,10 @@ class VirtualGroupResource(ProtectedResource):
             group = VirtualGroup(name=args['name'])
 
             db.session.add(group)
-            db.session.commit()
+            try:
+                db.session.commit()
+            except sqlalchemy.exc.IntegrityError:
+                abort(409, 'group already exists')
 
             return {'name': group.name,
                     'active': group.active}

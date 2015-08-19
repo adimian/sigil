@@ -11,6 +11,18 @@ def test_create_group(client):
     assert VirtualGroup.query.filter_by(name='jabber').one()
 
 
+def test_create_too_many_groups(client):
+    rv = client.post('/group',
+                     data={'name': 'jabber'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200
+
+    rv = client.post('/group',
+                     data={'name': 'jabber'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 409
+
+
 def test_add_members(client):
     rv = client.post('/group',
                      data={'name': 'jabber'},

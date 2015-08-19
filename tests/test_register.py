@@ -21,6 +21,21 @@ def test_validate(client):
     assert rv.status_code == 200
 
 
+def test_validate_2fa(client):
+    client.application.config['ENABLE_2FA'] = True
+    rv = client.post('/user/register', data={'username': 'eric',
+                                             'email': 'eric@adimian.com'})
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['token']
+
+    rv = client.post('/user/validate', data={'token': data['token'],
+                                             'password': 'secret'})
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['qrcode']
+
+
 def test_validate_error(client):
     rv = client.post('/user/register', data={'username': 'eric',
                                              'password': 'secret',

@@ -29,17 +29,27 @@ class VirtualGroupResource(ProtectedResource):
 
 
 class VirtualGroupMembers(ProtectedResource):
-    def post(self):
+    def get_group(self):
         with Permission(('groups', 'write')).require():
             parser = reqparse.RequestParser()
             parser.add_argument('name', type=str, required=True)
-            parser.add_argument('usernames', type=str, required=True)
             args = parser.parse_args()
+            try:
+                return db.session.query(VirtualGroup).filter_by(name=args['name']).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                abort(404, 'group not found')
 
-            group = db.session.query(VirtualGroup).filter_by(name=args['name']).one()
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('usernames', type=str, required=True)
+        args = parser.parse_args()
 
-            for username in set(json.loads(args['usernames'])):
+        group = self.get_group()
+        for username in set(json.loads(args['usernames'])):
+            try:
                 user = db.session.query(User).filter_by(username=username).one()
-                group.members.append(user)
+            except sqlalchemy.orm.exc.NoResultFound:
+                abort(404, 'user {} not found'.format(username))
+            group.members.append(user)
 
-            db.session.commit()
+        db.session.commit()

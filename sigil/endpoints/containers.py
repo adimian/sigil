@@ -10,32 +10,34 @@ from ..api import db
 from ..models import VirtualGroup, User
 
 
-class VirtualGroupResource(ProtectedResource):
+class ContainerResource(ProtectedResource):
+
     def post(self):
         with Permission(('groups', 'write')).require():
             parser = reqparse.RequestParser()
             parser.add_argument('name', type=str, required=True)
             args = parser.parse_args()
-            group = VirtualGroup(name=args['name'])
+            group = self.container_type(name=args['name'])
 
             db.session.add(group)
             try:
                 db.session.commit()
             except sqlalchemy.exc.IntegrityError:
-                abort(409, 'group already exists')
+                abort(409, '{} already exists'.format(args['name']))
 
             return {'name': group.name,
                     'active': group.active}
 
 
-class VirtualGroupMembers(ProtectedResource):
+class ContainerMembers(ProtectedResource):
+
     def get_group(self):
-        with Permission(('groups', 'write')).require():
+        with Permission(self.permission_type).require():
             parser = reqparse.RequestParser()
             parser.add_argument('name', type=str, required=True)
             args = parser.parse_args()
             try:
-                return db.session.query(VirtualGroup).filter_by(name=args['name']).one()
+                return db.session.query(self.container_type).filter_by(name=args['name']).one()
             except sqlalchemy.orm.exc.NoResultFound:
                 abort(404, 'group not found')
 
@@ -62,3 +64,12 @@ class VirtualGroupMembers(ProtectedResource):
             elif mode == 'delete':
                 group.members.remove(user)
         db.session.commit()
+
+
+class VirtualGroupResource(ContainerResource):
+    container_type = VirtualGroup
+
+
+class VirtualGroupMembers(ContainerMembers):
+    container_type = VirtualGroup
+    permission_type = ('groups', 'write')

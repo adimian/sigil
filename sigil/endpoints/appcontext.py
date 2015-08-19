@@ -6,7 +6,7 @@ from flask import abort
 from flask_principal import Permission
 import sqlalchemy
 
-from . import ManagedResource, reqparse, AnonymousResource
+from . import reqparse, AnonymousResource, ProtectedResource
 from ..api import db, app
 from ..models import AppContext, Need
 from ..permissions import APP_MANDATORY_NEEDS
@@ -16,7 +16,7 @@ from ..utils import current_user, generate_token, read_token, md5
 logger = logging.getLogger(__name__)
 
 
-class ApplicationContext(ManagedResource):
+class ApplicationContext(ProtectedResource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str)

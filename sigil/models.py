@@ -1,3 +1,4 @@
+# @PydevCodeAnalysisIgnore
 import datetime
 import logging
 
@@ -33,9 +34,19 @@ permissions = db.Table('permssions',
                        db.Column('user_id', db.Integer,
                                  db.ForeignKey('user.id')),
                        db.Column('need_id', db.Integer,
-                                 db.ForeignKey('need.id'))
-)
+                                 db.ForeignKey('need.id')))
 
+group_member = db.Table('group_member',
+                        db.Column('group_id', db.Integer,
+                                  db.ForeignKey('virtualgroup.id')),
+                        db.Column('member_id', db.Integer,
+                                  db.ForeignKey('user.id')))
+
+team_member = db.Table('team_member',
+                        db.Column('team_id', db.Integer,
+                                  db.ForeignKey('userteam.id')),
+                        db.Column('member_id', db.Integer,
+                                  db.ForeignKey('user.id')))
 
 class User(UserMixin, AccountMixin, db.Model):
     PROTECTED = ('id', 'created_at', 'validated_at',
@@ -68,6 +79,12 @@ class User(UserMixin, AccountMixin, db.Model):
 
     permissions = db.relationship('Need', secondary=permissions,
                                   backref=db.backref('users', lazy='dynamic'))
+
+    groups = db.relationship('VirtualGroup', secondary=group_member,
+                             backref=db.backref('members', lazy='dynamic'))
+
+    teams = db.relationship('UserTeam', secondary=team_member,
+                            backref=db.backref('members', lazy='dynamic'))
 
     @classmethod
     def by_username(cls, username):
@@ -167,3 +184,22 @@ class Need(db.Model):
     def __repr__(self):
         return '<Need {}.{}>'.format(self.app_context.name,
                                      '.'.join(self.as_tuple()))
+
+class VirtualGroup(db.Model):
+    __tablename__ = 'virtualgroup'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), unique=True)
+    active = db.Column(db.Boolean(), default=True)
+
+    def __init__(self, name):
+        self.name = name
+
+
+class UserTeam(db.Model):
+    __tablename__ = 'userteam'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), unique=True)
+    active = db.Column(db.Boolean(), default=True)
+
+    def __init__(self, name):
+        self.name = name

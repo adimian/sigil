@@ -1,11 +1,9 @@
-import hmac
+import io
 import time
-import uuid
 
 from flask import current_app as app
 import pyotp
 import qrcode
-from six import BytesIO
 
 
 def new_user_secret():
@@ -39,7 +37,7 @@ def check_code(user_secret, code):
 
 def ascii_qr_code(uri, invert=False):
     qr = qrcode.QRCode()
-    out = BytesIO()
+    out = io.StringIO()
     qr.add_data(uri)
     qr.print_ascii(out=out, invert=invert)
     res = out.getvalue()

@@ -38,7 +38,6 @@ class Login(AnonymousResource):
             if not user.is_correct_password(args['password']):
                 abort(403, 'invalid password')
             if app.config['ENABLE_2FA']:
-                print(app.config['ENABLE_2FA'])
                 if not args['totp']:
                     abort(400, 'TOTP code required')
                 if not check_code(user.totp_secret, args['totp']):

@@ -19,28 +19,34 @@ var SigilUser = function(){
 	self.username = ko.observable();
 	self.password = ko.observable();
 	self.totp = ko.observable();
+	
+	self.auth_token = ko.observable("placeholder");
 };
 
 var SigilApplication = function() {
     var self = this;
     self.login_error_message = ko.observable();
-    
-    self.authenticated = ko.observable();
     self.error_message = ko.observable();
     
     self.server_options = new ServerOptions();
     self.current_user = new SigilUser()
+    
+    self.authenticated = ko.computed(function(){
+    	return !!self.current_user.auth_token();
+    }, this);
     
     self.authenticated.subscribe(function(new_value) {
     	if (!new_value){
     		$("#login_modal").modal({
     			show: true,
     			backdrop: 'static'
-    		});
-    	}
+    		})
+    	} else {
+    		$("#login_modal").hide();
+    	};
     });
     
-    self.authenticated(false);
+    self.current_user.auth_token(null);
 };
 
 SigilApplication.prototype.login = function(){
@@ -51,6 +57,7 @@ SigilApplication.prototype.login = function(){
 		totp: this.current_user.totp()}, 
 		function(data){
 			console.log(data);
+			self.current_user.auth_token(data.token);
 		}).error(function(data){
 			self.login_error_message(data.responseJSON.message);
 		});

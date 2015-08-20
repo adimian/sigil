@@ -1,0 +1,66 @@
+"use strict"
+
+var SIGIL_API = '/api'
+	
+var postJSON = function(url, data){
+	return $.post(url, data)
+};
+
+var ServerOptions = function() {
+	var self = this;
+	self.use_totp = ko.observable();
+	$.getJSON(SIGIL_API+'/options', function(data){
+		self.use_totp(data.use_totp == "1");
+	});
+};
+
+var SigilUser = function(){
+	var self = this;
+	self.username = ko.observable();
+	self.password = ko.observable();
+	self.totp = ko.observable();
+};
+
+var SigilApplication = function() {
+    var self = this;
+    self.login_error_message = ko.observable();
+    
+    self.authenticated = ko.observable();
+    self.error_message = ko.observable();
+    
+    self.server_options = new ServerOptions();
+    self.current_user = new SigilUser()
+    
+    self.authenticated.subscribe(function(new_value) {
+    	if (!new_value){
+    		$("#login_modal").modal({
+    			show: true,
+    			backdrop: 'static'
+    		});
+    	}
+    });
+    
+    self.authenticated(false);
+};
+
+SigilApplication.prototype.login = function(){
+	var self = this;
+	$.post(SIGIL_API+'/login', {
+		username: this.current_user.username(),
+		password: this.current_user.password(),
+		totp: this.current_user.totp()}, 
+		function(data){
+			console.log(data);
+		}).error(function(data){
+			self.login_error_message(data.responseJSON.message);
+		});
+};
+
+
+var init = function(){
+	var app = new SigilApplication();
+	ko.applyBindings(app);
+	window.app = app;
+};
+
+$(init)

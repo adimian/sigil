@@ -33,11 +33,13 @@ def setup_endpoints():
                                  UpdatePassword, UserCatalog)
     from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
     from .endpoints.containers import VirtualGroupResource, VirtualGroupMembers
+    from .endpoints.options import ServerOptions
 
     api = restful.Api(app, prefix=app.config['API_URL_PREFIX'])
     # application
     api.add_resource(ApplicationContext, '/app/register')
     api.add_resource(ApplicationNeeds, '/needs')
+    api.add_resource(ServerOptions, '/options')
     # login (SSO)
     api.add_resource(Login, '/login')
     # user

@@ -24,6 +24,8 @@ class Login(AnonymousResource):
 
         args = parser.parse_args()
 
+        print(args)
+
         if args['username'] and args['password']:
             try:
                 user = session.query(User).filter_by(username=args['username']).one()

@@ -18,7 +18,7 @@ web:
     - DEBUG=1
     - HOST=0.0.0.0
     - SQLALCHEMY_DATABASE_URI=postgres://postgres@db
-    - ENABLE_2FA=1
+    - ENABLE_2FA=0
     - TOTP_DOMAIN=docker.dev
     - API_URL_PREFIX=/api
   volumes:

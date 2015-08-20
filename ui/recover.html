@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Sigil UI</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+		<!--[if lt IE 9]>
+		  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+		<![endif]-->
+		<link rel="stylesheet" href="sigil.css">
+    </head>
+    <body>
+    
+	    <div class="container">
+	      <form class="form-recovery" id="form-recovery">
+	        <h2 class="form-heading">Password recovery</h2>
+	        <label for="username" class="sr-only">E-mail</label>
+	        <input type="email" name="email" class="form-control" placeholder="E-mail" required autofocus>
+	        
+	        <button class="btn btn-lg btn-primary btn-block" data-bind="#">Send email</button>
+	      </form>
+	    </div>
+  
+	    <!-- JS imports -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+		<script src="js.cookie-2.0.3.min.js"></script>
+		<script src="sammy.min.js"></script>
+		<script src="sigil.js"></script>
+    </body>
+</html>

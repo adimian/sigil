@@ -42,7 +42,7 @@ var SigilApplication = function() {
     			backdrop: 'static'
     		})
     	} else {
-    		$("#login_modal").hide();
+    		$("#login_modal").modal('hide');
     	};
     });
     
@@ -56,7 +56,6 @@ SigilApplication.prototype.login = function(){
 		password: this.current_user.password(),
 		totp: this.current_user.totp()}, 
 		function(data){
-			console.log(data);
 			self.current_user.auth_token(data.token);
 		}).error(function(data){
 			self.login_error_message(data.responseJSON.message);

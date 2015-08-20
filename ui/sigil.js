@@ -30,16 +30,21 @@ var SigilUser = function(){
 	self.auth_token = ko.observable("placeholder");
 };
 
-var TabItem = function(key, label){
+var TabItem = function(key, label, searchable){
 	this.key = key;
 	this.label = label;
+	this.searchable = searchable;
 };
 
 var SigilApplication = function() {
     var self = this;
     
-    self.tabs = [new TabItem('overview', 'Overview'),
-                 new TabItem('users', 'Users')]
+    self.tabs = [new TabItem('overview', 'Overview', false),
+                 new TabItem('users', 'Users', true),
+                 new TabItem('groups', 'Virtual Groups', true),
+                 new TabItem('permissions', 'Permissions', true),
+                 new TabItem('import', 'Import from Excel', false),
+                 new TabItem('export', 'Export to Excel', false)]
     
     self.login_error_message = ko.observable();
     self.error_message = ko.observable();

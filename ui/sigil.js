@@ -2,8 +2,10 @@
 
 var SIGIL_API = '/api'
 	
-var postJSON = function(url, data){
-	return $.post(url, data)
+var authed_request = function(verb, url, data){
+	return $.ajax({
+			method: verb,
+			headers: {'Sigil-Token': ''}});
 };
 
 var ServerOptions = function() {
@@ -20,18 +22,35 @@ var SigilUser = function(){
 	self.password = ko.observable();
 	self.totp = ko.observable();
 	
+	self.first_name = ko.observable();
+	self.last_name = ko.observable();
+	self.display_name = ko.observable();
+	self.user_id = ko.observable();
+	
 	self.auth_token = ko.observable("placeholder");
+};
+
+var TabItem = function(key, label){
+	this.key = key;
+	this.label = label;
 };
 
 var SigilApplication = function() {
     var self = this;
+    
+    self.tabs = [new TabItem('overview', 'Overview'),
+                 new TabItem('users', 'Users')]
+    
     self.login_error_message = ko.observable();
     self.error_message = ko.observable();
     
     self.server_options = new ServerOptions();
-    self.current_user = new SigilUser()
+    self.current_user = new SigilUser();
+    
+    self.current_tab = ko.observable(self.tabs[0]);
     
     self.authenticated = ko.computed(function(){
+    	// TODO: should check session validity against the API
     	return !!self.current_user.auth_token();
     }, this);
     
@@ -42,6 +61,7 @@ var SigilApplication = function() {
     			backdrop: 'static'
     		})
     	} else {
+    		console.log('hiding');
     		$("#login_modal").modal('hide');
     	};
     });
@@ -62,6 +82,11 @@ SigilApplication.prototype.login = function(){
 			self.login_error_message(data.responseJSON.message);
 		});
 };
+
+SigilApplication.prototype.set_current_tab = function(data){
+	app.current_tab(data);
+};
+
 
 
 var init = function(){

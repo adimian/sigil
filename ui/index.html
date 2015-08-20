@@ -25,24 +25,26 @@
 					<div class="modal-header clearfix">
 						<img src="sigil.png" class="img-rounded pull-right" width="100px">
 						<h2 class="form-signin-heading">Please sign in</h2>
-					    <div class="alert alert-danger" data-bind="visible: login_error_message">
-					        <span data-bind="text: login_error_message"></span>
-					    </div>
+						<div class="alert alert-danger"
+							data-bind="visible: login_error_message">
+							<span data-bind="text: login_error_message"></span>
+						</div>
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="username" class="control-label">Username</label>
-							<input type="text" name="username" class="form-control"
+							<label for="username" class="control-label">Username</label> <input
+								type="text" name="username" class="form-control"
 								placeholder="Username" required autofocus
 								data-bind="value: current_user.username">
 						</div>
 						<div class="form-group">
-							<label for="password" class="control-label">Password</label>
-							<input type="password" name="password" class="form-control"
+							<label for="password" class="control-label">Password</label> <input
+								type="password" name="password" class="form-control"
 								placeholder="Password" required
 								data-bind="value: current_user.password">
 						</div>
-						<div class="form-group" data-bind="visible: server_options.use_totp()">
+						<div class="form-group"
+							data-bind="visible: server_options.use_totp()">
 							<label for="totp" class="control-label">PIN code</label> <input
 								type="text" name="totp" class="form-control" placeholder="PIN"
 								required data-bind="value: current_user.totp">
@@ -52,65 +54,56 @@
 					<div class="modal-footer">
 						<a href="recover.html">Recover password ?</a>
 						<button type="button" class="btn btn-primary"
-						data-bind="click: $root.login">Sign In</button>
+							data-bind="click: $root.login">Sign In</button>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
 
-    <!-- Application Page -->
-    
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Sigil</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
-      </div>
-    </nav>
-    
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item</a></li>
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-          </ul>
-        </div>
-    </div>
-    
-    
+	<!-- Application Page -->
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">Sigil</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#">Dashboard</a></li>
+					<li><a href="#"
+						data-bind="text: 'Profile (' + current_user.display_name() + ')'"></a></li>
+					<li><a href="#">Help</a></li>
+				</ul>
+				<form class="navbar-form navbar-right">
+					<input type="text" class="form-control" placeholder="Search...">
+				</form>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar">
+				<ul class="nav nav-sidebar" data-bind="foreach: tabs">
+					<li data-bind="css: { active: $parent.current_tab().key == key }">
+						<a href="#" data-bind="text: label, click: $parent.set_current_tab"></a>
+					</li>
+				</ul>
+			</div>
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+				<h1 class="page-header" data-bind="text: current_tab().label"></h1>
+			</div>
+		</div>
+	</div>
+
+
 
 	<!-- JS imports -->
 	<script

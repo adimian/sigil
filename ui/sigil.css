@@ -3,6 +3,11 @@ body {
   padding-top: 50px;
 }
 
+.brand-img {
+	width: 39px; 
+	margin-top: -11px;
+}
+
 .sub-header {
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;

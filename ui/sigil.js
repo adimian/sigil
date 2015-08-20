@@ -46,7 +46,7 @@ var SigilApplication = function() {
     	};
     });
     
-    self.current_user.auth_token(null);
+    self.current_user.auth_token(Cookies.get('token'));
 };
 
 SigilApplication.prototype.login = function(){
@@ -57,6 +57,7 @@ SigilApplication.prototype.login = function(){
 		totp: this.current_user.totp()}, 
 		function(data){
 			self.current_user.auth_token(data.token);
+			Cookies.set('token',data.token)
 		}).error(function(data){
 			self.login_error_message(data.responseJSON.message);
 		});

@@ -15,14 +15,13 @@ nginx:
 web:
   build: .
   environment:
-    - DEBUG=1
+    - DEBUG=yes
     - HOST=0.0.0.0
     - SQLALCHEMY_DATABASE_URI=postgres://postgres@db
-    - ENABLE_2FA=0
+    - ENABLE_2FA=no
     - TOTP_DOMAIN=docker.dev
     - API_URL_PREFIX=/api
   volumes:
     - .:/code
   links:
     - db
-  restart: always

@@ -5,7 +5,17 @@ def configure(app):
     config = app.config
 
     def set_default(key, value):
-        config[key] = environ.get(key, value)
+        v = environ.get(key, value)
+        try:
+            v = int(v)
+        except:
+            pass
+        if isinstance(v, str):
+            if v.lower() in ('false', 'no'):
+                v = False
+            elif v.lower() in('true', 'yes'):
+                v = True
+        config[key] = v
 
     set_default('DEBUG', False)
     set_default('HOST', '0.0.0.0')

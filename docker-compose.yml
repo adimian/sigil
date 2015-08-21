@@ -21,6 +21,7 @@ web:
     - ENABLE_2FA=no
     - TOTP_DOMAIN=docker.dev
     - API_URL_PREFIX=/api
+    - SESSION_TOKEN_MAX_AGE=300
   volumes:
     - .:/code
   links:

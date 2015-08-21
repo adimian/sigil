@@ -1,21 +1,24 @@
 "use strict"
 
-var SIGIL_API = '/api'
+var SIGIL_API = '/api';
+var SIGIL_TOKEN_HEADER = 'Sigil-Token';
 	
 var authed_request = function(verb, url, data, success){
-	
 	var headers = {};
-	headers[app.server_options.auth_token_name()] = app.current_user.auth_token();
-	
+	headers[SIGIL_TOKEN_HEADER] = app.current_user.auth_token();
 	return $.ajax({
 			method: verb,
 			dataType: "json",
-			url: url,
+			url: SIGIL_API + url,
 			data: data,
 			success: success,
 			headers: headers}).error(function(data){
-				app.error_message(data.responseJSON.message);
-				$("#error_popup").modal('show');
+				if (data.status == 401) {
+					app.current_user.auth_token(null);
+				} else {
+					app.error_message(data.responseJSON.message);
+					$("#error_popup").modal('show');
+				}
 			});
 };
 
@@ -41,12 +44,41 @@ var SigilUser = function(){
 	self.user_id = ko.observable();
 	
 	self.auth_token = ko.observable("placeholder");
+	
+	self.get_info = function() {
+		authed_request('GET', '/user/details', null, function(data){
+			self.first_name(data.firstname);
+			self.last_name(data.lastname);
+			self.display_name(data.displayname);
+			self.user_id(data.id);
+		})
+	};
 };
 
 var TabItem = function(key, label, searchable){
 	this.key = key;
 	this.label = label;
 	this.searchable = searchable;
+};
+
+var DataView = function () {
+	var self = this;
+	self.collection = ko.observable([]);
+	self.cursor = ko.observable();
+	
+	self.get_data = ko.computed(function() {
+        var res = this.collection();
+        return res;
+    }, this);
+	
+	self.headers = ko.computed(function() {
+        var res = [];
+        var item = self.collection()[0];
+        for (var col in item){
+        	res.push(col);
+        }
+        return res;
+    }, this);
 };
 
 var SigilApplication = function() {
@@ -58,17 +90,27 @@ var SigilApplication = function() {
                  new TabItem('permissions', 'Permissions', true),
                  new TabItem('import', 'Import from Excel', false),
                  new TabItem('export', 'Export to Excel', false)]
+    self.tabmap = {};
+    for (var i=0; i<self.tabs.length;i++) {
+    	var tab = self.tabs[i];
+    	self.tabmap[tab.key] = tab;
+    }
     
     self.login_error_message = ko.observable();
     self.error_message = ko.observable();
     
     self.server_options = new ServerOptions();
     self.current_user = new SigilUser();
+    self.data_view = new DataView();
     
-    self.current_tab = ko.observable(self.tabs[0]);
+    var initial_tab = self.tabs[0];
+    if (location.hash) {
+    	initial_tab = self.tabmap[location.hash.replace('#', '')];
+    }
+    
+    self.current_tab = ko.observable(initial_tab);
     
     self.authenticated = ko.computed(function(){
-    	// TODO: should check session validity against the API
     	return !!self.current_user.auth_token();
     }, this);
     
@@ -101,15 +143,39 @@ SigilApplication.prototype.login = function(){
 };
 
 SigilApplication.prototype.set_current_tab = function(data){
-	app.current_tab(data);
+	if (data) {
+		location.hash = data.key;
+		app.current_tab(data);
+		if (Cookies.get('current_tab').key != data.key) {
+			Cookies.set('current_tab', data)
+		} 
+	}
 };
-
 
 
 var init = function(){
 	var app = new SigilApplication();
 	ko.applyBindings(app);
 	window.app = app;
+	
+	Sammy(function () {
+		this.get('#users', function () {
+			authed_request('GET', '/user', null, function(users){
+				app.data_view.collection(users['users']);
+				console.log(app.data_view.collection());
+			});
+		});
+		
+		this.get('#overview', function () {});
+		this.get('#groups', function () {});
+		this.get('#permissions', function () {});
+		this.get('#import', function () {});
+		this.get('#export', function () {});
+		
+	}).run();
+	
+	app.current_user.get_info();
 };
+
 
 $(init)

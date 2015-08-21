@@ -5,6 +5,7 @@ import uuid
 from flask import request, current_app as app, abort, _request_ctx_stack, g
 from flask_principal import Identity, identity_loaded, Permission
 from itsdangerous import URLSafeTimedSerializer
+import itsdangerous
 import sqlalchemy
 from werkzeug.local import LocalProxy
 
@@ -68,10 +69,12 @@ def requires_authentication(func):
         if not token:
             abort(401, 'missing {0} header'.format(token_name))
 
-        user_id, _ = read_token(token,
-                                app.config['SESSION_TOKEN_SALT'],
-                                app.config['SESSION_TOKEN_MAX_AGE'])
-
+        try:
+            user_id, _ = read_token(token,
+                                    app.config['SESSION_TOKEN_SALT'],
+                                    app.config['SESSION_TOKEN_MAX_AGE'])
+        except itsdangerous.SignatureExpired:
+            abort(401, 'token has expired')
         from .models import User
         try:
             user = User.query.filter_by(id=user_id).one()

@@ -29,7 +29,9 @@
 					</button>
 					<h4 class="modal-title" id="myModalLabel">An error occured</h4>
 				</div>
-				<div class="modal-body"><span data-bind="text: error_message"></span></div>
+				<div class="modal-body">
+					<span data-bind="text: error_message"></span>
+				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
 				</div>
@@ -122,11 +124,21 @@
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 				<h1 class="page-header" data-bind="text: current_tab().label"></h1>
 
-				<!-- Users view -->
-
-				<table class="table">
-
-				</table>
+				<!-- Data view -->
+				<div class="container" data-bind="visible: data_view.collection, with: data_view">
+					<table class="table table-hover">
+						<thead>
+							<tr data-bind="foreach: headers">
+								<th data-bind="text: name"></th>
+							</tr>
+						</thead>
+						<!-- <tbody data-bind="foreach: {data: get_data, as: 'line'}">
+							<tr data-bind="foreach: $parent.columns">
+								<td data-bind="text: line[$index()]"></td>
+							</tr>
+						</tbody> -->
+					</table>
+				</div>
 
 				<!-- Excel export view -->
 

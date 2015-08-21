@@ -173,8 +173,8 @@ var init = function(){
 	
 	Sammy(function () {
 		this.get('#users', function () {
-			authed_request('GET', '/user', null, function(users){
-				app.data_view.collection(users['users']);
+			authed_request('GET', '/user', null, function(data){
+				app.data_view.collection(data['users']);
 				app.data_view.columns([
 					new DataColumn('id', 'ID'),
 					new DataColumn('username', 'Username'),
@@ -185,7 +185,16 @@ var init = function(){
 		});
 		
 		this.get('#overview', function () {app.data_view.collection(null);});
-		this.get('#groups', function () {app.data_view.collection(null);});
+		this.get('#groups', function () {
+			authed_request('GET', '/group', null, function(data){
+				app.data_view.collection(data['groups']);
+				app.data_view.columns([
+					new DataColumn('id', 'ID'),
+					new DataColumn('name', 'Name'),
+					new DataColumn('active', 'Active'),
+				]);
+			});
+		});
 		this.get('#permissions', function () {app.data_view.collection(null);});
 		this.get('#import', function () {app.data_view.collection(null);});
 		this.get('#export', function () {app.data_view.collection(null);});

@@ -12,6 +12,15 @@ from ..models import VirtualGroup, User, UserTeam
 
 class ContainerResource(ProtectedResource):
 
+    def get(self):
+        with Permission(('groups', 'read')).require():
+            response = []
+            for group in db.session.query(self.container_type).all():
+                response.append({'id': group.id,
+                                 'name': group.name,
+                                 'active': group.active})
+            return {'groups': response}
+
     def post(self):
         with Permission(('groups', 'write')).require():
             parser = reqparse.RequestParser()

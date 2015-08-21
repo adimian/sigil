@@ -56,10 +56,11 @@ var SigilUser = function(){
 	
 };
 
-var TabItem = function(key, label, searchable){
+var TabItem = function(key, label, searchable, can_add){
 	this.key = key;
 	this.label = label;
 	this.searchable = searchable;
+	this.can_add = searchable;
 };
 
 var DataView = function () {
@@ -144,6 +145,12 @@ SigilApplication.prototype.login = function(){
 		}).error(function(data){
 			self.login_error_message(data.responseJSON.message);
 		});
+};
+
+SigilApplication.prototype.logout = function(){
+	var self = this;
+	Cookies.remove('token')
+	self.current_user.auth_token(null);
 };
 
 SigilApplication.prototype.set_current_tab = function(data){

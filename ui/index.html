@@ -17,6 +17,26 @@
 </head>
 <body>
 
+	<!-- Error popup -->
+	<div class="modal fade" id="error_popup" tabindex="-1" role="dialog"
+		aria-labelledby="error_popup">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="myModalLabel">An error occured</h4>
+				</div>
+				<div class="modal-body"><span data-bind="text: error_message"></span></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<!-- Login Form -->
 	<div class="modal fade" id="login_modal" tabindex="-1">
 		<div class="modal-dialog">
@@ -72,8 +92,8 @@
 						class="icon-bar"></span> <span class="icon-bar"></span> <span
 						class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">
-				<img src="sigil.png" class="brand-img"></a>
+				<a class="navbar-brand" href="#"> <img src="sigil.png"
+					class="brand-img"></a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
 				<ul class="nav navbar-nav navbar-right">
@@ -81,7 +101,8 @@
 						data-bind="text: 'Profile (' + current_user.display_name() + ')'"></a></li>
 					<li><a href="#">Help</a></li>
 				</ul>
-				<form class="navbar-form navbar-right" data-bind="visible: current_tab().searchable">
+				<form class="navbar-form navbar-right"
+					data-bind="visible: current_tab().searchable">
 					<input type="text" class="form-control" placeholder="Search...">
 				</form>
 			</div>
@@ -93,17 +114,22 @@
 			<div class="col-sm-3 col-md-2 sidebar">
 				<ul class="nav nav-sidebar" data-bind="foreach: tabs">
 					<li data-bind="css: { active: $parent.current_tab().key == key }">
-						<a href="#" data-bind="text: label, click: $parent.set_current_tab"></a>
+						<a href="#"
+						data-bind="text: label, click: $parent.set_current_tab"></a>
 					</li>
 				</ul>
 			</div>
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 				<h1 class="page-header" data-bind="text: current_tab().label"></h1>
-				
+
 				<!-- Users view -->
-				
-				
-				
+
+				<table class="table">
+
+				</table>
+
+				<!-- Excel export view -->
+
 			</div>
 		</div>
 	</div>

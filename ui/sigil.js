@@ -2,17 +2,30 @@
 
 var SIGIL_API = '/api'
 	
-var authed_request = function(verb, url, data){
+var authed_request = function(verb, url, data, success){
+	
+	var headers = {};
+	headers[app.server_options.auth_token_name()] = app.current_user.auth_token();
+	
 	return $.ajax({
 			method: verb,
-			headers: {'Sigil-Token': ''}});
+			dataType: "json",
+			url: url,
+			data: data,
+			success: success,
+			headers: headers}).error(function(data){
+				app.error_message(data.responseJSON.message);
+				$("#error_popup").modal('show');
+			});
 };
 
 var ServerOptions = function() {
 	var self = this;
 	self.use_totp = ko.observable();
+	self.auth_token_name = ko.observable();
 	$.getJSON(SIGIL_API+'/options', function(data){
 		self.use_totp(data.use_totp == "1");
+		self.auth_token_name(data.auth_token);
 	});
 };
 
@@ -66,7 +79,6 @@ var SigilApplication = function() {
     			backdrop: 'static'
     		})
     	} else {
-    		console.log('hiding');
     		$("#login_modal").modal('hide');
     	};
     });

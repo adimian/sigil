@@ -53,6 +53,7 @@ var SigilUser = function(){
 			self.user_id(data.id);
 		})
 	};
+	
 };
 
 var TabItem = function(key, label, searchable){
@@ -103,11 +104,8 @@ var SigilApplication = function() {
     self.current_user = new SigilUser();
     self.data_view = new DataView();
     
-    var initial_tab = self.tabs[0];
-    if (location.hash) {
-    	initial_tab = self.tabmap[location.hash.replace('#', '')];
-    }
-    
+    var initial_tab = (self.tabmap[location.hash.replace('#', '')] 
+    					|| self.tabs[0]);
     self.current_tab = ko.observable(initial_tab);
     
     self.authenticated = ko.computed(function(){
@@ -122,6 +120,7 @@ var SigilApplication = function() {
     		})
     	} else {
     		$("#login_modal").modal('hide');
+    		self.current_user.get_info();
     	};
     });
     
@@ -146,7 +145,9 @@ SigilApplication.prototype.set_current_tab = function(data){
 	if (data) {
 		location.hash = data.key;
 		app.current_tab(data);
-		if (Cookies.get('current_tab').key != data.key) {
+		
+		if (Cookies.get('current_tab') 
+				&& Cookies.get('current_tab').key != data.key) {
 			Cookies.set('current_tab', data)
 		} 
 	}

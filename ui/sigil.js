@@ -64,6 +64,7 @@ var TabItem = function(key, label, searchable){
 
 var DataView = function () {
 	var self = this;
+	self.columns = ko.observable([])
 	self.collection = ko.observable([]);
 	self.cursor = ko.observable();
 	
@@ -74,12 +75,16 @@ var DataView = function () {
 	
 	self.headers = ko.computed(function() {
         var res = [];
-        var item = self.collection()[0];
-        for (var col in item){
-        	res.push(col);
+        for (var i=0; i<self.columns().length; i++){
+        	res.push({'name': self.columns()[i].label});
         }
         return res;
     }, this);
+};
+
+var DataColumn = function (key, label) {
+	this.key = key;
+	this.label = label;
 };
 
 var SigilApplication = function() {
@@ -163,7 +168,11 @@ var init = function(){
 		this.get('#users', function () {
 			authed_request('GET', '/user', null, function(users){
 				app.data_view.collection(users['users']);
-				console.log(app.data_view.collection());
+				app.data_view.columns([
+					new DataColumn('id', 'ID'),
+					new DataColumn('username', 'Username'),
+					new DataColumn('display_name', 'Display Name'),
+				]);
 			});
 		});
 		

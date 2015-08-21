@@ -13,6 +13,12 @@ body {
   border-bottom: 1px solid #eee;
 }
 
+.modal-backdrop.in {
+  filter: alpha(opacity=95);
+  opacity: .95;
+}
+
+
 .form-signin .form-recovery {
   max-width: 330px;
   padding: 15px;

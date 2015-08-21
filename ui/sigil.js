@@ -179,6 +179,7 @@ var init = function(){
 					new DataColumn('id', 'ID'),
 					new DataColumn('username', 'Username'),
 					new DataColumn('display_name', 'Display Name'),
+					new DataColumn('email', 'E-mail'),
 				]);
 			});
 		});

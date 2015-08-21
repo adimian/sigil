@@ -100,7 +100,8 @@ class UserCatalog(ProtectedResource):
             for user in User.query.all():
                 users.append({'id': user.id,
                               'username': user.username,
-                              'display_name': user.display_name})
+                              'display_name': user.display_name,
+                              'email': user.email})
 
             return response
 

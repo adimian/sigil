@@ -183,11 +183,11 @@ var init = function(){
 			});
 		});
 		
-		this.get('#overview', function () {});
-		this.get('#groups', function () {});
-		this.get('#permissions', function () {});
-		this.get('#import', function () {});
-		this.get('#export', function () {});
+		this.get('#overview', function () {app.data_view.collection(null);});
+		this.get('#groups', function () {app.data_view.collection(null);});
+		this.get('#permissions', function () {app.data_view.collection(null);});
+		this.get('#import', function () {app.data_view.collection(null);});
+		this.get('#export', function () {app.data_view.collection(null);});
 		
 	}).run();
 	

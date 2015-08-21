@@ -127,6 +127,7 @@ var SigilApplication = function() {
     	} else {
     		$("#login_modal").modal('hide');
     		self.current_user.get_info();
+    		location.reload(false);
     	};
     });
     

@@ -203,7 +203,19 @@ var init = function(){
 	}).run();
 	
 	app.current_user.get_info();
+	
+	// dropzone setup
+	var upload_zone = new Dropzone("#drop", {
+		  url: "/upload",
+		  previewsContainer: "#previews",
+		  clickable: ["#clickable", "#drop"],
+		  paramName: "file",
+		  addRemoveLinks: false,
+		  acceptedFiles: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12"
+		});
+	
 };
 
 
-$(init)
+$(init);
+

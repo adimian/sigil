@@ -93,6 +93,7 @@ var SigilApplication = function() {
     
     self.tabs = [new TabItem('overview', 'Overview', false),
                  new TabItem('users', 'Users', true),
+                 new TabItem('teams', 'User Teams', true),
                  new TabItem('groups', 'Virtual Groups', true),
                  new TabItem('permissions', 'Permissions', true),
                  new TabItem('import', 'Import from Excel', false),
@@ -186,6 +187,7 @@ var init = function(){
 		});
 		
 		this.get('#overview', function () {app.data_view.collection(null);});
+		this.get('#teams', function () {app.data_view.collection(null);});
 		this.get('#groups', function () {
 			authed_request('GET', '/group', null, function(data){
 				app.data_view.collection(data['groups']);

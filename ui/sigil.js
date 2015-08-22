@@ -187,7 +187,16 @@ var init = function(){
 		});
 		
 		this.get('#overview', function () {app.data_view.collection(null);});
-		this.get('#teams', function () {app.data_view.collection(null);});
+		this.get('#teams', function () {
+			authed_request('GET', '/team', null, function(data){
+				app.data_view.collection(data['groups']);
+				app.data_view.columns([
+					new DataColumn('id', 'ID'),
+					new DataColumn('name', 'Name'),
+					new DataColumn('active', 'Active'),
+				]);
+			});
+		});
 		this.get('#groups', function () {
 			authed_request('GET', '/group', null, function(data){
 				app.data_view.collection(data['groups']);

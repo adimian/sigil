@@ -2,17 +2,21 @@
 
 var SIGIL_API = '/api';
 var SIGIL_TOKEN_HEADER = 'Sigil-Token';
-	
-var authed_request = function(verb, url, data, success){
+
+var get_auth_headers = function() {
 	var headers = {};
 	headers[SIGIL_TOKEN_HEADER] = app.current_user.auth_token();
+	return headers;
+};
+	
+var authed_request = function(verb, url, data, success){
 	return $.ajax({
 			method: verb,
 			dataType: "json",
 			url: SIGIL_API + url,
 			data: data,
 			success: success,
-			headers: headers}).error(function(data){
+			headers: get_auth_headers()}).error(function(data){
 				if (data.status == 401) {
 					app.current_user.auth_token(null);
 				} else {
@@ -214,16 +218,17 @@ var init = function(){
 	}).run();
 	
 	app.current_user.get_info();
-	
+
 	// dropzone setup
-	var upload_zone = new Dropzone("#drop", {
-		  url: "/upload",
-		  previewsContainer: "#previews",
-		  clickable: ["#clickable", "#drop"],
+	Dropzone.options.importFileDropzone = {
+		  url: SIGIL_API + "/import/excel",
 		  paramName: "file",
+		  headers: get_auth_headers(),
+		  uploadMultiple: false,
+		  maxFiles: 1,
 		  addRemoveLinks: false,
 		  acceptedFiles: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12"
-		});
+		};
 	
 };
 

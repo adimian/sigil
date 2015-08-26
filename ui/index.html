@@ -158,21 +158,11 @@
 				</div>
 
 				<!-- Excel import view -->
-				<div class="container"
+				<div class="container" 
 					data-bind="visible: current_tab().key == 'import'">
-					<form action="/file-upload" class="dropzone">
-						<div class="dz-message">
-							Drop your import file here <span class="note">(or click to
-								open file selection window)</span>
-						</div>
-
-						<div class="fallback">
-							<input name="file" type="file" multiple />
-						</div>
-					</form>
+					<form action="/file-upload" class="drop dropzone"
+						id="import-file-dropzone"></form>
 				</div>
-
-
 			</div>
 		</div>
 	</div>

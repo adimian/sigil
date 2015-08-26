@@ -91,7 +91,7 @@ body {
 	background-color: #428bca;
 }
 
-.dropzone {
+.drop {
 	border: 2px dashed #0087F7;
 	border-radius: 5px;
 	background: white;
@@ -99,11 +99,11 @@ body {
 	min-height: 200px;
 }
 
-.dropzone .dz-message {
+.drop .dz-message {
 	font-size: 2em;
 }
 
-.dropzone .dz-message .note {
+.drop .dz-message .note {
 	font-size: 0.6em;
 	font-weight: 200;
 	display: block;

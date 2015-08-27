@@ -36,6 +36,7 @@ def setup_endpoints():
                                        VirtualGroupMembers, UserTeamResource,
                                        UserTeamMembers)
     from .endpoints.options import ServerOptions
+    from .endpoints.connectors import ExcelImport
 
     api = restful.Api(app, prefix=app.config['API_URL_PREFIX'])
     # application
@@ -55,6 +56,6 @@ def setup_endpoints():
     api.add_resource(VirtualGroupMembers, '/group/members')
     api.add_resource(UserTeamResource, '/team')
     api.add_resource(UserTeamMembers, '/team/members')
+    # connectors
+    api.add_resource(ExcelImport, '/import/excel')
     logger.info('endpoints ready')
-
-setup_endpoints()

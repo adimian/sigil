@@ -2,21 +2,29 @@
 import datetime
 import logging
 
+from flask import current_app as app
 from flask_login import UserMixin
 import sqlalchemy
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql.schema import UniqueConstraint
 
-from sigil.utils import random_token
-
 from .api import db, bcrypt
 from .multifactor import new_user_secret
+from .signals import user_registered
+from .utils import random_token, generate_token, md5
 
 
 logger = logging.getLogger(__name__)
 
 
 class AccountMixin(object):
+    def generate_token(self):
+        token = generate_token([self.id, md5(self.email)],
+                               salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
+
+        user_registered.send(app._get_current_object(), user=self, token=token)
+        return token
+
     @hybrid_property
     def password(self):
         return self._password
@@ -62,9 +70,9 @@ class User(UserMixin, AccountMixin, db.Model):
 
     # object fields
     description = db.Column(db.Text)
-    username = db.Column(db.String(256), unique=True)
+    username = db.Column(db.String(256), unique=True, nullable=False)
     _password = db.Column(db.String(256))
-    email = db.Column(db.String(256), unique=True)
+    email = db.Column(db.String(256), unique=True, nullable=False)
     api_key = db.Column(db.String(256), unique=True)
 
     # user fields
@@ -88,12 +96,18 @@ class User(UserMixin, AccountMixin, db.Model):
 
     @classmethod
     def by_username(cls, username):
-        return cls.query.filter_by(username=username).one()
+        try:
+            return cls.query.filter_by(username=username).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            return None
 
-    def __init__(self, username, email):
+    def __init__(self, username, email, mobile=None):
         super(User, self).__init__()
+        assert username
+        assert email
         self.username = username
         self.email = email
+        self.mobile = mobile
 
         api_key = random_token()
         while self.__class__.query.filter_by(api_key=api_key).all():

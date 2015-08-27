@@ -38,10 +38,7 @@ class Register(AnonymousResource):
             message = 'an account with the same username/email already exists'
             abort(409, message)
 
-        token = generate_token([user.id, md5(user.email)],
-                               salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
-
-        user_registered.send(app._get_current_object(), user=user, token=token)
+        token = user.generate_token()
 
         return {"token": token}
 

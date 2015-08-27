@@ -22,6 +22,8 @@ def get_target_user():
 
     if args['username']:
         user = User.by_username(args['username'])
+        if user is None:
+            abort(404, 'unknown user {}'.format(args['username']))
     else:
         user = current_user
     return user

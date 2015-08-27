@@ -20,9 +20,11 @@ def test_get_catalog(client):
     assert data == {'users':
                     [{'display_name': 'alice alice',
                       'id': 1,
+                      'email': 'test@test.com',
                       'username': 'alice'},
                      {'display_name': 'bernard bernard',
                       'id': 2,
+                      'email': 'test1@test.com',
                       'username': 'bernard'}]}
 
 

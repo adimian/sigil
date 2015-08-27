@@ -1,7 +1,9 @@
-from sigil.api import app, db
+from sigil.api import app, db, setup_endpoints
 from sigil.permissions import setup_default_permissions
 from flask_script import Manager, Server, prompt_pass
 from sigil.models import User
+
+setup_endpoints()
 
 
 @app.before_first_request

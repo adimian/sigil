@@ -11,3 +11,4 @@ raven==5.5.0
 psycopg2==2.6.1
 pyotp==1.4.2
 qrcode==5.1
+openpyxl==2.2.5

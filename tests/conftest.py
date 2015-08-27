@@ -1,9 +1,11 @@
 import pytest
 
-from sigil.api import app, db
+from sigil.api import app, db, setup_endpoints
 from sigil.models import User, Need
 from sigil.permissions import setup_default_permissions
 from sigil.utils import generate_token
+
+setup_endpoints()
 
 
 @pytest.fixture(scope='function')

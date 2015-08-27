@@ -20,8 +20,13 @@ var authed_request = function(verb, url, data, success){
 				if (data.status == 401) {
 					app.current_user.auth_token(null);
 				} else {
-					app.error_message(data.responseJSON.message);
-					$("#error_popup").modal('show');
+					if (data.status == 502 || data.responseJSON === undefined) {
+						app.login_error_message('application server unreachable, please retry later')
+						app.current_user.auth_token(null);
+					} else {
+						app.error_message(data.responseJSON.message);
+						$("#error_popup").modal('show');
+					}
 				}
 			});
 };
@@ -227,7 +232,12 @@ var init = function(){
 		  uploadMultiple: false,
 		  maxFiles: 1,
 		  addRemoveLinks: false,
-		  acceptedFiles: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12"
+		  acceptedFiles: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel.sheet.macroEnabled.12",
+		  init: function() {
+			    this.on("error", function(file, response) {
+			    	$(".dz-error-message>span").text(response.message);
+				});
+		  }
 		};
 	
 };

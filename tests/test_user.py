@@ -17,15 +17,8 @@ def test_get_catalog(client):
 
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
-    assert data == {'users':
-                    [{'displayname': 'alice alice',
-                      'id': 1,
-                      'email': 'test@test.com',
-                      'username': 'alice'},
-                     {'displayname': 'bernard bernard',
-                      'id': 2,
-                      'email': 'test1@test.com',
-                      'username': 'bernard'}]}
+    assert sorted([u['username'] for u in data['users']]) == sorted(['alice',
+                                                                     'bernard'])
 
 
 def test_search_user(client):

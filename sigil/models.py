@@ -149,9 +149,7 @@ class User(UserMixin, AccountMixin, db.Model):
                 'email': self.email,
                 'username': self.username,
                 'displayname': self.display_name,
-                'id': self.id,
-                'searchname': '{1} ({0})'.format(self.username,
-                                             self.display_name)}
+                'id': self.id}
 
 
 class AppContext(db.Model):

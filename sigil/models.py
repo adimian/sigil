@@ -97,7 +97,7 @@ class User(UserMixin, AccountMixin, db.Model):
     @classmethod
     def by_username(cls, username):
         try:
-            return cls.query.filter_by(username=username).one()
+            return db.session.query(cls).filter_by(username=username).one()
         except sqlalchemy.orm.exc.NoResultFound:
             return None
 

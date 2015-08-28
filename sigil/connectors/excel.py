@@ -119,9 +119,9 @@ class ExcelConnector(object):
 
     def _find_dupe(self, message, users):
         for user in users:
-            if user in message:
+            if user.username in message or user.email in message:
                 return user
-        return 'unknown'
+        return 'another user'
 
     def process_users(self, sheet):
         p = UserProcessor(sheet)
@@ -136,8 +136,7 @@ class ExcelConnector(object):
         try:
             self.session.commit()
         except sqlalchemy.exc.IntegrityError as err:
-            dupe_user = self._find_dupe(err.params,
-                                        [u.username for u in added])
+            dupe_user = self._find_dupe(err.params, added)
             raise DuplicatedUserError('{} for {}'.format(str(err.orig),
                                                          dupe_user))
 
@@ -151,29 +150,27 @@ class ExcelConnector(object):
         pass
 
     def process(self, fobj):
-        wb = openpyxl.load_workbook(fobj.stream, read_only=True,
-                                    use_iterators=True,
-                                    data_only=True)
+        with self.session.no_autoflush:
+            wb = openpyxl.load_workbook(fobj.stream, read_only=True,
+                                        use_iterators=True,
+                                        data_only=True)
 
-        sheets = set(wb.sheetnames)
+            sheets = set(wb.sheetnames)
 
-        # objects
-        for sheetname in ('users', 'groups', 'teams'):
-            if sheetname in sheets:
-                f_name = 'process_{}'.format(sheetname)
-                f = getattr(self, f_name)
-                if not f:
-                    raise Exception('{} not found'.format(f_name))
-                logger.info('handling {} change'.format(sheetname))
-                f(wb[sheetname])
-                logger.info('done handling {} change'.format(sheetname))
-                sheets.remove(sheetname)
+            # objects
+            for sheetname in ('users', 'groups', 'teams'):
+                if sheetname in sheets:
+                    f_name = 'process_{}'.format(sheetname)
+                    f = getattr(self, f_name)
+                    if not f:
+                        raise Exception('{} not found'.format(f_name))
+                    logger.info('handling {} change'.format(sheetname))
+                    f(wb[sheetname])
+                    logger.info('done handling {} change'.format(sheetname))
+                    sheets.remove(sheetname)
 
-        # permissions
-        for context in sheets:
-            logger.info('handling permission change for {}'.format(context))
+            # permissions
+            for context in sheets:
+                logger.info('handling permission change for {}'.format(context))
 
-        try:
             self.session.commit()
-        except sqlalchemy.exc.IntegrityError as err:
-            raise DuplicatedUserError(str(err.orig))

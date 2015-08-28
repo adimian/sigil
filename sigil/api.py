@@ -50,7 +50,7 @@ def setup_endpoints():
     api.add_resource(UpdatePassword, '/user/recover', '/user/validate')
     api.add_resource(UserDetails, '/user/details')
     api.add_resource(UserPermissions, '/user/permissions')
-    api.add_resource(UserCatalog, '/user')
+    api.add_resource(UserCatalog, '/user', '/user/search')
     # containers
     api.add_resource(VirtualGroupResource, '/group')
     api.add_resource(VirtualGroupMembers, '/group/members')

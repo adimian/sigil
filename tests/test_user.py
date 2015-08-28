@@ -28,6 +28,16 @@ def test_get_catalog(client):
                       'username': 'bernard'}]}
 
 
+def test_search_user(client):
+    rv = client.get('/user/search',
+                    data={'query': 'ern'},
+                    headers=client._auth_headers)
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['users'][0]['username'] == 'bernard'
+    assert len(data['users']) == 1
+
+
 def test_get_permissions(client):
     rv = client.get('/user/permissions',
                     data={'context': 'sigil'},

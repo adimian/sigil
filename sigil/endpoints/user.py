@@ -92,16 +92,24 @@ class UserDetails(ManagedResource):
 
 class UserCatalog(ProtectedResource):
     def get(self):
-        with Permission(('users', 'read')).require():
-            response = {}
-            users = response['users'] = []
-            for user in User.query.all():
-                users.append({'id': user.id,
-                              'username': user.username,
-                              'displayname': user.display_name,
-                              'email': user.email})
+        parser = reqparse.RequestParser()
+        parser.add_argument('query', type=str)
+        args = parser.parse_args()
 
-            return response
+        with Permission(('users', 'read')).require():
+            users = []
+            if not args['query']:
+                for user in User.query.all():
+                    users.append(user.public())
+            else:
+                text = args['query']
+                query = User.query.filter(User.username.contains(text)).union(
+                        User.query.filter(User.firstname.contains(text))).union(
+                        User.query.filter(User.surname.contains(text)))
+                for user in query.all():
+                    users.append(user.public())
+
+            return {'users': users}
 
 
 class UserPermissions(ManagedResource):

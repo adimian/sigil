@@ -94,7 +94,13 @@ var DataView = function () {
 	
 	self.sortby = function(column) {
 		self.collection.sort(function (a, b) {
-			return String(a[column]).localeCompare(String(b[column]));
+			var left = a[column];
+			var right = b[column];
+			if (typeof(left) == 'number') {
+				return left-right;
+			} else {
+				return String(left).localeCompare(String(right));
+			}
 		});
 	};
 };

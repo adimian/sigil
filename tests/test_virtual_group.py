@@ -56,7 +56,8 @@ def test_get_members(client):
                     headers=client._auth_headers)
     assert rv.status_code == 200, str(rv.data)
     data = json.loads(rv.data.decode('utf-8'))
-    assert data['usernames'] == ['alice', 'bernard']
+    assert sorted([u['username'] for u in data['users']]) == sorted(['alice',
+                                                                     'bernard'])
 
 
 def test_add_non_members(client):

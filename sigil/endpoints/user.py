@@ -87,11 +87,7 @@ class UpdatePassword(AnonymousResource):
 class UserDetails(ManagedResource):
     def get(self):
         user = get_target_user()
-        return {'firstname': user.fn,
-                'lastname': user.sn,
-                'username': user.username,
-                'displayname': user.display_name,
-                'id': user.id}
+        return user.public()
 
 
 class UserCatalog(ProtectedResource):
@@ -102,7 +98,7 @@ class UserCatalog(ProtectedResource):
             for user in User.query.all():
                 users.append({'id': user.id,
                               'username': user.username,
-                              'display_name': user.display_name,
+                              'displayname': user.display_name,
                               'email': user.email})
 
             return response

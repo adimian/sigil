@@ -18,11 +18,11 @@ def test_get_catalog(client):
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data == {'users':
-                    [{'display_name': 'alice alice',
+                    [{'displayname': 'alice alice',
                       'id': 1,
                       'email': 'test@test.com',
                       'username': 'alice'},
-                     {'display_name': 'bernard bernard',
+                     {'displayname': 'bernard bernard',
                       'id': 2,
                       'email': 'test1@test.com',
                       'username': 'bernard'}]}

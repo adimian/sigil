@@ -143,6 +143,14 @@ class User(UserMixin, AccountMixin, db.Model):
                                                 self.display_name,
                                                 self.id)
 
+    def public(self):
+        return {'firstname': self.fn,
+                'lastname': self.sn,
+                'email': self.email,
+                'username': self.username,
+                'displayname': self.display_name,
+                'id': self.id}
+
 
 class AppContext(db.Model):
     __tablename__ = 'appcontext'

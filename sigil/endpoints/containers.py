@@ -58,7 +58,8 @@ class ContainerMembers(ProtectedResource):
 
     def get(self):
         group = self.get_group()
-        return {'usernames': [u.username for u in group.members]}
+        return {'users': [u.public() for u in group.members],
+                'active': group.active}
 
     def update_members(self, mode):
         parser = reqparse.RequestParser()

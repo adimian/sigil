@@ -3,11 +3,13 @@ import re
 
 import openpyxl
 
-from ..models import User
+from ..models import User, VirtualGroup
 import sqlalchemy
 
 
 logger = logging.getLogger(__name__)
+
+TRUES = ('yes', 'y', 'no', 'n', 'x')
 
 
 class MissingFieldError(Exception):
@@ -19,6 +21,14 @@ class InvalidEmailError(Exception):
 
 
 class DuplicatedUserError(Exception):
+    pass
+
+
+class UnknownUserError(Exception):
+    pass
+
+
+class UnknownGroupError(Exception):
     pass
 
 
@@ -64,6 +74,55 @@ class SheetProcessor(object):
 
     def read(self):
         NotImplementedError()
+
+
+class GroupProcessor(SheetProcessor):
+    object_class = VirtualGroup
+    mandatory_fields = ('username',)
+
+    def cleanup_username(self, name):
+        if not name:
+            raise ValueError('name is required')
+        return re.sub('\s', '', str(name).lower())
+
+    @property
+    def headers(self):
+        headers = super(GroupProcessor, self).headers
+        return [h.strip().lower() for h in headers]
+
+    def read(self):
+        headers = self.headers
+
+        added = []
+        updated = []
+        deactivated = []
+        memberships = {}
+
+        group_names = set(headers) - set(['username'])
+
+        # deactivated
+        for group in VirtualGroup.query.all():
+            if group.name not in group_names:
+                deactivated.append(group)
+
+        # added
+        for group_name in group_names:
+            group = VirtualGroup.by_name(group_name)
+
+            if not group:
+                group = VirtualGroup(name=group_name)
+                added.append(group)
+            else:
+                updated.append(group)
+
+        # memberships
+        for item in self.data:
+            user_groups = memberships.setdefault(item['username'], [])
+            for group_name in group_names:
+                if item[group_name].strip().lower() in TRUES:
+                    user_groups.append(group_name)
+
+        return added, updated, deactivated, memberships
 
 
 class UserProcessor(SheetProcessor):
@@ -125,13 +184,17 @@ class ExcelConnector(object):
 
     def process_users(self, sheet):
         p = UserProcessor(sheet)
-        added, _, deactivated = p.read()
+        added, updated, deactivated = p.read()
 
         for user in added:
             self.session.add(user)
 
         for user in deactivated:
             user.active = False
+
+        for user in updated:
+            if not user.active:
+                user.active = True
 
         try:
             self.session.commit()
@@ -144,7 +207,41 @@ class ExcelConnector(object):
             user.generate_token()
 
     def process_groups(self, sheet):
-        pass
+        p = GroupProcessor(sheet)
+        added, updated, deactivated, memberships = p.read()
+
+        for group in added:
+            self.session.add(group)
+
+        for group in deactivated:
+            group.active = False
+
+        for group in updated:
+            if not group.active:
+                group.active = True
+
+        for username, groups in memberships.items():
+            user = User.by_username(username)
+            if not user:
+                msg = ('unable to add {} to '
+                       'groups, user unknown').format(username)
+                raise UnknownUserError(msg)
+            for name in groups:
+                group = VirtualGroup.by_name(name)
+                if not group:
+                    # maybe a new group
+                    for new_group in added:
+                        if new_group.name == name:
+                            group = new_group
+                            break
+                    else:
+                        msg = ('unable to add {} to '
+                               'group {}, group unknown').format(username,
+                                                                 name)
+                        raise UnknownGroupError(msg)
+                user.groups.append(group)
+
+        self.session.commit()
 
     def process_teams(self, sheet):
         pass

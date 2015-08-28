@@ -205,6 +205,13 @@ class VirtualGroup(db.Model):
     name = db.Column(db.String(256), unique=True)
     active = db.Column(db.Boolean(), default=True)
 
+    @classmethod
+    def by_name(cls, name):
+        try:
+            return db.session.query(cls).filter_by(name=name).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            return None
+
     def __init__(self, name):
         self.name = name
 

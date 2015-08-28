@@ -75,7 +75,7 @@ var TabItem = function(key, label, searchable, can_add){
 var DataView = function () {
 	var self = this;
 	self.columns = ko.observable([])
-	self.collection = ko.observable([]);
+	self.collection = ko.observableArray([]);
 	self.cursor = ko.observable();
 	
 	self.get_data = ko.computed(function() {
@@ -86,10 +86,17 @@ var DataView = function () {
 	self.headers = ko.computed(function() {
         var res = [];
         for (var i=0; i<self.columns().length; i++){
-        	res.push({'name': self.columns()[i].label});
+        	res.push({'name': self.columns()[i].label,
+        			  'key': self.columns()[i].key});
         }
         return res;
     }, this);
+	
+	self.sortby = function(column) {
+		self.collection.sort(function (a, b) {
+			return String(a[column]).localeCompare(String(b[column]));
+		});
+	};
 };
 
 var DataColumn = function (key, label) {

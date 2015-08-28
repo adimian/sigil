@@ -56,6 +56,10 @@ class ContainerMembers(ProtectedResource):
     def delete(self):
         self.update_members(mode='delete')
 
+    def get(self):
+        group = self.get_group()
+        return {'usernames': [u.username for u in group.members]}
+
     def update_members(self, mode):
         parser = reqparse.RequestParser()
         parser.add_argument('usernames', type=str, required=True)

@@ -94,20 +94,21 @@ class UserCatalog(ProtectedResource):
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('query', type=str)
+        parser.add_argument('context', type=str)
         args = parser.parse_args()
 
         with Permission(('users', 'read')).require():
             users = []
             if not args['query']:
                 for user in User.query.all():
-                    users.append(user.public())
+                    users.append(user.public(args['context']))
             else:
                 text = args['query']
                 query = User.query.filter(User.username.contains(text)).union(
                         User.query.filter(User.firstname.contains(text))).union(
                         User.query.filter(User.surname.contains(text)))
                 for user in query.all():
-                    users.append(user.public())
+                    users.append(user.public(args['context']))
 
             return {'users': users}
 

@@ -23,11 +23,13 @@ def test_get_catalog(client):
 
 def test_search_user(client):
     rv = client.get('/user/search',
-                    data={'query': 'ern'},
+                    data={'query': 'lice',
+                          'context': 'sigil'},
                     headers=client._auth_headers)
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
-    assert data['users'][0]['username'] == 'bernard'
+    print(data)
+    assert data['users'][0]['username'] == 'alice'
     assert len(data['users']) == 1
 
 

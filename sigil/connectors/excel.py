@@ -4,6 +4,7 @@ import re
 import openpyxl
 
 from ..models import User
+import sqlalchemy
 
 
 logger = logging.getLogger(__name__)
@@ -14,6 +15,10 @@ class MissingFieldError(Exception):
 
 
 class InvalidEmailError(Exception):
+    pass
+
+
+class DuplicatedUserError(Exception):
     pass
 
 
@@ -112,6 +117,12 @@ class ExcelConnector(object):
         self.session = session
         self.user = user
 
+    def _find_dupe(self, message, users):
+        for user in users:
+            if user in message:
+                return user
+        return 'unknown'
+
     def process_users(self, sheet):
         p = UserProcessor(sheet)
         added, _, deactivated = p.read()
@@ -122,7 +133,13 @@ class ExcelConnector(object):
         for user in deactivated:
             user.active = False
 
-        self.session.commit()
+        try:
+            self.session.commit()
+        except sqlalchemy.exc.IntegrityError as err:
+            dupe_user = self._find_dupe(err.params,
+                                        [u.username for u in added])
+            raise DuplicatedUserError('{} for {}'.format(str(err.orig),
+                                                         dupe_user))
 
         for user in added:
             user.generate_token()
@@ -149,10 +166,14 @@ class ExcelConnector(object):
                     raise Exception('{} not found'.format(f_name))
                 logger.info('handling {} change'.format(sheetname))
                 f(wb[sheetname])
+                logger.info('done handling {} change'.format(sheetname))
                 sheets.remove(sheetname)
 
         # permissions
         for context in sheets:
             logger.info('handling permission change for {}'.format(context))
 
-        self.session.commit()
+        try:
+            self.session.commit()
+        except sqlalchemy.exc.IntegrityError as err:
+            raise DuplicatedUserError(str(err.orig))

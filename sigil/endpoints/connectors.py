@@ -5,9 +5,8 @@ import werkzeug
 from . import ProtectedResource
 from ..api import db
 from ..connectors.excel import (ExcelConnector, MissingFieldError,
-                                InvalidEmailError)
+                                InvalidEmailError, DuplicatedUserError)
 from ..utils import current_user
-import sqlalchemy
 
 
 class ExcelImport(ProtectedResource):
@@ -21,6 +20,6 @@ class ExcelImport(ProtectedResource):
             return connector.process(args['file'])
         except (MissingFieldError, InvalidEmailError) as err:
             abort(400, str(err))
-        except sqlalchemy.exc.IntegrityError as err:
-            abort(409, 'duplicate information')
+        except DuplicatedUserError as err:
+            abort(409, str(err))
 

@@ -8,7 +8,7 @@ var get_auth_headers = function() {
 	headers[SIGIL_TOKEN_HEADER] = app.current_user.auth_token();
 	return headers;
 };
-	
+
 var authed_request = function(verb, url, data, success){
 	return $.ajax({
 			method: verb,
@@ -46,14 +46,14 @@ var SigilUser = function(){
 	self.username = ko.observable();
 	self.password = ko.observable();
 	self.totp = ko.observable();
-	
+
 	self.first_name = ko.observable();
 	self.last_name = ko.observable();
 	self.display_name = ko.observable();
 	self.user_id = ko.observable();
-	
+
 	self.auth_token = ko.observable("placeholder");
-	
+
 	self.get_info = function() {
 		authed_request('GET', '/user/details', null, function(data){
 			self.first_name(data.firstname);
@@ -62,7 +62,7 @@ var SigilUser = function(){
 			self.user_id(data.id);
 		})
 	};
-	
+
 };
 
 var TabItem = function(key, label, searchable, can_add){
@@ -72,17 +72,17 @@ var TabItem = function(key, label, searchable, can_add){
 	this.can_add = searchable;
 };
 
-var DataView = function () {
+var GenericDataView = function () {
 	var self = this;
 	self.columns = ko.observable([])
 	self.collection = ko.observableArray([]);
 	self.cursor = ko.observable();
-	
+
 	self.get_data = ko.computed(function() {
         var res = this.collection();
         return res;
     }, this);
-	
+
 	self.headers = ko.computed(function() {
         var res = [];
         for (var i=0; i<self.columns().length; i++){
@@ -91,8 +91,9 @@ var DataView = function () {
         }
         return res;
     }, this);
-	
-	self.sortby = function(column) {
+
+	self.sortby = function(item) {
+		var column = item.key;
 		self.collection.sort(function (a, b) {
 			var left = a[column];
 			var right = b[column];
@@ -105,6 +106,40 @@ var DataView = function () {
 	};
 };
 
+GenericDataView.prototype.show_detail = function(item) {
+	var tab = app.current_tab().key;
+
+	if (tab == 'groups') {
+		authed_request('GET', '/group/members', {'name': item.name}, function(data){
+			app.group_view.collection(data['users']);
+			app.group_view.active(data['active']);
+			app.group_view.columns([
+				new DataColumn('id', 'ID'),
+				new DataColumn('username', 'Username'),
+				new DataColumn('displayname', 'Display Name'),
+			]);
+		});
+		$("#group_popup").modal('show');
+	};
+
+};
+
+var GroupDataView = function() {
+	var self = this;
+	self.active = ko.observable();
+	self.name = ko.observable();
+
+	self.new_users = ko.observableArray([]);
+	self.add_user = ko.observable();
+
+	self.add_user.subscribe(function(new_value) {
+		authed_request('GET', '/user/search', {'query': new_value}, function(data){
+			self.new_users(data['users']);
+		});
+	});
+};
+GroupDataView.prototype = new GenericDataView();
+
 var DataColumn = function (key, label) {
 	this.key = key;
 	this.label = label;
@@ -112,10 +147,10 @@ var DataColumn = function (key, label) {
 
 var SigilApplication = function() {
     var self = this;
-    
+
     self.tabs = [new TabItem('overview', 'Overview', false),
                  new TabItem('users', 'Users', true),
-                 new TabItem('teams', 'User Teams', true),
+                 //new TabItem('teams', 'User Teams', true), // feature not completed yet
                  new TabItem('groups', 'Virtual Groups', true),
                  new TabItem('permissions', 'Permissions', true),
                  new TabItem('import', 'Import from Excel', false),
@@ -125,22 +160,25 @@ var SigilApplication = function() {
     	var tab = self.tabs[i];
     	self.tabmap[tab.key] = tab;
     }
-    
+
     self.login_error_message = ko.observable();
     self.error_message = ko.observable();
-    
+
     self.server_options = new ServerOptions();
     self.current_user = new SigilUser();
-    self.data_view = new DataView();
-    
-    var initial_tab = (self.tabmap[location.hash.replace('#', '')] 
+
+	// generic view
+    self.data_view = new GenericDataView();
+	self.group_view = new GroupDataView();
+
+    var initial_tab = (self.tabmap[location.hash.replace('#', '')]
     					|| self.tabs[0]);
     self.current_tab = ko.observable(initial_tab);
-    
+
     self.authenticated = ko.computed(function(){
     	return !!self.current_user.auth_token();
     }, this);
-    
+
     self.authenticated.subscribe(function(new_value) {
     	if (!new_value){
     		$("#login_modal").modal({
@@ -153,7 +191,7 @@ var SigilApplication = function() {
     		location.reload(false);
     	};
     });
-    
+
     self.current_user.auth_token(Cookies.get('token'));
 };
 
@@ -162,7 +200,7 @@ SigilApplication.prototype.login = function(){
 	$.post(SIGIL_API+'/login', {
 		username: this.current_user.username(),
 		password: this.current_user.password(),
-		totp: this.current_user.totp()}, 
+		totp: this.current_user.totp()},
 		function(data){
 			self.current_user.auth_token(data.token);
 			Cookies.set('token',data.token)
@@ -181,11 +219,11 @@ SigilApplication.prototype.set_current_tab = function(data){
 	if (data) {
 		location.hash = data.key;
 		app.current_tab(data);
-		
-		if (Cookies.get('current_tab') 
+
+		if (Cookies.get('current_tab')
 				&& Cookies.get('current_tab').key != data.key) {
 			Cookies.set('current_tab', data)
-		} 
+		}
 	}
 };
 
@@ -194,7 +232,7 @@ var init = function(){
 	var app = new SigilApplication();
 	ko.applyBindings(app);
 	window.app = app;
-	
+
 	Sammy(function () {
 		this.get('#users', function () {
 			authed_request('GET', '/user', null, function(data){
@@ -202,12 +240,12 @@ var init = function(){
 				app.data_view.columns([
 					new DataColumn('id', 'ID'),
 					new DataColumn('username', 'Username'),
-					new DataColumn('display_name', 'Display Name'),
+					new DataColumn('displayname', 'Display Name'),
 					new DataColumn('email', 'E-mail'),
 				]);
 			});
 		});
-		
+
 		this.get('#overview', function () {app.data_view.collection(null);});
 		this.get('#teams', function () {
 			authed_request('GET', '/team', null, function(data){
@@ -232,9 +270,9 @@ var init = function(){
 		this.get('#permissions', function () {app.data_view.collection(null);});
 		this.get('#import', function () {app.data_view.collection(null);});
 		this.get('#export', function () {app.data_view.collection(null);});
-		
+
 	}).run();
-	
+
 	app.current_user.get_info();
 
 	// dropzone setup
@@ -252,9 +290,7 @@ var init = function(){
 				});
 		  }
 		};
-	
+
 };
 
-
 $(init);
-

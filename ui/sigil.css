@@ -109,3 +109,7 @@ body {
 	display: block;
 	margin-top: 1.4rem;
 }
+
+.input-append .btn.dropdown-toggle {
+    float: none;
+}

@@ -173,13 +173,20 @@
 				<div class="modal-body">
 
 					<form class="form-horizontal" action="#">
-						<div class="form-group">
-							<div class="col-sm-10 input-append">
-								<input data-toggle="dropdown" class="form-control" type="text" data-bind="value: group_view.add_user, valueUpdate: 'keyup'" id="add" placeholder="Username ...">
-								<ul class="dropdown-menu clearfix" class="form-control" data-bind="foreach: group_view.new_users">
-									<li><span data-bind="text: username"></span></li>
-								</ul>
-							</div>
+						<div class="input-append btn-group">
+							<input class="span2" data-toggle="dropdown" id="add_us_drop" type="text" data-bind="value: group_view.add_user, valueUpdate: 'keyup', css: {'text-danger': !group_view.new_users().length}" placeholder="Username ...">
+							<a class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu" data-bind="foreach: group_view.new_users">
+								<li>
+									<a>
+										<span data-bind="text: username" class="text-muted"></span>
+										<span data-bind="text: displayname"></span>
+										<span data-bind="text: '('+email+')'" class="text-info"></span>
+									</a>
+								</li>
+							</ul>
 						</div>
 					</form>
 

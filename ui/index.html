@@ -180,7 +180,7 @@
 							</a>
 							<ul class="dropdown-menu" data-bind="foreach: group_view.new_users">
 								<li>
-									<a>
+									<a data-bind="click: $root.group_view.add_selected">
 										<span data-bind="text: username" class="text-muted"></span>
 										<span data-bind="text: displayname"></span>
 										<span data-bind="text: '('+email+')'" class="text-info"></span>

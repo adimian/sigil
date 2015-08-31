@@ -104,25 +104,27 @@ var GenericDataView = function () {
 			}
 		});
 	};
-};
 
-GenericDataView.prototype.show_detail = function(item) {
-	var tab = app.current_tab().key;
+	self.show_detail = function(item) {
+		var tab = app.current_tab().key;
+		self.cursor(item);
 
-	if (tab == 'groups') {
-		authed_request('GET', '/group/members', {'name': item.name}, function(data){
-			app.group_view.collection(data['users']);
-			app.group_view.active(data['active']);
-			app.group_view.columns([
-				new DataColumn('id', 'ID'),
-				new DataColumn('username', 'Username'),
-				new DataColumn('displayname', 'Display Name'),
-			]);
-		});
-		$("#group_popup").modal('show');
+		if (tab == 'groups') {
+			authed_request('GET', '/group/members', {'name': item.name}, function(data){
+				app.group_view.collection(data['users']);
+				app.group_view.active(data['active']);
+				app.group_view.columns([
+					new DataColumn('id', 'ID'),
+					new DataColumn('username', 'Username'),
+					new DataColumn('displayname', 'Display Name'),
+				]);
+			});
+			$("#group_popup").modal('show');
+		};
+
 	};
-
 };
+
 
 var GroupDataView = function() {
 	var self = this;
@@ -137,6 +139,12 @@ var GroupDataView = function() {
 			self.new_users(data['users']);
 		});
 	});
+
+	self.add_selected = function (item) {
+		self.collection.push(item);
+		self.add_user(null);
+		authed_request('POST', '/group/members', {'name': app.data_view.cursor().name, 'usernames': JSON.stringify([item.username])}, function(){});
+	};
 };
 GroupDataView.prototype = new GenericDataView();
 

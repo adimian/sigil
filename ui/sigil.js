@@ -135,10 +135,17 @@ var GroupDataView = function() {
 	self.add_user = ko.observable();
 
 	self.add_user.subscribe(function(new_value) {
-		authed_request('GET', '/user/search', {'query': new_value}, function(data){
-			self.new_users(data['users']);
-		});
+		if (new_value && new_value.length>0) {
+			authed_request('GET', '/user/search', {'query': new_value}, function(data){
+				self.new_users(data['users']);
+			});
+		};
 	});
+
+	self.remove_selected = function(item) {
+		self.collection.remove(item);
+		authed_request('DELETE', '/group/members', {'name': app.data_view.cursor().name, 'usernames': JSON.stringify([item.username])}, function(){});
+	}
 
 	self.add_selected = function (item) {
 		self.collection.push(item);

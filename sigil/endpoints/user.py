@@ -6,6 +6,7 @@ from flask import current_app as app
 from flask_principal import Permission
 import itsdangerous
 import sqlalchemy
+from sqlalchemy import or_
 
 from . import ManagedResource, reqparse, AnonymousResource, ProtectedResource
 from ..api import db
@@ -103,10 +104,11 @@ class UserCatalog(ProtectedResource):
                 for user in User.query.all():
                     users.append(user.public(args['context']))
             else:
-                text = args['query']
-                query = User.query.filter(User.username.contains(text)).union(
-                        User.query.filter(User.firstname.contains(text))).union(
-                        User.query.filter(User.surname.contains(text)))
+                text = '%{}%'.format(args['query'])
+
+                query = User.query.filter(or_(User.username.ilike(text),
+                                              User.firstname.ilike(text),
+                                              User.surname.ilike(text)))
                 for user in query.all():
                     users.append(user.public(args['context']))
 

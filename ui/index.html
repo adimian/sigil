@@ -173,12 +173,12 @@
 				<div class="modal-body">
 
 					<form class="form-horizontal" action="#">
-						<div class="input-append btn-group">
-							<input class="span2" data-toggle="dropdown" id="add_us_drop" type="text" data-bind="value: group_view.add_user, valueUpdate: 'keyup', css: {'text-danger': !group_view.new_users().length}" placeholder="Username ...">
+						<div class="input-append btn-group" data-bind="css: {open: group_view.new_users().length}">
+							<input class="span2" type="text" data-bind="value: group_view.add_user, valueUpdate: 'keyup', css: {'text-danger': !group_view.new_users().length}" placeholder="Username ...">
 							<a class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
 								<span class="caret"></span>
 							</a>
-							<ul class="dropdown-menu" data-bind="foreach: group_view.new_users">
+							<ul class="dropdown-menu" data-bind="foreach: group_view.new_users" >
 								<li>
 									<a data-bind="click: $root.group_view.add_selected">
 										<span data-bind="text: username" class="text-muted"></span>
@@ -206,7 +206,7 @@
 								<td data-bind="text: line[key]"></td>
 								<!-- /ko -->
 								<td>
-									<a class="btn btn-xs btn-success" data-bind="click: $parent.remove">Remove</a>
+									<a class="btn btn-xs btn-success" data-bind="click: $parent.remove_selected">Remove</a>
 								</td>
 							</tr>
 						</tbody>

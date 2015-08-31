@@ -74,9 +74,11 @@ class ContainerMembers(ProtectedResource):
                 abort(404, 'user {} not found'.format(username))
 
             if mode == 'add':
-                group.members.append(user)
+                if user not in group.members:
+                    group.members.append(user)
             elif mode == 'delete':
-                group.members.remove(user)
+                if user in group.members:
+                    group.members.remove(user)
         db.session.commit()
 
 

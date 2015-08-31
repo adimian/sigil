@@ -39,6 +39,28 @@ def test_add_members(client):
     assert [g.name for g in user.groups] == ['jabber']
 
 
+def test_add_too_many_members(client):
+    rv = client.post('/group',
+                     data={'name': 'jabber'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/group/members',
+                     data={'name': 'jabber',
+                           'usernames': json.dumps(['alice', 'bernard'])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/group/members',
+                     data={'name': 'jabber',
+                           'usernames': json.dumps(['alice'])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    group = client._db.session.query(VirtualGroup).filter_by(name='jabber').one()
+    assert [m.username for m in group.members] == ['alice', 'bernard']
+
+
 def test_get_members(client):
     rv = client.post('/group',
                      data={'name': 'jabber'},

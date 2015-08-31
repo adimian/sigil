@@ -4,9 +4,9 @@ import logging
 
 from flask import current_app as app
 from flask_login import UserMixin
+from sqlalchemy import UniqueConstraint
 import sqlalchemy
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.schema import UniqueConstraint
 
 from .api import db, bcrypt
 from .multifactor import new_user_secret
@@ -42,19 +42,26 @@ permissions = db.Table('permssions',
                        db.Column('user_id', db.Integer,
                                  db.ForeignKey('user.id')),
                        db.Column('need_id', db.Integer,
-                                 db.ForeignKey('need.id')))
+                                 db.ForeignKey('need.id')),
+                       UniqueConstraint('user_id', 'need_id'),
+                       )
 
 group_member = db.Table('group_member',
+                        
                         db.Column('group_id', db.Integer,
                                   db.ForeignKey('virtualgroup.id')),
                         db.Column('member_id', db.Integer,
-                                  db.ForeignKey('user.id')))
+                                  db.ForeignKey('user.id')),
+                        UniqueConstraint('group_id', 'member_id'),
+                        )
 
 team_member = db.Table('team_member',
-                        db.Column('team_id', db.Integer,
-                                  db.ForeignKey('userteam.id')),
-                        db.Column('member_id', db.Integer,
-                                  db.ForeignKey('user.id')))
+                       db.Column('team_id', db.Integer,
+                                 db.ForeignKey('userteam.id')),
+                       db.Column('member_id', db.Integer,
+                                 db.ForeignKey('user.id')),
+                       UniqueConstraint('team_id', 'member_id'),
+                       )
 
 class User(UserMixin, AccountMixin, db.Model):
     PROTECTED = ('id', 'created_at', 'validated_at',

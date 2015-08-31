@@ -148,9 +148,11 @@ var GroupDataView = function() {
 	}
 
 	self.add_selected = function (item) {
-		self.collection.push(item);
 		self.add_user(null);
-		authed_request('POST', '/group/members', {'name': app.data_view.cursor().name, 'usernames': JSON.stringify([item.username])}, function(){});
+		if (!$.inArray(item, self.collection)) {
+			self.collection.push(item);
+			authed_request('POST', '/group/members', {'name': app.data_view.cursor().name, 'usernames': JSON.stringify([item.username])}, function(){});
+		}
 	};
 };
 GroupDataView.prototype = new GenericDataView();

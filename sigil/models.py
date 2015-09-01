@@ -154,6 +154,7 @@ class User(UserMixin, AccountMixin, db.Model):
         result = {'firstname': self.fn,
                   'lastname': self.sn,
                   'email': self.email,
+                  'active': self.active,
                   'username': self.username,
                   'displayname': self.display_name,
                   'id': self.id}

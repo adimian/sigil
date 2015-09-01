@@ -41,16 +41,32 @@ var ServerOptions = function() {
 	});
 };
 
-var SigilUser = function(){
+var User = function() {
 	var self = this;
-	self.username = ko.observable();
-	self.password = ko.observable();
-	self.totp = ko.observable();
-
+	self.user_id = ko.observable();
 	self.first_name = ko.observable();
 	self.last_name = ko.observable();
 	self.display_name = ko.observable();
-	self.user_id = ko.observable();
+	self.username = ko.observable();
+	self.email = ko.observable();
+	self.active = ko.observable();
+
+	self.groups = ko.observableArray();
+
+	self.reset_password = function() {
+		// call sigil to reset password
+	};
+
+	self.reset_totp = function() {
+		// call sigil to reset totp
+	};
+
+};
+
+var LoggedInUser = function(){
+	var self = this;
+	self.password = ko.observable();
+	self.totp = ko.observable();
 
 	self.auth_token = ko.observable("placeholder");
 
@@ -64,6 +80,7 @@ var SigilUser = function(){
 	};
 
 };
+LoggedInUser.prototype = new User();
 
 var TabItem = function(key, label, searchable, can_add){
 	this.key = key;
@@ -191,7 +208,7 @@ var SigilApplication = function() {
     self.error_message = ko.observable();
 
     self.server_options = new ServerOptions();
-    self.current_user = new SigilUser();
+    self.current_user = new LoggedInUser();
 
 	// generic view
     self.data_view = new GenericDataView();
@@ -273,7 +290,6 @@ var init = function(){
 			});
 		});
 
-		this.get('/', function () {});
 		this.get('#overview', function () {app.data_view.collection(null);});
 		this.get('#teams', function () {
 			authed_request('GET', '/team', null, function(data){

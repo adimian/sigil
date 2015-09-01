@@ -134,6 +134,15 @@ var GroupDataView = function() {
 	self.new_users = ko.observableArray([]);
 	self.add_user = ko.observable();
 
+	self.usernames = ko.computed(function() {
+        var res = [];
+        for (var i=0; i<self.collection().length; i++){
+        	res.push(self.collection()[i].username);
+        }
+        return res;
+    }, this);
+
+
 	self.add_user.subscribe(function(new_value) {
 		if (new_value && new_value.length>0) {
 			authed_request('GET', '/user/search', {'query': new_value}, function(data){
@@ -149,7 +158,7 @@ var GroupDataView = function() {
 
 	self.add_selected = function (item) {
 		self.add_user(null);
-		if (!$.inArray(item, self.collection)) {
+		if ($.inArray(item.username, self.usernames()) === -1) {
 			self.collection.push(item);
 			authed_request('POST', '/group/members', {'name': app.data_view.cursor().name, 'usernames': JSON.stringify([item.username])}, function(){});
 		}
@@ -251,6 +260,7 @@ var init = function(){
 	window.app = app;
 
 	Sammy(function () {
+		this.get('/', function () {});
 		this.get('#users', function () {
 			authed_request('GET', '/user', null, function(data){
 				app.data_view.collection(data['users']);
@@ -263,6 +273,7 @@ var init = function(){
 			});
 		});
 
+		this.get('/', function () {});
 		this.get('#overview', function () {app.data_view.collection(null);});
 		this.get('#teams', function () {
 			authed_request('GET', '/team', null, function(data){

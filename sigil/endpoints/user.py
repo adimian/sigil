@@ -90,6 +90,28 @@ class UserDetails(ManagedResource):
         user = get_target_user()
         return user.public()
 
+    def cleanup_active(self, new_value):
+        return new_value == 'true'
+
+    def post(self):
+        user = get_target_user()
+        fields = user.ALLOWED
+        parser = reqparse.RequestParser()
+        for field in fields:
+            parser.add_argument(field, type=str)
+        args = parser.parse_args()
+
+        for field in fields:
+            if args[field]:
+                old, new = args[field], getattr(user, field)
+                cleanup = getattr(self, 'cleanup_{}'.format(field), None)
+                if cleanup:
+                    new = cleanup(new)
+                if old != new:
+                    setattr(user, field, args[field])
+        db.session.commit()
+        return user.public()
+
 
 class UserCatalog(ProtectedResource):
     def get(self):

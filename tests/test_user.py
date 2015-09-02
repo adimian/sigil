@@ -1,5 +1,7 @@
 import json
 
+from sigil.models import User
+
 
 def test_get_details(client):
     rv = client.get('/user/details',
@@ -8,6 +10,26 @@ def test_get_details(client):
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['username'] == client._user.username
+
+
+def test_set_details(client):
+    rv = client.post('/user/details', data={'firstname': 'bob'},
+                     headers=client._auth_headers)
+
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    user = User.query.get(data['id'])
+    assert user.firstname == 'bob'
+
+
+def test_set_protected_details(client):
+    rv = client.post('/user/details', data={'api_key': 'new_key'},
+                     headers=client._auth_headers)
+
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    user = User.query.get(data['id'])
+    assert user.api_key != 'new_key'
 
 
 def test_get_catalog(client):

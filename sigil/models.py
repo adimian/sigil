@@ -65,7 +65,8 @@ team_member = db.Table('team_member',
 
 class User(UserMixin, AccountMixin, db.Model):
     PROTECTED = ('id', 'created_at', 'validated_at',
-                 'must_change_password', 'totp_secret')
+                 'must_change_password', 'totp_secret', 'username',
+                 'password', 'api_key', 'groups', 'permissions', 'teams')
     # accounting fields
     id = db.Column(db.Integer, primary_key=True)
     active = db.Column(db.Boolean(), default=False)
@@ -157,10 +158,18 @@ class User(UserMixin, AccountMixin, db.Model):
                   'active': self.active,
                   'username': self.username,
                   'displayname': self.display_name,
+                  'mobile': self.mobile_number,
                   'id': self.id}
         if context:
             result['provides'] = self.provides(context)
         return result
+    
+    @property
+    def ALLOWED(self):
+        return set([x
+                    for x in self._sa_class_manager.keys()
+                    if not x.startswith('_')]) - set(self.PROTECTED)
+        
 
 
 class AppContext(db.Model):

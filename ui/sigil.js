@@ -49,6 +49,7 @@ var User = function() {
     self.last_name = ko.observable();
     self.display_name = ko.observable();
     self.username = ko.observable();
+	self.mobile_number = ko.observable();
     self.email = ko.observable();
     self.active = ko.observable();
 
@@ -62,15 +63,33 @@ var User = function() {
         // call sigil to reset totp
     };
 
-	self.load = function(item) {
-		self.user_id(item.id);
-		self.first_name(item.firstname);
-		self.last_name(item.lastname);
-		self.display_name(item.displayname);
-		self.username(item.username);
-		self.email(item.email);
-		self.active(item.active);
-	};
+    self.load = function(item) {
+        self.user_id(item.id);
+        self.first_name(item.firstname);
+        self.last_name(item.lastname);
+        self.display_name(item.displayname);
+        self.username(item.username);
+        self.email(item.email);
+        self.active(item.active);
+		self.mobile_number(item.mobile);
+    };
+
+    self.persist = function() {
+        var update = {
+			username: self.username(),
+            active:self.active(),
+            display: self.display_name(),
+            email:self.email(),
+            firstname: self.first_name(),
+            mobile_number: self.mobile_number(),
+            surname: self.last_name()
+        };
+        authed_request('POST', '/user/details', update, function(data) {
+            self.load(data);
+			$("#user_edit_modal").modal('hide');
+        });
+
+    };
 
 };
 
@@ -83,7 +102,7 @@ var LoggedInUser = function() {
 
     self.get_info = function() {
         authed_request('GET', '/user/details', null, function(data) {
-			self.load(data);
+            self.load(data);
         });
     };
 };
@@ -154,10 +173,10 @@ var GenericDataView = function() {
             authed_request('GET', '/user/details', {
                 'username': item.username
             }, function(data) {
-				var user = new User();
-				user.load(data);
+                var user = new User();
+                user.load(data);
                 app.edited_user(user);
-				$("#user_edit_modal").modal('show');
+                $("#user_edit_modal").modal('show');
             });
         };
 
@@ -241,7 +260,7 @@ var SigilApplication = function() {
     self.server_options = new ServerOptions();
     self.current_user = new LoggedInUser();
 
-    self.edited_user = ko.observable();
+    self.edited_user = ko.observable(new User());
 
     // generic view
     self.data_view = new GenericDataView();
@@ -288,7 +307,7 @@ SigilApplication.prototype.login = function() {
 SigilApplication.prototype.edit_me = function() {
     var self = this;
     app.edited_user(self.current_user);
-	$("#user_edit_modal").modal('show');
+    $("#user_edit_modal").modal('show');
 };
 
 SigilApplication.prototype.logout = function() {

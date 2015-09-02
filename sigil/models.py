@@ -109,13 +109,13 @@ class User(UserMixin, AccountMixin, db.Model):
         except sqlalchemy.orm.exc.NoResultFound:
             return None
 
-    def __init__(self, username, email, mobile=None):
+    def __init__(self, username, email, mobile_number=None):
         super(User, self).__init__()
         assert username
         assert email
         self.username = username
         self.email = email
-        self.mobile = mobile
+        self.mobile_number = mobile_number
 
         api_key = random_token()
         while self.__class__.query.filter_by(api_key=api_key).all():

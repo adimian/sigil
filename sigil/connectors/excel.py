@@ -160,7 +160,7 @@ class UserProcessor(SheetProcessor):
             if not entity:
                 entity = User(username=item['username'],
                               email=item['email'],
-                              mobile=item['mobile'])
+                              mobile_number=item['mobile'])
                 added.append(entity)
             else:
                 updated.append(entity)

@@ -87,6 +87,7 @@ var User = function() {
         authed_request('POST', '/user/details', update, function(data) {
             self.load(data);
             $("#user_edit_modal").modal('hide');
+			location.reload(false);
         });
 
     };
@@ -141,7 +142,6 @@ var GenericDataView = function() {
 
     self.sortby = function(item) {
         var column = item.key;
-
 		if (column == self.sort_column()){
 			self.sort_direction(!self.sort_direction());
 		} else {
@@ -194,9 +194,6 @@ var GenericDataView = function() {
                 $("#user_edit_modal").modal('show');
             });
         };
-
-		location.reload(false);
-
     };
 };
 

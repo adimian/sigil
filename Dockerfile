@@ -6,5 +6,7 @@ WORKDIR /code
 ADD requirements.txt /code/
 RUN pip install -r requirements.txt
 
+VOLUME /code
+
 ADD . /code/
 CMD python3 sigil/server.py runserver

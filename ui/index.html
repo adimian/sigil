@@ -138,13 +138,14 @@
 							</tr>
 						</thead>
 						<tbody data-bind="foreach: {data: get_data, as: 'line'}">
-							<tr>
+							<tr data-bind="css: {'text-muted': !line['active']}">
 								<!-- ko foreach: $parent.columns -->
 								<td data-bind="text: line[key]"></td>
 								<!-- /ko -->
 								<td>
-									<a class="btn btn-xs btn-success" data-bind="click: $parent.show_detail">View</a>
-									<a class="btn btn-xs btn-warning">Disable</a>
+									<a class="btn btn-xs btn-primary" data-bind="click: $parent.show_detail">Details</a>
+									<a class="btn btn-xs btn-warning" data-bind="visible: !line['active']">Disabled</a>
+									<a class="btn btn-xs btn-success" data-bind="visible: line['active']">Enabled</a>
 								</td>
 							</tr>
 						</tbody>

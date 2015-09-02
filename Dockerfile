@@ -12,6 +12,6 @@ RUN pip install -r requirements.txt
 VOLUME /app
 
 ADD . /code/
-ADD ./ui /app/
+RUN cp -R /code/ui/* /app/
 
 CMD python3 sigil/server.py runserver

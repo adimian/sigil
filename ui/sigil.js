@@ -49,7 +49,7 @@ var User = function() {
     self.last_name = ko.observable();
     self.display_name = ko.observable();
     self.username = ko.observable();
-	self.mobile_number = ko.observable();
+    self.mobile_number = ko.observable();
     self.email = ko.observable();
     self.active = ko.observable();
 
@@ -71,22 +71,22 @@ var User = function() {
         self.username(item.username);
         self.email(item.email);
         self.active(item.active);
-		self.mobile_number(item.mobile);
+        self.mobile_number(item.mobile);
     };
 
     self.persist = function() {
         var update = {
-			username: self.username(),
-            active:self.active(),
+            username: self.username(),
+            active: self.active(),
             display: self.display_name(),
-            email:self.email(),
+            email: self.email(),
             firstname: self.first_name(),
             mobile_number: self.mobile_number(),
             surname: self.last_name()
         };
         authed_request('POST', '/user/details', update, function(data) {
             self.load(data);
-			$("#user_edit_modal").modal('hide');
+            $("#user_edit_modal").modal('hide');
         });
 
     };
@@ -343,6 +343,7 @@ var init = function() {
                     new DataColumn('username', 'Username'),
                     new DataColumn('displayname', 'Display Name'),
                     new DataColumn('email', 'E-mail'),
+                    new DataColumn('active', 'Active'),
                 ]);
             });
         });

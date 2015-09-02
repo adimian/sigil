@@ -83,13 +83,9 @@ var LoggedInUser = function() {
 
     self.get_info = function() {
         authed_request('GET', '/user/details', null, function(data) {
-            self.first_name(data.firstname);
-            self.last_name(data.lastname);
-            self.display_name(data.displayname);
-            self.user_id(data.id);
-        })
+			self.load(data);
+        });
     };
-
 };
 LoggedInUser.prototype = new User();
 
@@ -287,6 +283,12 @@ SigilApplication.prototype.login = function() {
         }).error(function(data) {
         self.login_error_message(data.responseJSON.message);
     });
+};
+
+SigilApplication.prototype.edit_me = function() {
+    var self = this;
+    app.edited_user(self.current_user);
+	$("#user_edit_modal").modal('show');
 };
 
 SigilApplication.prototype.logout = function() {

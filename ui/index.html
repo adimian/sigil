@@ -94,7 +94,7 @@
 							data-bind="text: current_user.display_name()"></span> <span
 							class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li><a href="#">Edit personal details</a></li>
+							<li><a href="#" data-bind="click: $root.edit_me">Edit personal details</a></li>
 							<li><a href="#">Change password</a></li>
 							<li><a href="#">Add 2FA device</a></li>
 							<li role="separator" class="divider"></li>
@@ -173,7 +173,7 @@
 					<form data-bind="with: edited_user">
 						<div class="form-group">
 							<label for="username">Username</label>
-							<input type="text" id="username" class="form-control" data-bind="value: username">
+							<p class="form-control-static" data-bind="text: username"></p>
 						</div>
 						<div class="form-group">
 							<label for="firstname">First name</label>
@@ -184,8 +184,16 @@
 							<input type="text" id="lastname" class="form-control" data-bind="value: last_name">
 						</div>
 						<div class="form-group">
+							<label for="displayname">Display name</label>
+							<input type="text" id="displayname" class="form-control" data-bind="value: display_name">
+						</div>
+						<div class="form-group">
 							<label for="email">E-mail</label>
-							<input type="text" id="email" class="form-control" data-bind="value: email">
+							<input type="email" id="email" class="form-control" data-bind="value: email">
+						</div>
+						<div class="form-group" data-bind="visible: $root.current_user.username() != $root.edited_user().username()">
+							<label for="email">Active</label>
+							<input type="checkbox" id="email" class="form-control" data-bind="checked: active">
 						</div>
 					</form>
 				</div>

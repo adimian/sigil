@@ -14,6 +14,7 @@ def client(request):
     app.config['TESTING'] = True
     app.config['URL_PREFIX'] = ''
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
+    app.config['ENABLE_2FA'] = False
     db.create_all()
 
     u1 = User('alice', 'test@test.com')

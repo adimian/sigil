@@ -3,15 +3,17 @@ import json
 
 def test_register_user(client):
     rv = client.post('/user/register', data={'username': 'eric',
-                                             'email': 'eric@adimian.com'})
-    assert rv.status_code == 200
+                                             'email': 'eric@adimian.com'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
     data = json.loads(rv.data.decode('utf-8'))
     assert data['token']
 
 
 def test_validate(client):
     rv = client.post('/user/register', data={'username': 'eric',
-                                             'email': 'eric@adimian.com'})
+                                             'email': 'eric@adimian.com'},
+                     headers=client._auth_headers)
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['token']
@@ -24,7 +26,9 @@ def test_validate(client):
 def test_validate_2fa(client):
     client.application.config['ENABLE_2FA'] = True
     rv = client.post('/user/register', data={'username': 'eric',
-                                             'email': 'eric@adimian.com'})
+                                             'email': 'eric@adimian.com',
+                                             'mobile_number': '1234'},
+                     headers=client._auth_headers)
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['token']
@@ -39,7 +43,8 @@ def test_validate_2fa(client):
 def test_validate_error(client):
     rv = client.post('/user/register', data={'username': 'eric',
                                              'password': 'secret',
-                                             'email': 'eric@adimian.com'})
+                                             'email': 'eric@adimian.com'},
+                     headers=client._auth_headers)
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['token']
@@ -50,7 +55,8 @@ def test_validate_error(client):
 
 def test_validate_twice(client):
     rv = client.post('/user/register', data={'username': 'eric',
-                                             'email': 'eric@adimian.com'})
+                                             'email': 'eric@adimian.com'},
+                     headers=client._auth_headers)
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['token']
@@ -66,17 +72,20 @@ def test_validate_twice(client):
 
 def test_register_existing(client):
     rv = client.post('/user/register', data={'username': 'eric',
-                                             'email': 'eric@adimian.com'})
+                                             'email': 'eric@adimian.com'},
+                     headers=client._auth_headers)
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['token']
 
     rv = client.post('/user/register', data={'username': 'eric',
-                                             'email': 'eric@adimian.com'})
+                                             'email': 'eric@adimian.com'},
+                     headers=client._auth_headers)
     assert rv.status_code == 409
 
 
 def test_register_error(client):
     rv = client.post('/user/register', data={'username': '',
-                                             'email': ''})
+                                             'email': ''},
+                     headers=client._auth_headers)
     assert rv.status_code == 400

@@ -1,4 +1,3 @@
-
 var User = function() {
     var self = this;
     self.user_id = ko.observable();
@@ -47,6 +46,18 @@ var User = function() {
             location.reload(false);
         });
 
+    };
+
+    self.register = function() {
+        var update = {
+            username: self.username(),
+            email: self.email(),
+            mobile_number: self.mobile_number()
+        };
+        authed_request('POST', '/user/register', update, function(data) {
+            alert('New user created');
+        });
+        $("#user_add_modal").modal('hide');
     };
 
 };

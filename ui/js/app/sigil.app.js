@@ -98,3 +98,11 @@ SigilApplication.prototype.set_current_tab = function(data) {
         }
     }
 };
+
+SigilApplication.prototype.add_new = function(data) {
+    var tab = app.current_tab().key;
+    if (tab == 'users') {
+        app.edited_user(new User());
+        $("#user_add_modal").modal('show');
+    };
+};

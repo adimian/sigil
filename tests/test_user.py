@@ -50,7 +50,6 @@ def test_search_user(client):
                     headers=client._auth_headers)
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
-    print(data)
     assert data['users'][0]['username'] == 'alice'
     assert len(data['users']) == 1
 

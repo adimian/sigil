@@ -12,8 +12,9 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-	<link rel="stylesheet" href="dropzone.css">
-	<link rel="stylesheet" href="sigil.css">
+	<link rel="stylesheet" href="css/dropzone.css">
+	<link rel="stylesheet" href="css/sigil.css">
+	<link rel="shortcut icon" type='image/x-icon' href='img/favicon.ico'>
 </head>
 
 <body>
@@ -44,7 +45,7 @@
 			<div class="modal-content">
 				<form class="form-signin " id="form-signin">
 					<div class="modal-header clearfix">
-						<img src="sigil.png" class="img-rounded pull-right" width="100px">
+						<img src="img/sigil.png" class="img-rounded pull-right" width="100px">
 						<h2 class="form-signin-heading">Please sign in</h2>
 						<div class="alert alert-danger" data-bind="visible: login_error_message">
 							<span data-bind="text: login_error_message"></span>
@@ -85,7 +86,7 @@
 					<span class="icon-bar"></span>
 				</button>
 				<a class="navbar-brand" href="#">
-					<img src="sigil.png" class="brand-img">
+					<img src="img/sigil.png" class="brand-img">
 				</a>
 			</div>
 			<div id="navbar" class="navbar-collapse collapse">
@@ -278,10 +279,13 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
-	<script src="js.cookie-2.0.3.min.js"></script>
-	<script src="sammy.min.js"></script>
-	<script src="dropzone.js"></script>
-	<script src="sigil.js"></script>
+	<script src="js/ext/js.cookie-2.0.3.min.js"></script>
+	<script src="js/ext/sammy.min.js"></script>
+	<script src="js/ext/dropzone.js"></script>
+	<script src="js/app/sigil.user.js"></script>
+	<script src="js/app/sigil.views.js"></script>
+	<script src="js/app/sigil.app.js"></script>
+	<script src="js/app/sigil.init.js"></script>
 </body>
 
 </html>

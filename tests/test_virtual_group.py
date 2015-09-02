@@ -23,6 +23,20 @@ def test_create_too_many_groups(client):
     assert rv.status_code == 409
 
 
+def test_disable_group(client):
+    rv = client.post('/group',
+                     data={'name': 'jabber'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200
+
+    rv = client.patch('/group',
+                      data={'name': 'jabber',
+                            'active': False},
+                      headers=client._auth_headers)
+    assert rv.status_code == 200
+    assert VirtualGroup.by_name('jabber').active is False
+
+
 def test_add_members(client):
     rv = client.post('/group',
                      data={'name': 'jabber'},

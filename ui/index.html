@@ -147,8 +147,8 @@
 								<!-- /ko -->
 								<td>
 									<a class="btn btn-xs btn-primary" data-bind="click: $parent.show_detail">Details</a>
-									<a class="btn btn-xs btn-warning" data-bind="visible: !line['active']">Disabled</a>
-									<a class="btn btn-xs btn-success" data-bind="visible: line['active']">Enabled</a>
+									<a class="btn btn-xs btn-warning" data-bind="visible: !line['active'], click: $parent.toggle_active">Disabled</a>
+									<a class="btn btn-xs btn-success" data-bind="visible: line['active'], click: $parent.toggle_active">Enabled</a>
 								</td>
 							</tr>
 						</tbody>

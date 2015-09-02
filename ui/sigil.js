@@ -87,7 +87,7 @@ var User = function() {
         authed_request('POST', '/user/details', update, function(data) {
             self.load(data);
             $("#user_edit_modal").modal('hide');
-			location.reload(false);
+            location.reload(false);
         });
 
     };
@@ -121,8 +121,8 @@ var GenericDataView = function() {
     self.columns = ko.observable([])
     self.collection = ko.observableArray([]);
     self.cursor = ko.observable();
-	self.sort_direction = ko.observable(true);
-	self.sort_column = ko.observable();
+    self.sort_direction = ko.observable(true);
+    self.sort_column = ko.observable();
 
     self.get_data = ko.computed(function() {
         var res = this.collection();
@@ -142,22 +142,22 @@ var GenericDataView = function() {
 
     self.sortby = function(item) {
         var column = item.key;
-		if (column == self.sort_column()){
-			self.sort_direction(!self.sort_direction());
-		} else {
-			self.sort_direction(true);
-		}
-		self.sort_column(column);
+        if (column == self.sort_column()) {
+            self.sort_direction(!self.sort_direction());
+        } else {
+            self.sort_direction(true);
+        }
+        self.sort_column(column);
 
         self.collection.sort(function(a, b) {
             var left = a[column];
             var right = b[column];
-			if (!self.sort_direction()){
-				var tmp = left;
-				left = right;
-				right = tmp;
-			}
-            if (typeof(left) == 'number' || typeof(left) == 'boolean') {
+            if (!self.sort_direction()) {
+                var tmp = left;
+                left = right;
+                right = tmp;
+            }
+            if (typeof(left) == 'number' ||  typeof(left) == 'boolean') {
                 return left - right;
             } else {
                 return String(left).localeCompare(String(right));
@@ -165,9 +165,28 @@ var GenericDataView = function() {
         });
     };
 
+    self.toggle_active = function(item) {
+        var tab = app.current_tab().key;
+        if (tab == 'groups') {
+            authed_request('PATCH', '/group', {
+                'name': item.name,
+                'active': !item.active
+            }, function(data){
+				location.reload(false);
+			});
+        };
+        if (tab == 'users') {
+			authed_request('POST', '/user/details', {
+                'username': item.username,
+                'active': !item.active
+            }, function(data){
+				location.reload(false);
+			});
+		};
+    }
+
     self.show_detail = function(item)  {
         var tab = app.current_tab().key;
-        self.cursor(item);
 
         if (tab == 'groups') {
             authed_request('GET', '/group/members', {

@@ -12,6 +12,16 @@ from ..models import VirtualGroup, User, UserTeam
 
 class ContainerResource(ProtectedResource):
 
+    def get_group(self):
+        with Permission(self.permission_type).require():
+            parser = reqparse.RequestParser()
+            parser.add_argument('name', type=str, required=True)
+            args = parser.parse_args()
+            try:
+                return db.session.query(self.container_type).filter_by(name=args['name']).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                abort(404, 'group not found')
+
     def get(self):
         with Permission(('groups', 'read')).require():
             response = []
@@ -20,6 +30,14 @@ class ContainerResource(ProtectedResource):
                                  'name': group.name,
                                  'active': group.active})
             return {'groups': response}
+
+    def patch(self):
+        group = self.get_group()
+        parser = reqparse.RequestParser()
+        parser.add_argument('active', type=str, required=True)
+        args = parser.parse_args()
+        group.active = args['active'] == 'true'
+        db.session.commit()
 
     def post(self):
         with Permission(('groups', 'write')).require():
@@ -84,10 +102,12 @@ class ContainerMembers(ProtectedResource):
 
 class VirtualGroupResource(ContainerResource):
     container_type = VirtualGroup
+    permission_type = ('groups', 'write')
 
 
 class UserTeamResource(ContainerResource):
     container_type = UserTeam
+    permission_type = ('teams', 'write')
 
 
 class VirtualGroupMembers(ContainerMembers):

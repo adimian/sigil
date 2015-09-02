@@ -163,7 +163,7 @@ var GenericDataView = function() {
                 app.group_view.columns([
                     new DataColumn('id', 'ID'),
                     new DataColumn('username', 'Username'),
-                    new DataColumn('displayname', 'Display Name'),
+                    new DataColumn('displayname', 'Display Name')
                 ]);
             });
             $("#group_popup").modal('show');
@@ -343,7 +343,7 @@ var init = function() {
                     new DataColumn('username', 'Username'),
                     new DataColumn('displayname', 'Display Name'),
                     new DataColumn('email', 'E-mail'),
-                    new DataColumn('active', 'Active'),
+                    new DataColumn('active', 'Active')
                 ]);
             });
         });
@@ -357,7 +357,7 @@ var init = function() {
                 app.data_view.columns([
                     new DataColumn('id', 'ID'),
                     new DataColumn('name', 'Name'),
-                    new DataColumn('active', 'Active'),
+                    new DataColumn('active', 'Active')
                 ]);
             });
         });
@@ -367,7 +367,7 @@ var init = function() {
                 app.data_view.columns([
                     new DataColumn('id', 'ID'),
                     new DataColumn('name', 'Name'),
-                    new DataColumn('active', 'Active'),
+                    new DataColumn('active', 'Active')
                 ]);
             });
         });

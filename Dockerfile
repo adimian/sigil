@@ -3,15 +3,12 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONPATH $PYTHONPATH:/code
 
 RUN mkdir /code
-RUN mkdir /app
+VOLUME /code
 
 WORKDIR /code
 ADD requirements.txt /code/
-RUN pip install -r requirements.txt
-
-VOLUME /app
+RUN pip install -U pip && pip install -r requirements.txt
 
 ADD . /code/
-RUN cp -R /code/ui/* /app/
 
 CMD python3 sigil/server.py runserver

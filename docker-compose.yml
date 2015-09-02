@@ -7,7 +7,7 @@ nginx:
   image: nginx
   volumes:
    - ./nginx.conf:/etc/nginx/conf.d/default.conf
-   - ./ui/:/app
+   - .:/code
   volumes_from:
    - web
   ports:
@@ -28,6 +28,5 @@ web:
     - SESSION_TOKEN_MAX_AGE=300
   volumes:
     - .:/code
-    - ./ui/:/app
   links:
     - db

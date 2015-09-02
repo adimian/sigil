@@ -120,6 +120,8 @@ var GenericDataView = function() {
     self.columns = ko.observable([])
     self.collection = ko.observableArray([]);
     self.cursor = ko.observable();
+	self.sort_direction = ko.observable(true);
+	self.sort_column = ko.observable();
 
     self.get_data = ko.computed(function() {
         var res = this.collection();
@@ -139,10 +141,23 @@ var GenericDataView = function() {
 
     self.sortby = function(item) {
         var column = item.key;
+
+		if (column == self.sort_column()){
+			self.sort_direction(!self.sort_direction());
+		} else {
+			self.sort_direction(true);
+		}
+		self.sort_column(column);
+
         self.collection.sort(function(a, b) {
             var left = a[column];
             var right = b[column];
-            if (typeof(left) == 'number') {
+			if (!self.sort_direction()){
+				var tmp = left;
+				left = right;
+				right = tmp;
+			}
+            if (typeof(left) == 'number' || typeof(left) == 'boolean') {
                 return left - right;
             } else {
                 return String(left).localeCompare(String(right));
@@ -179,6 +194,8 @@ var GenericDataView = function() {
                 $("#user_edit_modal").modal('show');
             });
         };
+
+		location.reload(false);
 
     };
 };

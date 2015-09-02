@@ -132,7 +132,10 @@
 						<thead>
 							<tr>
 								<!-- ko foreach: headers -->
-								<th style="cursor: pointer" data-bind="text: name, click:$parent.sortby"></th>
+								<th style="cursor: pointer" data-bind="click:$parent.sortby, css:{dropup: !$parent.sort_direction()}">
+									<span data-bind="text: name"></span>
+									<span class="caret" data-bind="visible: $parent.sort_column() == key"></span>
+								</th>
 								<!-- /ko -->
 								<th>Details</th>
 							</tr>

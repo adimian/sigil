@@ -1,11 +1,14 @@
 import pytest
 
 from sigil.api import app, db, setup_endpoints
+from sigil.emails import setup_emails
 from sigil.models import User, Need
 from sigil.permissions import setup_default_permissions
 from sigil.utils import generate_token
 
+
 setup_endpoints()
+setup_emails()
 
 
 @pytest.fixture(scope='function')
@@ -25,6 +28,7 @@ def client(request):
 
     client = app.test_client()
     client._db = db
+    client._app = app
 
     with app.app_context():
         client._auth_token = generate_token([u1.id, 'abcdef'],

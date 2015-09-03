@@ -32,6 +32,15 @@ def configure(app):
     set_default('ROOT_APP_CTX', 'sigil')
     set_default('AUTO_ACTIVATE_NEW_USER', True)
 
+    # mail
+    set_default('MAIL_SUPPRESS_SEND', True)
+    set_default('MAIL_SERVER', '')
+    set_default('MAIL_USERNAME', '')
+    set_default('MAIL_PORT', '587')
+    set_default('MAIL_USE_TLS', True)
+    set_default('MAIL_PASSWORD', '')
+    set_default('MAIL_DEFAULT_SENDER', 'sigil@local')
+
     # 2FA
     set_default('ENABLE_2FA', False)
     set_default('TOTP_MAX_TIME_STEPS', 20)

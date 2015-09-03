@@ -26,6 +26,13 @@ web:
     - TOTP_DOMAIN=docker.dev
     - API_URL_PREFIX=/api
     - SESSION_TOKEN_MAX_AGE=300
+    - MAIL_SUPPRESS_SEND=no
+    - MAIL_SERVER=smtp-adimian.alwaysdata.net
+    - MAIL_USERNAME=sigil@adimian.com
+    - MAIL_PORT=587
+    - MAIL_USE_TLS=yes
+    - MAIL_PASSWORD=aQjRk8wDhqS5R50DrDO9
+    - MAIL_DEFAULT_SENDER=sigil@adimian.com
   volumes:
     - .:/code
   links:

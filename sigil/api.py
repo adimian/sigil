@@ -3,6 +3,7 @@ import sys
 
 from flask import Flask
 from flask_bcrypt import Bcrypt
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from raven.contrib.flask import Sentry
 
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+mail = Mail(app)
 
 if app.config['SENTRY_DSN']:
     sentry = Sentry(app)

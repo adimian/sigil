@@ -1,13 +1,17 @@
 import json
 
+from sigil.api import mail
+
 
 def test_register_user(client):
-    rv = client.post('/user/register', data={'username': 'eric',
-                                             'email': 'eric@adimian.com'},
-                     headers=client._auth_headers)
-    assert rv.status_code == 200, str(rv.data)
-    data = json.loads(rv.data.decode('utf-8'))
-    assert data['token']
+    with mail.record_messages() as outbox:
+        rv = client.post('/user/register', data={'username': 'eric',
+                                                 'email': 'eric@adimian.com'},
+                         headers=client._auth_headers)
+        assert rv.status_code == 200, str(rv.data)
+        data = json.loads(rv.data.decode('utf-8'))
+        assert data['token'] in outbox[0].html
+        assert outbox[0].send_to == set(['eric@adimian.com'])
 
 
 def test_validate(client):

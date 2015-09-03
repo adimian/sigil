@@ -1,4 +1,4 @@
-
+"use strict"
 var init = function() {
     var app = new SigilApplication();
     ko.applyBindings(app);

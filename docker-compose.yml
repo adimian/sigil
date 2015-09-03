@@ -33,6 +33,7 @@ web:
     - MAIL_USE_TLS=yes
     - MAIL_PASSWORD=aQjRk8wDhqS5R50DrDO9
     - MAIL_DEFAULT_SENDER=sigil@adimian.com
+    - SERVER_NAME=docker.dev
   volumes:
     - .:/code
   links:

@@ -1,37 +1,4 @@
 "use strict"
-
-var SIGIL_API = '/api';
-var SIGIL_TOKEN_HEADER = 'Sigil-Token';
-
-var get_auth_headers = function() {
-    var headers = {};
-    headers[SIGIL_TOKEN_HEADER] = app.current_user.auth_token();
-    return headers;
-};
-
-var authed_request = function(verb, url, data, success) {
-    return $.ajax({
-        method: verb,
-        dataType: "json",
-        url: SIGIL_API + url,
-        data: data,
-        success: success,
-        headers: get_auth_headers()
-    }).error(function(data) {
-        if (data.status == 401)  {
-            app.current_user.auth_token(null);
-        } else {
-            if (data.status == 502 || data.responseJSON === undefined)  {
-                app.login_error_message('application server unreachable, please retry later')
-                app.current_user.auth_token(null);
-            } else {
-                app.error_message(data.responseJSON.message);
-                $("#error_popup").modal('show');
-            }
-        }
-    });
-};
-
 var TabItem = function(key, label, searchable, can_add) {
     this.key = key;
     this.label = label;

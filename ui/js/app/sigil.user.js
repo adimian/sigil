@@ -1,3 +1,4 @@
+"use strict"
 var User = function() {
     var self = this;
     self.user_id = ko.observable();

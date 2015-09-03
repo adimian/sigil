@@ -80,8 +80,7 @@ class UpdatePassword(AnonymousResource):
                   'the request has been issued, you should start again')
 
         response = {'message': 'password updated !'}
-        if app.config['ENABLE_2FA']:
-            response['qrcode'] = qr_code_for_user(user)
+        response['qrcode'] = qr_code_for_user(user)
         return response
 
 

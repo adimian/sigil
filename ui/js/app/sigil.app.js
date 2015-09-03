@@ -1,13 +1,4 @@
-
-var ServerOptions = function() {
-    var self = this;
-    self.use_totp = ko.observable();
-    self.auth_token_name = ko.observable();
-    $.getJSON(SIGIL_API + '/options', function(data) {
-        self.use_totp(data.use_totp == "1");
-        self.auth_token_name(data.auth_token);
-    });
-};
+"use strict"
 
 var SigilApplication = function() {
     var self = this;

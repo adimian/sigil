@@ -13,6 +13,7 @@
 		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
     <link rel="stylesheet" href="css/strength.css">
+    <link rel="stylesheet" href="css/sigil.css">
     <link rel="shortcut icon" type='image/x-icon' href='img/favicon.ico'>
 </head>
 
@@ -27,17 +28,25 @@
                     <button type="button" class="close" data-dismiss="modal">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title">2FA setup</h4>
+                    <h4 class="modal-title">Multi-factor setup</h4>
                 </div>
                 <div class="modal-body">
-                    <pre style="width: 50em;
-                        line-height: 90%;
-                        margin: 0 auto;
-                        border: none;
-                        background: transparent;" data-bind="text: user_account.qr_code"></pre>
+                    <p class="bg-danger">
+                        This screen will only be shown <em>once</em>. Make sure you read it completely before dismissing it.
+                    </p>
+                    <p>
+                        Sigil uses <a href="https://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a> to secure your account against password theft.
+                    </p>
+                    <p>
+                        It relies on a hardware code generator to produce time-based PIN codes to be used along with your traditional username/password login method.
+                    </p>
+                    <p>
+                        If you have installed <a href="https://support.google.com/accounts/answer/1066447?hl=en">Google Authenticator</a> you can now use the QR code below to setup your new account.
+                    </p>
+                    <pre class="qrcode" data-bind="text: user_account.qr_code"></pre>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-warning" data-dismiss="modal">Setup complete</button>
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" data-bind="click: $root.redirect">I have configured my device</button>
                 </div>
             </div>
         </div>

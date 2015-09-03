@@ -11,6 +11,10 @@ var ValidateAccountApplication = function() {
     self.server_options = new ServerOptions();
     self.user_account = new UserAccount();
 
+    self.redirect = function() {
+        window.location = location.origin;
+    }
+
     self.validate = function() {
         var data = {
             token: self.user_account.token(),

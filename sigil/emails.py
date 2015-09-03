@@ -24,4 +24,5 @@ def setup_emails():
                                    validate_url=base_url)
         if app.config['DEBUG']:
             print(msg.html)
-        mail.send(msg)
+        else:
+            mail.send(msg)

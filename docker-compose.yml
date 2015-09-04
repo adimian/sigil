@@ -8,6 +8,7 @@ nginx:
   image: nginx
   volumes:
    - ./nginx.conf:/etc/nginx/conf.d/default.conf
+   - .:/sigil
   volumes_from:
    - sigil
    - haruba
@@ -38,7 +39,7 @@ sigil:
     - MAIL_DEFAULT_SENDER=sigil@adimian.com
     - UI_BASE_URL=http://docker.dev/sigil
   volumes:
-    - .:/code
+    - .:/sigil
   links:
     - sigildb
 

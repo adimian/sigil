@@ -1,14 +1,14 @@
 FROM python:3.4
 ENV PYTHONUNBUFFERED 1
-ENV PYTHONPATH $PYTHONPATH:/code
+ENV PYTHONPATH $PYTHONPATH:/sigil
 
-RUN mkdir /code
-VOLUME /code
+RUN mkdir /sigil
+VOLUME /sigil
 
-WORKDIR /code
-ADD requirements.txt /code/
+WORKDIR /sigil
+ADD requirements.txt /sigil/
 RUN pip install -U pip && pip install -r requirements.txt
 
-ADD . /code/
+ADD . /sigil/
 
 CMD python3 sigil/server.py runserver

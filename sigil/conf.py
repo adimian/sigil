@@ -20,7 +20,7 @@ def configure(app):
     set_default('DEBUG', False)
     set_default('HOST', '0.0.0.0')
     set_default('PORT', 5000)
-    set_default('SERVER_NAME', 'docker.dev')
+    set_default('SERVER_NAME', None)
     set_default('UI_BASE_URL', 'http://docker.dev/sigil')
     set_default('API_URL_PREFIX', '')
     set_default('SQLALCHEMY_DATABASE_URI', 'sqlite:///')

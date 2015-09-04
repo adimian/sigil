@@ -1,6 +1,6 @@
 "use strict"
 
-var SIGIL_API = '/api';
+var SIGIL_API = '/sigil-api';
 var SIGIL_TOKEN_HEADER = 'Sigil-Token';
 
 var get_auth_headers = function() {

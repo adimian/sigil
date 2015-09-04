@@ -51,6 +51,9 @@ var init = function() {
         this.get('#export', function() {
             app.data_view.collection(null);
         });
+        this.get('#applications', function() {
+            app.data_view.collection(null);
+        });
 
     }).run();
 

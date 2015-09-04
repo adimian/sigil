@@ -8,6 +8,7 @@ var SigilApplication = function() {
         //new TabItem('teams', 'User Teams', true), // feature not completed yet
         new TabItem('groups', 'Virtual Groups', true),
         new TabItem('permissions', 'Permissions', true),
+        new TabItem('applications', 'Applications', false),
         new TabItem('import', 'Import from Excel', false),
         new TabItem('export', 'Export to Excel', false)
     ]

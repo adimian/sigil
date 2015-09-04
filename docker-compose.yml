@@ -9,14 +9,14 @@ nginx:
    - ./nginx.conf:/etc/nginx/conf.d/default.conf
    - .:/code
   volumes_from:
-   - web
+   - sigil
   ports:
    - "80:80"
   links:
-   - web
+   - sigil
   restart: always
   
-web:
+sigil:
   build: .
   environment:
     - DEBUG=yes
@@ -24,7 +24,7 @@ web:
     - SQLALCHEMY_DATABASE_URI=postgres://postgres@db
     - ENABLE_2FA=no
     - TOTP_DOMAIN=docker.dev
-    - API_URL_PREFIX=/api
+    - API_URL_PREFIX=/sigil-api
     - SESSION_TOKEN_MAX_AGE=300
     - MAIL_SUPPRESS_SEND=no
     - MAIL_SERVER=smtp-adimian.alwaysdata.net
@@ -33,7 +33,7 @@ web:
     - MAIL_USE_TLS=yes
     - MAIL_PASSWORD=aQjRk8wDhqS5R50DrDO9
     - MAIL_DEFAULT_SENDER=sigil@adimian.com
-    - SERVER_NAME=docker.dev
+    - UI_BASE_URL=http://docker.dev/sigil
   volumes:
     - .:/code
   links:

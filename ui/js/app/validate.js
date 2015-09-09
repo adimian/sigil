@@ -34,6 +34,8 @@ var ValidateAccountApplication = function() {
             url: SIGIL_API + '/user/validate',
             data: data,
             success: success
+        }).error(function(data){
+            console.log(data);
         });
     };
 };

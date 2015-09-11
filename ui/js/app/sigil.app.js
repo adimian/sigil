@@ -18,6 +18,8 @@ var SigilApplication = function() {
         self.tabmap[tab.key] = tab;
     }
 
+    self.searchbar = ko.observable();
+
     self.login_error_message = ko.observable();
     self.error_message = ko.observable();
 
@@ -28,8 +30,8 @@ var SigilApplication = function() {
     self.edited_app = ko.observable(new AppContext());
 
     // generic view
-    self.data_view = new GenericDataView();
-    self.group_view = new GroupDataView();
+    self.data_view = new GenericDataView(self);
+    self.group_view = new GroupDataView(self);
 
     var initial_tab = (self.tabmap[location.hash.replace('#', '')] || self.tabs[0]);
     self.current_tab = ko.observable(initial_tab);

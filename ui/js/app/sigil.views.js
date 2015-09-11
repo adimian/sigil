@@ -7,8 +7,9 @@ var TabItem = function(key, label, searchable, can_add, can_toggle) {
     this.can_toggle = can_toggle;
 };
 
-var GenericDataView = function() {
+var GenericDataView = function(parent) {
     var self = this;
+    self.parent_app = parent;
     self.columns = ko.observable([])
     self.collection = ko.observableArray([]);
     self.cursor = ko.observable();
@@ -16,8 +17,24 @@ var GenericDataView = function() {
     self.sort_column = ko.observable();
 
     self.get_data = ko.computed(function() {
-        var res = this.collection();
-        return res;
+        if (self.parent_app === undefined) {
+            return;
+        }
+
+        var searchbar = self.parent_app.searchbar();
+        if (!searchbar) {
+            return this.collection();
+        } else {
+            return ko.utils.arrayFilter(this.collection(), function(item) {
+                for (var attribute in item) {
+                    var value = item[attribute];
+                    if (typeof(value) == "string" && item[attribute].indexOf(searchbar) > -1) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
     }, this);
 
     self.headers = ko.computed(function() {
@@ -62,18 +79,18 @@ var GenericDataView = function() {
             authed_request('PATCH', '/group', {
                 'name': item.name,
                 'active': !item.active
-            }, function(data){
-				location.reload(false);
-			});
+            }, function(data) {
+                location.reload(false);
+            });
         };
         if (tab == 'users') {
-			authed_request('POST', '/user/details', {
+            authed_request('POST', '/user/details', {
                 'username': item.username,
                 'active': !item.active
-            }, function(data){
-				location.reload(false);
-			});
-		};
+            }, function(data) {
+                location.reload(false);
+            });
+        };
     }
 
     self.show_detail = function(item)  {
@@ -111,9 +128,10 @@ var GenericDataView = function() {
             }, function(data) {
                 var appctx = new AppContext();
                 appctx.name(item.name);
-                // TODO: load needs in an array
-                for (var i=0; i<data.needs.length;i++){
-                    appctx.needs.push({permission: data.needs[i].join(".")});
+                for (var i = 0; i < data.needs.length; i++) {
+                    appctx.needs.push({
+                        permission: data.needs[i].join(".")
+                    });
                 }
                 app.edited_app(appctx);
                 $("#app_details_modal").modal('show');

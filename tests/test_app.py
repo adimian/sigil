@@ -20,6 +20,15 @@ def test_list_apps(client):
     assert data['apps'][-1] == {'id': 2, 'name': 'newapp'}
 
 
+def test_get_needs(client):
+    register_app(client)
+    rv = client.get('/app', data={'name': 'newapp'},
+                    headers=client._auth_headers)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['needs'] == [['permissions', 'read'],
+                             ['permissions', 'write']]
+
+
 def test_expose_needs(client):
     app_key = register_app(client)
 

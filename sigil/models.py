@@ -183,6 +183,13 @@ class AppContext(db.Model):
     def declared_needs(self):
         return tuple(n.as_tuple() for n in self.needs)
 
+    @classmethod
+    def by_name(cls, name):
+        try:
+            return db.session.query(cls).filter_by(name=name).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            return None
+
 
 class Need(db.Model):
     __table_args__ = (UniqueConstraint('app_id', 'method',

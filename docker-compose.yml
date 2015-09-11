@@ -63,7 +63,7 @@ haruba:
     - SQLALCHEMY_DATABASE_URI=postgres://postgres@harubadb
     - API_URL_PREFIX=/haruba-api
     - SIGIL_API_URL=http://sigil:5000/sigil-api
-    - SIGIL_APP_KEY=WzM0LCJmZjIzOWM1NGQwZjMwZTQ0NjdmZjRmMzdjOTZjZGZkMSJd.CMs2PA.6EKaxzLHpPnmu8aza-BCEjmJS7A
+    - SIGIL_APP_KEY=WzEwLCJmZjIzOWM1NGQwZjMwZTQ0NjdmZjRmMzdjOTZjZGZkMSJd.CNRD9Q.AOh7TZ2wbGvSmMPvhlhUOJSAMEI
   links:
     - harubadb
     - sigil

@@ -214,18 +214,49 @@
 				<div class="modal-body">
 					<form data-bind="with: edited_app">
 						<div class="form-group">
-							<label for="appname">Name</label>
-							<input type="text" id="appname" class="form-control" data-bind="value: appname">
+							<label for="name">Name</label>
+							<p class="form-control-static" data-bind="visible: appkey, text: name"></p>
+							<input type="text" id="name" class="form-control" data-bind="visible: blank, value: name">
 						</div>
-						<div class="form-group">
+						<div class="form-group" data-bind="visible: appkey">
 							<label for="appkey">Application Key</label>
+							<p class="bg-success">
+								This application key will never be displayed again and cannot be recovered.<br>Please save it somewhere safe.
+							</p>
 							<input type="text" id="appkey" class="form-control" data-bind="value: appkey">
 						</div>
 					</form>
 				</div>
+				<div class="modal-footer" data-bind="with: edited_app">
+					<span data-bind="visible: blank">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="button" class="btn btn-success" data-bind="click: register">Create</button>
+					</span>
+					<span data-bind="visible: appkey">
+						<button type="button" class="btn btn-warning" data-dismiss="modal">Ok, I have saved the key</button>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Application details modal -->
+	<div class="modal fade" id="app_details_modal" data-bind="with: edited_app">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title"><span data-bind="text: name"></span> defines the following permissions</h4>
+				</div>
+				<div class="modal-body">
+					<ul data-bind="foreach: needs">
+						<li data-bind="text: permission"></li>
+					</ul>
+				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" data-bind="click: edited_app().register">Create</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>

@@ -104,6 +104,21 @@ var GenericDataView = function() {
                 $("#user_edit_modal").modal('show');
             });
         };
+
+        if (tab == 'applications') {
+            authed_request('GET', '/app', {
+                'name': item.name
+            }, function(data) {
+                var appctx = new AppContext();
+                appctx.name(item.name);
+                // TODO: load needs in an array
+                for (var i=0; i<data.needs.length;i++){
+                    appctx.needs.push({permission: data.needs[i].join(".")});
+                }
+                app.edited_app(appctx);
+                $("#app_details_modal").modal('show');
+            });
+        };
     };
 };
 

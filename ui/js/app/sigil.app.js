@@ -98,4 +98,8 @@ SigilApplication.prototype.add_new = function(data) {
         app.edited_user(new User());
         $("#user_add_modal").modal('show');
     };
+    if (tab == 'applications') {
+        app.edited_app(new AppContext());
+        $("#app_add_modal").modal('show');
+    };
 };

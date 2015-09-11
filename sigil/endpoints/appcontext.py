@@ -17,6 +17,14 @@ logger = logging.getLogger(__name__)
 
 
 class ApplicationContext(ProtectedResource):
+
+    def get(self):
+        apps = {}
+        if Permission(('appcontexts', 'read')).can():
+            for ctx in db.session.query(AppContext).all():
+                apps[ctx.name] = ctx.declared_needs()
+        return {'apps': apps}
+
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('name', type=str)
@@ -72,7 +80,7 @@ class ApplicationNeeds(AnonymousResource):
                                                                   ctx.name))
         db.session.commit()
 
-        return {'needs': ctx.show()}
+        return {'needs': ctx.declared_needs()}
 
     def delete(self):
         parser = reqparse.RequestParser()
@@ -89,4 +97,4 @@ class ApplicationNeeds(AnonymousResource):
                     db.session.delete(need)
         db.session.commit()
 
-        return {'needs': ctx.show()}
+        return {'needs': ctx.declared_needs()}

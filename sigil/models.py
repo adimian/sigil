@@ -180,7 +180,7 @@ class AppContext(db.Model):
     def __init__(self, name):
         self.name = name
 
-    def show(self):
+    def declared_needs(self):
         return tuple(n.as_tuple() for n in self.needs)
 
 
@@ -216,6 +216,9 @@ class Need(db.Model):
         self.method = method
         self.value = value
         self.resource = resource or "*"
+
+    def __eq__(self, other):
+        return self.as_tuple() == other.as_tuple()
 
     def as_tuple(self):
         if self.resource == '*':

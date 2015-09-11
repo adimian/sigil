@@ -13,6 +13,14 @@ def test_register_app(client):
     register_app(client)
 
 
+def test_list_apps(client):
+    register_app(client)
+    rv = client.get('/app', headers=client._auth_headers)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['apps']['newapp'] == [['permissions', 'read'],
+                                      ['permissions', 'write']]
+
+
 def test_expose_needs(client):
     app_key = register_app(client)
 

@@ -168,11 +168,15 @@ class UserPermissions(ManagedResource):
             abort(400,
                   'permissions {} were not found'.format(repr(request_needs)))
 
+        current_permissions = user.permissions
+
         for need in selected_needs:
             if mode == 'add':
-                user.permissions.append(need)
+                if need not in current_permissions:
+                    user.permissions.append(need)
             elif mode == 'delete':
-                user.permissions.remove(need)
+                if need in current_permissions:
+                    user.permissions.remove(need)
 
         db.session.commit()
 

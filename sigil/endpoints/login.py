@@ -1,3 +1,5 @@
+import logging
+
 from flask import abort, current_app as app
 from flask_restful import reqparse
 import sqlalchemy
@@ -5,9 +7,12 @@ import sqlalchemy
 from . import AnonymousResource
 from ..api import db
 from ..models import User
-from ..signals import user_login
-from ..utils import random_token, generate_token
 from ..multifactor import check_code
+from ..signals import user_login
+from ..utils import random_token, generate_token, get_remote_ip
+
+
+logger = logging.getLogger(__name__)
 
 
 class Login(AnonymousResource):
@@ -24,11 +29,14 @@ class Login(AnonymousResource):
 
         args = parser.parse_args()
 
+        logger.info('login attempt from {}'.format(get_remote_ip()))
+
         if args['username'] and args['password']:
+            logger.info('login attempt: {}'.format(args['username']))
             try:
                 user = session.query(User).filter_by(username=args['username']).one()
             except sqlalchemy.orm.exc.NoResultFound as err:
-                abort(403, 'invalid user')
+                abort(403, 'invalid user: {}'.format(args['username']))
             if not user.active:
                 abort(403, 'inactive user')
             if user.must_change_password:

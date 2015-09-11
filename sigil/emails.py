@@ -22,7 +22,7 @@ def setup_emails():
                                    token=token,
                                    user=user,
                                    validate_url=base_url)
-        if app.config['DEBUG']:
+        if app.config['DEBUG'] and not app.config['TESTING']:
             print(msg.html)
         else:
             mail.send(msg)

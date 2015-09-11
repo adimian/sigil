@@ -42,7 +42,7 @@ def setup_endpoints():
 
     api = restful.Api(app, prefix=app.config['API_URL_PREFIX'])
     # application
-    api.add_resource(ApplicationContext, '/app/register')
+    api.add_resource(ApplicationContext, '/app', '/app/register')
     api.add_resource(ApplicationNeeds, '/needs')
     api.add_resource(ServerOptions, '/options')
     # login (SSO)

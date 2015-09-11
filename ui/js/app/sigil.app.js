@@ -3,14 +3,14 @@
 var SigilApplication = function() {
     var self = this;
 
-    self.tabs = [new TabItem('overview', 'Overview', false),
-        new TabItem('users', 'Users', true),
-        //new TabItem('teams', 'User Teams', true), // feature not completed yet
-        new TabItem('groups', 'Virtual Groups', true),
-        new TabItem('permissions', 'Permissions', true),
-        new TabItem('applications', 'Applications', false),
-        new TabItem('import', 'Import from Excel', false),
-        new TabItem('export', 'Export to Excel', false)
+    self.tabs = [new TabItem('overview', 'Overview', false, false, false),
+        new TabItem('users', 'Users', true, true, true),
+        //new TabItem('teams', 'User Teams', true, true, true), // feature not completed yet
+        new TabItem('groups', 'Virtual Groups', true, true, true),
+        new TabItem('permissions', 'Permissions', true, false, false),
+        new TabItem('applications', 'Applications', true, true, false),
+        new TabItem('import', 'Import from Excel', false, false, false),
+        new TabItem('export', 'Export to Excel', false, false, false)
     ]
     self.tabmap = {};
     for (var i = 0; i < self.tabs.length; i++) {
@@ -25,6 +25,7 @@ var SigilApplication = function() {
     self.current_user = new LoggedInUser();
 
     self.edited_user = ko.observable(new User());
+    self.edited_app = ko.observable(new AppContext());
 
     // generic view
     self.data_view = new GenericDataView();

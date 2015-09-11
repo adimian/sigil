@@ -52,7 +52,13 @@ var init = function() {
             app.data_view.collection(null);
         });
         this.get('#applications', function() {
-            app.data_view.collection(null);
+            authed_request('GET', '/app', null, function(data) {
+                app.data_view.collection(data['apps']);
+                app.data_view.columns([
+                    new DataColumn('id', 'ID'),
+                    new DataColumn('name', 'Name'),
+                ]);
+            });
         });
 
     }).run();

@@ -143,14 +143,16 @@
 							</tr>
 						</thead>
 						<tbody data-bind="foreach: {data: get_data, as: 'line'}">
-							<tr data-bind="css: {'text-muted': !line['active']}">
+							<tr data-bind="css: {'text-muted': $root.current_tab().can_toggle && !line['active'] }">
 								<!-- ko foreach: $parent.columns -->
 								<td data-bind="text: line[key]"></td>
 								<!-- /ko -->
 								<td>
 									<a class="btn btn-xs btn-primary" data-bind="click: $parent.show_detail">Details</a>
-									<a class="btn btn-xs btn-warning" data-bind="visible: !line['active'], click: $parent.toggle_active">Disabled</a>
-									<a class="btn btn-xs btn-success" data-bind="visible: line['active'], click: $parent.toggle_active">Enabled</a>
+									<span data-bind="visible: $root.current_tab().can_toggle">
+										<a class="btn btn-xs btn-warning" data-bind="visible: !line['active'], click: $parent.toggle_active">Disabled</a>
+										<a class="btn btn-xs btn-success" data-bind="visible: line['active'], click: $parent.toggle_active">Enabled</a>
+									</span>
 								</td>
 							</tr>
 						</tbody>
@@ -194,6 +196,36 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 					<button type="button" class="btn btn-success" data-bind="click: edited_user().register">Create</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- New application modal -->
+	<div class="modal fade" id="app_add_modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">New Application</h4>
+				</div>
+				<div class="modal-body">
+					<form data-bind="with: edited_app">
+						<div class="form-group">
+							<label for="appname">Name</label>
+							<input type="text" id="appname" class="form-control" data-bind="value: appname">
+						</div>
+						<div class="form-group">
+							<label for="appkey">Application Key</label>
+							<input type="text" id="appkey" class="form-control" data-bind="value: appkey">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-success" data-bind="click: edited_app().register">Create</button>
 				</div>
 			</div>
 		</div>
@@ -319,6 +351,7 @@
 	<script src="js/ext/dropzone.js"></script>
 	<script src="js/app/sigil.utils.js"></script>
 	<script src="js/app/sigil.user.js"></script>
+	<script src="js/app/sigil.appctx.js"></script>
 	<script src="js/app/sigil.views.js"></script>
 	<script src="js/app/sigil.app.js"></script>
 	<script src="js/app/sigil.init.js"></script>

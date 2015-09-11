@@ -19,10 +19,11 @@ logger = logging.getLogger(__name__)
 class ApplicationContext(ProtectedResource):
 
     def get(self):
-        apps = {}
+        apps = []
         if Permission(('appcontexts', 'read')).can():
             for ctx in db.session.query(AppContext).all():
-                apps[ctx.name] = ctx.declared_needs()
+                apps.append({'id': ctx.id,
+                             'name': ctx.name})
         return {'apps': apps}
 
     def post(self):

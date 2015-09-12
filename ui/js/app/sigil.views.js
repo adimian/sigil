@@ -17,23 +17,24 @@ var GenericDataView = function(parent) {
     self.sort_column = ko.observable();
 
     self.get_data = ko.computed(function() {
-        if (self.parent_app === undefined) {
-            return;
-        }
-
-        var searchbar = self.parent_app.searchbar();
-        if (!searchbar) {
-            return this.collection();
-        } else {
-            return ko.utils.arrayFilter(this.collection(), function(item) {
-                for (var attribute in item) {
-                    var value = item[attribute];
-                    if (typeof(value) == "string" && item[attribute].indexOf(searchbar) > -1) {
-                        return true;
+        if (self.parent_app !== undefined) {
+            var searchbar = self.parent_app.searchbar();
+            if (!searchbar) {
+                return this.collection();
+            } else {
+                return ko.utils.arrayFilter(this.collection(), function(item) {
+                    searchbar = searchbar.toLowerCase();
+                    var value = null;
+                    var attribute = null;
+                    for (attribute in item) {
+                        value = item[attribute];
+                        if (typeof(value) == "string" && item[attribute].toLowerCase().indexOf(searchbar) > -1) {
+                            return true;
+                        }
                     }
-                }
-                return false;
-            });
+                    return false;
+                });
+            }
         }
     }, this);
 

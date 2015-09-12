@@ -42,9 +42,6 @@ var init = function() {
                 ]);
             });
         });
-        this.get('#permissions', function() {
-            app.data_view.collection(null);
-        });
         this.get('#import', function() {
             app.data_view.collection(null);
         });

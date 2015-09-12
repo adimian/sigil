@@ -2,15 +2,14 @@
 
 var SigilApplication = function() {
     var self = this;
-
-    self.tabs = [new TabItem('overview', 'Overview', false, false, false),
-        new TabItem('users', 'Users', true, true, true),
-        //new TabItem('teams', 'User Teams', true, true, true), // feature not completed yet
-        new TabItem('groups', 'Virtual Groups', true, true, true),
-        new TabItem('permissions', 'Permissions', true, false, false),
-        new TabItem('applications', 'Applications', true, true, false),
-        new TabItem('import', 'Import from Excel', false, false, false),
-        new TabItem('export', 'Export to Excel', false, false, false)
+//searchable, can_add, can_toggle, has_permissions
+    self.tabs = [new TabItem('overview', 'Overview', {}),
+        new TabItem('users', 'Users', {searchable:true, can_add:true, can_toggle:true, has_permissions:true}),
+        //new TabItem('teams', 'User Teams', {searchable:true, can_add:true, can_toggle:true, has_permissions:true}), // feature not completed yet
+        new TabItem('groups', 'Virtual Groups', {searchable:true, can_add:true, can_toggle:true, has_permissions:false}),
+        new TabItem('applications', 'Applications', {searchable:true, can_add:true, has_permissions:true}),
+        new TabItem('import', 'Import from Excel', {}),
+        new TabItem('export', 'Export to Excel', {})
     ]
     self.tabmap = {};
     for (var i = 0; i < self.tabs.length; i++) {

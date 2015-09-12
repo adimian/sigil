@@ -1,10 +1,11 @@
 "use strict"
-var TabItem = function(key, label, searchable, can_add, can_toggle) {
+var TabItem = function(key, label, options) {
     this.key = key;
     this.label = label;
-    this.searchable = searchable;
-    this.can_add = can_add;
-    this.can_toggle = can_toggle;
+    this.searchable = options.searchable || false;
+    this.can_add = options.can_add || false;
+    this.can_toggle = options.can_toggle || false;
+    this.has_permissions = options.has_permissions || false;
 };
 
 var GenericDataView = function(parent) {

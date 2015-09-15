@@ -31,7 +31,8 @@ class ApplicationContext(ProtectedResource):
             if Permission(('appcontexts', 'read')).can():
                 for ctx in db.session.query(AppContext).all():
                     apps.append({'id': ctx.id,
-                                 'name': ctx.name})
+                                 'name': ctx.name,
+                                 'needs': ctx.declared_needs()})
             return {'apps': apps}
 
     def post(self):

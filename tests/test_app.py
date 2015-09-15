@@ -17,7 +17,9 @@ def test_list_apps(client):
     register_app(client)
     rv = client.get('/app', headers=client._auth_headers)
     data = json.loads(rv.data.decode('utf-8'))
-    assert data['apps'][-1] == {'id': 2, 'name': 'newapp'}
+    assert data['apps'][-1] == {'id': 2, 'name': 'newapp',
+                                'needs': [['permissions', 'read'],
+                                          ['permissions', 'write']]}
 
 
 def test_get_needs(client):

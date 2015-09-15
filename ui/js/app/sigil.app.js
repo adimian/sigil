@@ -2,12 +2,26 @@
 
 var SigilApplication = function() {
     var self = this;
-//searchable, can_add, can_toggle, has_permissions
+    //searchable, can_add, can_toggle, has_permissions
     self.tabs = [new TabItem('overview', 'Overview', {}),
-        new TabItem('users', 'Users', {searchable:true, can_add:true, can_toggle:true, has_permissions:true}),
+        new TabItem('users', 'Users', {
+            searchable: true,
+            can_add: true,
+            can_toggle: true,
+            has_permissions: true
+        }),
         //new TabItem('teams', 'User Teams', {searchable:true, can_add:true, can_toggle:true, has_permissions:true}), // feature not completed yet
-        new TabItem('groups', 'Virtual Groups', {searchable:true, can_add:true, can_toggle:true, has_permissions:false}),
-        new TabItem('applications', 'Applications', {searchable:true, can_add:true, has_permissions:true}),
+        new TabItem('groups', 'Virtual Groups', {
+            searchable: true,
+            can_add: true,
+            can_toggle: true,
+            has_permissions: false
+        }),
+        new TabItem('applications', 'Applications', {
+            searchable: true,
+            can_add: true,
+            has_permissions: false
+        }),
         new TabItem('import', 'Import from Excel', {}),
         new TabItem('export', 'Export to Excel', {})
     ]
@@ -27,6 +41,9 @@ var SigilApplication = function() {
 
     self.edited_user = ko.observable(new User());
     self.edited_app = ko.observable(new AppContext());
+
+    self.all_apps = ko.observableArray([]);
+    self.current_principal = ko.observable(new User());
 
     // generic view
     self.data_view = new GenericDataView(self);
@@ -95,11 +112,11 @@ SigilApplication.prototype.set_current_tab = function(data) {
 
 SigilApplication.prototype.add_new = function(data) {
     var tab = app.current_tab().key;
-    if (tab == 'users') {
+    if (tab == 'users')  {
         app.edited_user(new User());
         $("#user_add_modal").modal('show');
     };
-    if (tab == 'applications') {
+    if (tab == 'applications')  {
         app.edited_app(new AppContext());
         $("#app_add_modal").modal('show');
     };

@@ -137,6 +137,13 @@ class UserCatalog(ProtectedResource):
 
 
 class UserPermissions(ManagedResource):
+    def options(self):
+        user = get_target_user()
+        response = {}
+        for context in db.session.query(AppContext).all():
+            response[context.name] = user.permission_catalog(context.name)
+        return response
+
     def get(self):
         user = get_target_user()
         parser = reqparse.RequestParser()

@@ -3,22 +3,11 @@ sigildb-data:
   command: /bin/true
   volumes: 
     - /var/lib/postgresql/data
-  
-harubadb-data:
-  image: busybox
-  command: /bin/true
-  volumes: 
-    - /var/lib/postgresql/data
 
 sigildb:
   image: postgres
   volumes_from:
     - sigildb-data
-
-harubadb:
-  image: postgres
-  volumes_from: 
-    - harubadb-data
   
 nginx:
   image: nginx
@@ -27,12 +16,10 @@ nginx:
    - .:/sigil
   volumes_from:
    - sigil
-   - haruba
   ports:
    - "80:80"
   links:
    - sigil
-   - haruba
   
 sigil:
   build: .
@@ -55,16 +42,4 @@ sigil:
   volumes:
     - .:/sigil
   links:
-    - sigildb
-
-haruba:
-  image: registry.adimian.com/haruba/haruba
-  environment:
-    - SQLALCHEMY_DATABASE_URI=postgres://postgres@harubadb
-    - API_URL_PREFIX=/haruba-api
-    - SIGIL_API_URL=http://sigil:5000/sigil-api
-    - SIGIL_APP_KEY=WzEwLCJmZjIzOWM1NGQwZjMwZTQ0NjdmZjRmMzdjOTZjZGZkMSJd.CNRD9Q.AOh7TZ2wbGvSmMPvhlhUOJSAMEI
-  links:
-    - harubadb
-    - sigil
-  
+    - sigildb  

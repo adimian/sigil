@@ -154,6 +154,9 @@
 										<a class="btn btn-xs btn-warning" data-bind="visible: !line['active'], click: $parent.toggle_active">Disabled</a>
 										<a class="btn btn-xs btn-success" data-bind="visible: line['active'], click: $parent.toggle_active">Enabled</a>
 									</span>
+									<span data-bind="visible: $root.current_tab().has_permissions">
+										<a class="btn btn-xs btn-info" data-bind="click: $parent.show_permissions">Permissions</a>
+									</span>
 								</td>
 							</tr>
 						</tbody>
@@ -222,7 +225,8 @@
 						<div class="form-group" data-bind="visible: appkey">
 							<label for="appkey">Application Key</label>
 							<p class="bg-success">
-								This application key will never be displayed again and cannot be recovered.<br>Please save it somewhere safe.
+								This application key will never be displayed again and cannot be recovered.
+								<br>Please save it somewhere safe.
 							</p>
 							<input type="text" id="appkey" class="form-control" data-bind="value: appkey">
 						</div>
@@ -249,7 +253,8 @@
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
-					<h4 class="modal-title"><span data-bind="text: name"></span> defines the following permissions</h4>
+					<h4 class="modal-title">
+						<span data-bind="text: name"></span> defines the following permissions</h4>
 				</div>
 				<div class="modal-body">
 					<ul data-bind="foreach: needs">
@@ -262,6 +267,53 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Assigned permissions modal -->
+	<div class="modal fade" id="assigned_permissions_modal" data-bind="with: current_principal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<span data-bind="text: name"></span> has the following permissions</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-striped table-condensed">
+						<tbody>
+							<tr>
+								<th>
+									Application
+								</th>
+								<th>
+									Permission
+								</th>
+								<th>
+									Active ?
+								</th>
+							</tr>
+							<!-- ko foreach: {data: permissions, as: 'application'} -->
+								<!-- ko  foreach: {data: application.needs, as: 'need'} -->
+								<tr>
+									<th data-bind="text: $parent.name"></th>
+									<td data-bind="text: need.permission"></td>
+									<td>
+										<input type="checkbox" data-bind="checked: need.active">
+									</td>
+								</tr>
+								<!-- /ko -->
+							<!-- /ko -->
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 
 	<!-- User modal -->
 	<div class="modal fade" id="user_edit_modal">
@@ -382,6 +434,7 @@
 	<script src="js/ext/sammy.min.js"></script>
 	<script src="js/ext/dropzone.js"></script>
 	<script src="js/app/sigil.utils.js"></script>
+	<script src="js/app/sigil.permissions.js"></script>
 	<script src="js/app/sigil.user.js"></script>
 	<script src="js/app/sigil.appctx.js"></script>
 	<script src="js/app/sigil.views.js"></script>

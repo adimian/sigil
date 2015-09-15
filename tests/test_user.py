@@ -71,6 +71,23 @@ def test_get_permissions(client):
                                                ['appcontexts', 'write']])
 
 
+def test_get_permissions_catalog(client):
+    rv = client.options('/user/permissions',
+                        headers=client._auth_headers)
+
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert set(data.keys()) == set(['sigil'])
+    assert sorted(data['sigil']) == sorted([[['teams', 'read'], True],
+                                            [['teams', 'write'], True],
+                                            [['users', 'read'], True],
+                                            [['users', 'write'], True],
+                                            [['groups', 'read'], True],
+                                            [['groups', 'write'], True],
+                                            [['appcontexts', 'read'], True],
+                                            [['appcontexts', 'write'], True]])
+
+
 def test_set_permissions(client):
     rv = client.post('/app/register', data={'name': 'newapp'},
                      headers=client._auth_headers)

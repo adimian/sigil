@@ -12,6 +12,12 @@ var User = function() {
 
     self.groups = ko.observableArray();
 
+    self.permissions = ko.observableArray();
+
+    this.name = ko.pureComputed(function() {
+        return self.display_name();
+    }, this);
+
     self.reset_password = function() {
         // call sigil to reset password
     };
@@ -29,6 +35,25 @@ var User = function() {
         self.email(item.email);
         self.active(item.active);
         self.mobile_number(item.mobile);
+    };
+
+    self.load_needs = function() {
+        authed_request('OPTIONS', '/user/permissions', {
+            username: self.username()
+        }, function(data) {
+            self.permissions([]);
+            for (var app_name in data) {
+                var appctx = new AppContext();
+                appctx.name(app_name);
+                self.permissions.push(appctx);
+                for (var i = 0; i < data[app_name].length; i++) {
+                    var permission = data[app_name][i];
+                    var need = new Need(app_name, permission[0]);
+                    need.active(permission[1]);
+                    appctx.needs.push(need);
+                }
+            }
+        })
     };
 
     self.persist = function() {

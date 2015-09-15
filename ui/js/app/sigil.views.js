@@ -2,10 +2,10 @@
 var TabItem = function(key, label, options) {
     this.key = key;
     this.label = label;
-    this.searchable = options.searchable || false;
-    this.can_add = options.can_add || false;
+    this.searchable = options.searchable ||  false;
+    this.can_add = options.can_add ||  false;
     this.can_toggle = options.can_toggle || false;
-    this.has_permissions = options.has_permissions || false;
+    this.has_permissions = options.has_permissions  || false;
 };
 
 var GenericDataView = function(parent) {
@@ -75,8 +75,27 @@ var GenericDataView = function(parent) {
         });
     };
 
+    self.tabname = function() {
+        return app.current_tab().key;
+    }
+
+    self.show_permissions = function(item) {
+        var tab = self.tabname();
+        if (tab == 'users') {
+            var user = new User();
+            user.load(item);
+            user.load_needs();
+            app.current_principal(user);
+            $('#assigned_permissions_modal').modal('show');
+        }
+
+        if (tab == 'teams') {
+            // TODO
+        }
+    }
+
     self.toggle_active = function(item) {
-        var tab = app.current_tab().key;
+        var tab = self.tabname();
         if (tab == 'groups') {
             authed_request('PATCH', '/group', {
                 'name': item.name,
@@ -96,7 +115,7 @@ var GenericDataView = function(parent) {
     }
 
     self.show_detail = function(item)  {
-        var tab = app.current_tab().key;
+        var tab = self.tabname();
 
         if (tab == 'groups') {
             authed_request('GET', '/group/members', {
@@ -131,9 +150,7 @@ var GenericDataView = function(parent) {
                 var appctx = new AppContext();
                 appctx.name(item.name);
                 for (var i = 0; i < data.needs.length; i++) {
-                    appctx.needs.push({
-                        permission: data.needs[i].join(".")
-                    });
+                    appctx.needs.push(new Need(item.name, data.needs[i]));
                 }
                 app.edited_app(appctx);
                 $("#app_details_modal").modal('show');

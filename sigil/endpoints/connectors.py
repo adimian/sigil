@@ -1,11 +1,14 @@
-from flask import abort
+from flask import abort, send_file
 from flask_restful import reqparse
 import werkzeug
+
+import os.path as osp
 
 from . import ProtectedResource
 from ..api import db
 from ..connectors.excel import (ExcelConnector, MissingFieldError,
-                                InvalidEmailError, DuplicatedUserError)
+                                InvalidEmailError, DuplicatedUserError,
+                                ExcelExporter)
 from ..utils import current_user
 
 
@@ -23,3 +26,10 @@ class ExcelImport(ProtectedResource):
         except DuplicatedUserError as err:
             abort(409, str(err))
 
+
+class ExcelExport(ProtectedResource):
+    def get(self):
+        filename = ExcelExporter(db.session, current_user).export()
+        return send_file(filename,
+                         as_attachment=True,
+                         attachment_filename=osp.basename(filename))

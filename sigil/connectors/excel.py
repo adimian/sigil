@@ -2,9 +2,11 @@ import logging
 import re
 
 import openpyxl
+import tempfile
 
 from ..models import User, VirtualGroup
 import sqlalchemy
+import os
 
 
 logger = logging.getLogger(__name__)
@@ -271,3 +273,28 @@ class ExcelConnector(object):
                 logger.info('handling permission change for {}'.format(context))
 
             self.session.commit()
+
+
+class ExcelExporter(object):
+
+    USER_FIELDS = ('username', 'firstname', 'surname', 'mobile_number', 'email')
+    HEADER_MAPPING = {'mobile_number': 'mobile'}
+
+    def __init__(self, session, user):
+        self.session = session
+        self.user = user
+
+    def export(self):
+        fd, filename = tempfile.mkstemp(suffix='.xlsx', prefix='sigil_export_')
+        os.close(fd)
+
+        workbook = openpyxl.Workbook(optimized_write=True)
+        self.export_users(workbook.create_sheet(title='users'))
+        workbook.save(filename)
+
+        return filename
+
+    def export_users(self, sheet):
+        sheet.append([self.HEADER_MAPPING.get(f, f) for f in self.USER_FIELDS])
+        for user in self.session.query(User).all():
+            sheet.append([getattr(user, f) for f in self.USER_FIELDS])

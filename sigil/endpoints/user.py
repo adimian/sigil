@@ -1,19 +1,22 @@
 import datetime
 import json
+import logging
 
 from flask import abort
 from flask import current_app as app
 from flask_principal import Permission
 import itsdangerous
-import sqlalchemy
 from sqlalchemy import or_
+import sqlalchemy
 
 from . import ManagedResource, reqparse, AnonymousResource, ProtectedResource
 from ..api import db
 from ..models import AppContext, User, Need
+from ..multifactor import qr_code_for_user
 from ..signals import password_recovered, user_request_password_recovery
 from ..utils import current_user, read_token, md5, generate_token
-from ..multifactor import qr_code_for_user
+
+logger = logging.getLogger(__name__)
 
 
 def get_target_user():
@@ -175,15 +178,19 @@ class UserPermissions(ManagedResource):
             abort(400,
                   'permissions {} were not found'.format(repr(request_needs)))
 
-        current_permissions = user.permissions
-
         for need in selected_needs:
             if mode == 'add':
-                if need not in current_permissions:
+                if need not in user.permissions:
+                    logger.debug('adding {}, was not in {}'.format(need, user.permissions))
                     user.permissions.append(need)
+                else:
+                    logger.debug('asked to add {}, but is already there, ignoring'.format(need))
             elif mode == 'delete':
-                if need in current_permissions:
+                if need in user.permissions:
+                    logger.debug('removing {}, was in {}'.format(need, user.permissions))
                     user.permissions.remove(need)
+                else:
+                    logger.debug('asked to remove {}, but is not there, ignoring'.format(need))
 
         db.session.commit()
 

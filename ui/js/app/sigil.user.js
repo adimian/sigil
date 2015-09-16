@@ -56,6 +56,34 @@ var User = function() {
         })
     };
 
+    self.persist_needs = function() {
+        for (var i = 0; i < self.permissions().length; i++) {
+            var appctx = self.permissions()[i];
+            var removed = [];
+            var added = [];
+            for (var j = 0; j < appctx.needs().length; j++) {
+                var need = appctx.needs()[j];
+                if (need.active()) {
+                    added.push(need.scope);
+                } else {
+                    removed.push(need.scope);
+                }
+            }
+
+            authed_request('POST', '/user/permissions', {
+                context: appctx.name(),
+                username: self.username(),
+                needs: JSON.stringify(added)
+            })
+
+            authed_request('DELETE', '/user/permissions', {
+                context: appctx.name(),
+                username: self.username(),
+                needs: JSON.stringify(removed)
+            })
+        }
+    };
+
     self.persist = function() {
         var update = {
             username: self.username(),

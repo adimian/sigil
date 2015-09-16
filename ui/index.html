@@ -294,21 +294,21 @@
 								</th>
 							</tr>
 							<!-- ko foreach: {data: permissions, as: 'application'} -->
-								<!-- ko  foreach: {data: application.needs, as: 'need'} -->
-								<tr>
-									<th data-bind="text: $parent.name"></th>
-									<td data-bind="text: need.permission"></td>
-									<td>
-										<input type="checkbox" data-bind="checked: need.active">
-									</td>
-								</tr>
-								<!-- /ko -->
+							<!-- ko foreach: {data: application.needs, as: 'need'} -->
+							<tr>
+								<th data-bind="text: $parent.name"></th>
+								<td data-bind="text: need.permission"></td>
+								<td>
+									<input type="checkbox" data-bind="checked: need.active">
+								</td>
+							</tr>
+							<!-- /ko -->
 							<!-- /ko -->
 						</tbody>
 					</table>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: $root.current_principal().persist_needs">Close</button>
 				</div>
 			</div>
 		</div>

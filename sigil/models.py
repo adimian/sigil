@@ -235,7 +235,8 @@ class Need(db.Model):
         self.resource = resource or "*"
 
     def __eq__(self, other):
-        return self.as_tuple() == other.as_tuple()
+        return (self.as_tuple() == other.as_tuple()
+                and self.app_id == other.app_id)
 
     def as_tuple(self):
         if self.resource == '*':

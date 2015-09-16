@@ -142,6 +142,7 @@ var GenericDataView = function(parent) {
 
     self.show_detail = function(item)  {
         var tab = self.tabname();
+        self.cursor(item);
 
         if (tab == 'groups') {
             authed_request('GET', '/group/members', {

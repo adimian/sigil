@@ -410,7 +410,7 @@
 								<th></th>
 							</tr>
 						</thead>
-						<tbody data-bind="foreach: {data: get_data, as: 'line'}">
+						<tbody data-bind="foreach: {data: collection, as: 'line'}">
 							<tr>
 								<!-- ko foreach: $parent.columns -->
 								<td data-bind="text: line[key]"></td>

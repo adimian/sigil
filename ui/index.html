@@ -119,6 +119,10 @@
 						<a href="#" data-bind="text: label, click: $parent.set_current_tab"></a>
 					</li>
 				</ul>
+
+					<div class="footer">
+						<p class="text-muted" data-bind="text: 'Sigil version ' + $root.server_options.version()"></p>
+					</div>
 			</div>
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 				<h1 class="page-header">
@@ -424,7 +428,6 @@
 			</div>
 		</div>
 	</div>
-
 
 	<!-- JS imports -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

@@ -30,6 +30,7 @@ def configure(app):
     set_default('SESSION_TOKEN_MAX_AGE', 86400)  # 1 day
     set_default('SESSION_TOKEN_SALT', 'session-salt')
     set_default('APPLICATION_KEY_SALT', 'application-key-salt')
+    set_default('FILE_DOWNLOAD_SALT', 'file-download')
     set_default('SESSION_TOKEN_HEADER', 'Sigil-Token')
     set_default('ROOT_APP_CTX', 'sigil')
     set_default('AUTO_ACTIVATE_NEW_USER', True)

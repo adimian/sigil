@@ -41,8 +41,14 @@ def test_export_excel(client):
     assert rv.status_code == 200, str(rv.data)
 
     rv = client.get('/export/excel', headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['token']
 
-    assert rv.status_code == 200
+    rv = client.get('/download/excel',
+                    data={'token': data['token']})
+    assert rv.status_code == 200, str(rv.data)
+
     if sys.platform == 'darwin':
         f = rv.response.file
         os.system('open {}'.format(f.name))

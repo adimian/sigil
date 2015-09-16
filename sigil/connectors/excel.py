@@ -284,17 +284,12 @@ class ExcelExporter(object):
         self.session = session
         self.user = user
 
-    def export(self):
-        fd, filename = tempfile.mkstemp(suffix='.xlsx', prefix='sigil_export_')
-        os.close(fd)
-
+    def export(self, filename):
         workbook = openpyxl.Workbook(optimized_write=True)
         self.export_users(workbook)
         self.export_groups(workbook)
         self.export_permissions(workbook)
         workbook.save(filename)
-
-        return filename
 
     def export_users(self, workbook):
         sheet = workbook.create_sheet(title='users')

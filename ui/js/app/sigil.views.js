@@ -1,4 +1,6 @@
 "use strict"
+var PAGE_LIMIT = 30;
+
 var TabItem = function(key, label, options) {
     this.key = key;
     this.label = label;
@@ -17,7 +19,9 @@ var GenericDataView = function(parent) {
     self.sort_direction = ko.observable(true);
     self.sort_column = ko.observable();
 
-    self.get_data = ko.computed(function() {
+    self.limit = ko.observable(PAGE_LIMIT);
+
+    self.table_data = ko.computed(function() {
         if (self.parent_app !== undefined) {
             var searchbar = self.parent_app.searchbar();
             if (!searchbar) {
@@ -38,6 +42,28 @@ var GenericDataView = function(parent) {
             }
         }
     }, this);
+
+    self.get_data = ko.computed(function() {
+        var res = this.table_data();
+        var limit = self.limit();
+        if (res && res.length > limit) {
+            return res.slice(0, limit);
+        }
+        return res;
+    }, this);
+
+    self.collection.subscribe(function() {
+        self.limit(PAGE_LIMIT);
+    }, this);
+
+    window.onscroll = function(ev) {
+        var full_height = document.body.offsetHeight;
+        var position = window.innerHeight + window.scrollY;
+        var near_bottom = position >= full_height * 0.9;
+        if (this.collection() && near_bottom && this.collection().length > this.limit()) {
+            this.limit(this.limit() + PAGE_LIMIT);
+        }
+    }.bind(this);
 
     self.headers = ko.computed(function() {
         var res = [];

@@ -3,6 +3,10 @@
 body {
     padding-top: 50px;
 }
+.modal .modal-body {
+    max-height: 420px;
+    overflow-y: auto;
+}
 .brand-img {
     width: 39px;
     margin-top: -11px;

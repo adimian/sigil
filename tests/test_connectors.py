@@ -4,6 +4,7 @@ import os.path as osp
 from sigil.models import User, VirtualGroup
 import openpyxl
 import os
+import sys
 
 
 data_dir = osp.join(osp.dirname(__file__), 'data')
@@ -42,6 +43,9 @@ def test_export_excel(client):
     rv = client.get('/export/excel', headers=client._auth_headers)
 
     assert rv.status_code == 200
+    if sys.platform == 'darwin':
+        f = rv.response.file
+        os.system('open {}'.format(f.name))
     wb = openpyxl.load_workbook(rv.response.file)
     assert wb['users']['A2'].value in ('eric', 'maarten',
                                        'xme', 'alice', 'bernard')

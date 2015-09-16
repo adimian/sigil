@@ -289,12 +289,30 @@ class ExcelExporter(object):
         os.close(fd)
 
         workbook = openpyxl.Workbook(optimized_write=True)
-        self.export_users(workbook.create_sheet(title='users'))
+        self.export_users(workbook)
+        self.export_groups(workbook)
         workbook.save(filename)
 
         return filename
 
-    def export_users(self, sheet):
+    def export_users(self, workbook):
+        sheet = workbook.create_sheet(title='users')
         sheet.append([self.HEADER_MAPPING.get(f, f) for f in self.USER_FIELDS])
         for user in self.session.query(User).all():
             sheet.append([getattr(user, f) for f in self.USER_FIELDS])
+
+    def export_groups(self, workbook):
+        sheet = workbook.create_sheet(title='groups')
+        all_groups = self.session.query(VirtualGroup).all()
+        all_users = self.session.query(User).all()
+
+        sheet.append(['username'] + [g.name for g in all_groups])
+        for user in all_users:
+            row = [user.username]
+            for group in all_groups:
+                if group in user.groups:
+                    member = 'yes'
+                else:
+                    member = ''
+                row.append(member)
+            sheet.append(row)

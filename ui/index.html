@@ -171,6 +171,12 @@
 				<div class="container" data-bind="visible: current_tab().key == 'import'">
 					<form action="/file-upload" class="drop dropzone" id="import-file-dropzone"></form>
 				</div>
+
+				<!-- Excel export view -->
+				<div class="container" data-bind="visible: current_tab().key == 'export'">
+					<input type="button" class="btn btn-success" data-bind="visible: $root.download_ready, click: $root.download" value="Download">
+					<img src="img/loading.gif" data-bind="visible: !$root.download_ready()" />
+				</div>
 			</div>
 		</div>
 	</div>
@@ -428,6 +434,8 @@
 			</div>
 		</div>
 	</div>
+
+	<iframe id="download_frame" height="0" width="0"></iframe>
 
 	<!-- JS imports -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

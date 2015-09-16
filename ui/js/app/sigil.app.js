@@ -49,6 +49,9 @@ var SigilApplication = function() {
     self.data_view = new GenericDataView(self);
     self.group_view = new GroupDataView(self);
 
+    // download
+    self.download_ready = ko.observable(true);
+
     var initial_tab = (self.tabmap[location.hash.replace('#', '')] || self.tabs[0]);
     self.current_tab = ko.observable(initial_tab);
 
@@ -120,4 +123,15 @@ SigilApplication.prototype.add_new = function(data) {
         app.edited_app(new AppContext());
         $("#app_add_modal").modal('show');
     };
+};
+
+SigilApplication.prototype.download = function() {
+    if (app.download_ready()) {
+        app.download_ready(false);
+        authed_request('GET', '/export/excel', {}, function(data) {
+            var url = SIGIL_API + '/download/excel?token=' + data.token;
+            $('#download_frame').attr('src', url);
+            app.download_ready(true);
+        })
+    }
 };

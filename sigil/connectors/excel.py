@@ -1,12 +1,12 @@
 import logging
+import os
 import re
-
-import openpyxl
 import tempfile
 
-from ..models import User, VirtualGroup
+import openpyxl
 import sqlalchemy
-import os
+
+from ..models import User, VirtualGroup, AppContext, Need
 
 
 logger = logging.getLogger(__name__)
@@ -291,6 +291,7 @@ class ExcelExporter(object):
         workbook = openpyxl.Workbook(optimized_write=True)
         self.export_users(workbook)
         self.export_groups(workbook)
+        self.export_permissions(workbook)
         workbook.save(filename)
 
         return filename
@@ -304,15 +305,22 @@ class ExcelExporter(object):
     def export_groups(self, workbook):
         sheet = workbook.create_sheet(title='groups')
         all_groups = self.session.query(VirtualGroup).all()
-        all_users = self.session.query(User).all()
 
         sheet.append(['username'] + [g.name for g in all_groups])
-        for user in all_users:
+        for user in self.session.query(User).all():
             row = [user.username]
             for group in all_groups:
-                if group in user.groups:
-                    member = 'yes'
-                else:
-                    member = ''
-                row.append(member)
+                row.append('yes' if group in user.groups else None)
             sheet.append(row)
+
+    def export_permissions(self, workbook):
+        for ctx in self.session.query(AppContext).all():
+            sheet = workbook.create_sheet(title=ctx.name)
+            all_needs = self.session.query(Need).filter_by(app_context=ctx).all()
+
+            sheet.append(['username'] + [n.dotted for n in all_needs])
+            for user in self.session.query(User).all():
+                row = [user.username]
+                for need in all_needs:
+                    row.append('yes' if need in user.permissions else None)
+                sheet.append(row)

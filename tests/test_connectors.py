@@ -49,3 +49,6 @@ def test_export_excel(client):
     wb = openpyxl.load_workbook(rv.response.file)
     assert wb['users']['A2'].value in ('eric', 'maarten',
                                        'xme', 'alice', 'bernard')
+
+    assert wb['groups']['A2'].value in ('eric', 'maarten',
+                                        'xme', 'alice', 'bernard')

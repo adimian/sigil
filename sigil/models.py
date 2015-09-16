@@ -244,6 +244,10 @@ class Need(db.Model):
         else:
             return (self.method, self.value, self.resource)
 
+    @property
+    def dotted(self):
+        return '.'.join(self.as_tuple())
+
     def __repr__(self):
         return '<Need {}.{}>'.format(self.app_context.name,
                                      '.'.join(self.as_tuple()))

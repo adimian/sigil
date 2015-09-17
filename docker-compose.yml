@@ -39,7 +39,18 @@ sigil:
     - MAIL_PASSWORD=aQjRk8wDhqS5R50DrDO9
     - MAIL_DEFAULT_SENDER=sigil@adimian.com
     - UI_BASE_URL=http://docker.dev/sigil
+    - LDAP_HOST=slapd
   volumes:
     - .:/sigil
   links:
-    - sigildb  
+    - sigildb 
+    - slapd
+    
+slapd:
+  image: nickstenning/slapd
+  environment:
+    - LDAP_DOMAIN=mycorp.com
+    - LDAP_ORGANISATION="My Mega Corporation"
+    - LDAP_ROOTPASS=s3cr3tpassw0rd
+  ports:
+    - "389:389"

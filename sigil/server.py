@@ -1,9 +1,11 @@
-from flask_script import Manager, Server, prompt_pass
+from flask_script import Manager, Server, prompt_pass, Shell
+import logging
 
 from sigil.api import app, db, setup_endpoints
 from sigil.emails import setup_emails
 from sigil.models import User
 from sigil.permissions import setup_default_permissions
+from sigil.ldap import update_ldap
 
 
 setup_endpoints()
@@ -16,9 +18,16 @@ def create_db():
     setup_default_permissions()
 
 
+class DebugShell(Shell):
+    def run(self, *args, **kwargs):
+        logging.basicConfig(level=logging.DEBUG)
+        return Shell.run(self, *args, **kwargs)
+
+
 manager = Manager(app)
 manager.add_command("runserver", Server(host=app.config['HOST'],
                                         port=app.config['PORT']))
+manager.add_command('shell', DebugShell())
 
 
 if app.config['DEBUG']:
@@ -39,6 +48,12 @@ if app.config['DEBUG']:
         db.session.add(user)
         db.session.commit()
         print('user {} added with id {}'.format(user.username, user.id))
+
+
+@manager.command
+def force_ldap_update():
+    logging.basicConfig(level=logging.DEBUG)
+    update_ldap()
 
 
 if __name__ == "__main__":

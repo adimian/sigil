@@ -4,11 +4,12 @@ import logging
 
 from flask import current_app as app
 from flask_login import UserMixin
+from passlib.hash import ldap_sha512_crypt
 from sqlalchemy import UniqueConstraint
 import sqlalchemy
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from .api import db, bcrypt
+from .api import db
 from .multifactor import new_user_secret
 from .signals import user_registered
 from .utils import random_token, generate_token, md5
@@ -31,10 +32,10 @@ class AccountMixin(object):
 
     @password.setter
     def _set_password(self, plaintext):
-        self._password = bcrypt.generate_password_hash(plaintext)
+        self._password = ldap_sha512_crypt.encrypt(plaintext)
 
     def is_correct_password(self, plaintext):
-        if bcrypt.check_password_hash(self._password, plaintext):
+        if ldap_sha512_crypt.verify(plaintext, self._password):
             return True
         return False
 
@@ -63,7 +64,14 @@ team_member = db.Table('team_member',
                        UniqueConstraint('team_id', 'member_id'),
                        )
 
-class User(UserMixin, AccountMixin, db.Model):
+class LDAPUserMixin(object):
+    
+    @property
+    def cn(self):
+        return 'cn={}'.format(self.username)
+
+
+class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
     PROTECTED = ('id', 'created_at', 'validated_at',
                  'must_change_password', 'totp_secret', 'username',
                  'password', 'api_key', 'groups', 'permissions', 'teams')
@@ -121,14 +129,6 @@ class User(UserMixin, AccountMixin, db.Model):
         while self.__class__.query.filter_by(api_key=api_key).all():
             api_key = random_token()
         self.api_key = api_key
-
-    @property
-    def cn(self):
-        return self.username
-
-    @property
-    def dn(self):
-        return self.username
 
     @property
     def sn(self):

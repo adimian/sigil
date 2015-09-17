@@ -51,4 +51,12 @@ def configure(app):
     set_default('TOTP_EXPIRATION', 30 * 86400)  # 1 month
     set_default('TOTP_DOMAIN', 'docker.dev')
 
+    # LDAP
+    set_default('LDAP_HOST', 'docker.dev')
+    set_default('LDAP_PORT', 389)
+    set_default('LDAP_ROOT_DN', 'dc=mycorp,dc=com')
+    set_default('LDAP_BIND_DN', 'cn=admin,dc=mycorp,dc=com')
+    set_default('LDAP_BIND_PASSWORD', 's3cr3tpassw0rd')
+    set_default('LDAP_USERS_OU', 'ou=Users')
+    set_default('LDAP_GROUPS_OU', 'ou=Groups')
 

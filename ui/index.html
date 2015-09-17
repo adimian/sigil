@@ -120,9 +120,9 @@
 					</li>
 				</ul>
 
-					<div class="footer">
-						<p class="text-muted small" data-bind="text: 'Sigil version ' + $root.server_options.version()"></p>
-					</div>
+				<div class="footer">
+					<p class="text-muted small" data-bind="text: 'Sigil version ' + $root.server_options.version()"></p>
+				</div>
 			</div>
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 				<h1 class="page-header">
@@ -175,7 +175,12 @@
 				<!-- Excel export view -->
 				<div class="container" data-bind="visible: current_tab().key == 'export'">
 					<input type="button" class="btn btn-success" data-bind="visible: $root.download_ready, click: $root.download" value="Download">
-					<img src="img/loading.gif" data-bind="visible: !$root.download_ready()" />
+					<span data-bind="visible: !$root.download_ready()">
+						<p>
+							Generating ... 
+						</p>
+						<img src="img/loading.gif" />
+					</span>
 				</div>
 			</div>
 		</div>

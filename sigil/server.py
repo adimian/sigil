@@ -1,11 +1,12 @@
-from flask_script import Manager, Server, prompt_pass, Shell
 import logging
+
+from flask_script import Manager, Server, prompt_pass
 
 from sigil.api import app, db, setup_endpoints
 from sigil.emails import setup_emails
+from sigil.ldap import update_ldap
 from sigil.models import User
 from sigil.permissions import setup_default_permissions
-from sigil.ldap import update_ldap
 
 
 setup_endpoints()

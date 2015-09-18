@@ -1,7 +1,8 @@
+from collections import defaultdict
 import logging
 
 from flask import current_app as app
-from ldap3 import Server, Connection, ALL, SUBTREE, MODIFY_ADD
+from ldap3 import Server, Connection, ALL, SUBTREE, MODIFY_ADD, MODIFY_DELETE
 
 from .api import db
 from .models import User, VirtualGroup
@@ -30,13 +31,9 @@ class LDAPConnection(object):
         self.connection.unbind()
 
     def search(self, search_base, object_class, attributes=['cn']):
-        ldap_search = self.connection.extend.standard.paged_search
-        return ldap_search(search_base=search_base,
-                           search_filter='(objectClass={})'.format(object_class),
-                           search_scope=SUBTREE,
-                           attributes=attributes,
-                           paged_size=50,
-                           generator=True)
+        return self._search(search_base=search_base,
+                            search_filter='(objectClass={})'.format(object_class),
+                            attributes=attributes)
 
     @property
     def connection(self):
@@ -96,6 +93,20 @@ class LDAPConnection(object):
         self.connection.modify(where, what)
         self.check()
 
+    def remove_group_member(self, group_dn, user_dn):
+        what = {'uniqueMember': [(MODIFY_DELETE, [user_dn])]}
+        self.connection.modify(group_dn, what)
+        self.check()
+
+    def _search(self, search_base, search_filter, attributes):
+        ldap_search = self.connection.extend.standard.paged_search
+        return ldap_search(search_base=search_base,
+                           search_filter=search_filter,
+                           attributes=attributes,
+                           search_scope=SUBTREE,
+                           paged_size=50,
+                           generator=True)
+
 
 def update_ldap():
     # create root groups
@@ -107,25 +118,53 @@ def update_ldap():
     db_users = set()
     ldap_users = set()
 
+    logger.info('adding DB user to LDAP')
     for user in db.session.query(User).all():
         db_users.add(con.user_dn(user))
         con.add_user(user)
 
+    logger.info('fetching LDAP users')
     for entry in con.search(con.ou_dn(app.config['LDAP_USERS_OU']),
                             object_class='inetOrgPerson'):
         ldap_users.add(entry['dn'])
 
+    logger.info('removing pruned users from LDAP')
     for removed_user in (ldap_users - db_users):
         logger.info('removing user "{}" from LDAP'.format(removed_user))
         con.delete(removed_user)
 
     # sync groups
     db_groups = set()
+    db_group_members = defaultdict(set)
     ldap_groups = set()
+    ldap_group_members = {}
+
+    logger.info('adding DB virtual groups and their members to LDAP')
     for group in db.session.query(VirtualGroup).all():
-        db_groups.add(con.group_dn(group))
+        group_dn = con.group_dn(group)
+        db_groups.add(group_dn)
         con.add_group(group)
         for user in group.members:
+            db_group_members[group_dn].add(con.user_dn(user))
             con.add_group_member(group, user)
+
+    logger.info('fetching LDAP groups and group members')
+    for entry in con.search(con.ou_dn(app.config['LDAP_GROUPS_OU']),
+                            object_class='groupOfUniqueNames',
+                            attributes=['cn', 'uniqueMember']):
+        group_dn = entry['dn']
+        ldap_groups.add(group_dn)
+        ldap_group_members[group_dn] = set(entry['attributes']['uniqueMember'])
+
+    logger.info('removing members from LDAP groups')
+    for group_dn in ldap_group_members:
+        if group_dn not in db_groups:
+            con.delete(group_dn)
+        removed_members = (db_group_members[group_dn] -
+                           ldap_group_members[group_dn])
+        for removed_member in removed_members:
+            logger.info('removing {} from group {}'.format(removed_member,
+                                                           group_dn))
+            con.remove_group_member(group_dn, removed_member)
 
     con.close()

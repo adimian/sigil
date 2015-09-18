@@ -49,9 +49,6 @@ def test_export_excel(client):
                     data={'token': data['token']})
     assert rv.status_code == 200, str(rv.data)
 
-    if sys.platform == 'darwin':
-        f = rv.response.file
-        os.system('open {}'.format(f.name))
     wb = openpyxl.load_workbook(rv.response.file)
     assert wb['users']['A2'].value in ('eric', 'maarten',
                                        'xme', 'alice', 'bernard')

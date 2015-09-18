@@ -32,13 +32,11 @@ class Login(AnonymousResource):
         logger.info('login attempt from {}'.format(get_remote_ip()))
 
         if args['username'] and args['password']:
-            logger.info('login attempt: {}'.format(args['username']))
             try:
                 user = session.query(User).filter_by(username=args['username']).one()
-            except sqlalchemy.orm.exc.NoResultFound as err:
+                logger.info('login by credentials: {}'.format(user.username))
+            except sqlalchemy.orm.exc.NoResultFound:
                 abort(403, 'invalid user: {}'.format(args['username']))
-            if not user.active:
-                abort(403, 'inactive user')
             if user.must_change_password:
                 abort(403, 'your password needs to be changed now')
             if not user.is_correct_password(args['password']):
@@ -51,10 +49,14 @@ class Login(AnonymousResource):
         elif args['key']:
             try:
                 user = session.query(User).filter_by(api_key=args['key']).one()
-            except sqlalchemy.orm.exc.NoResultFound as err:
+                logger.info('login by api key: {}'.format(user.username))
+            except sqlalchemy.orm.exc.NoResultFound:
                 abort(403, 'invalid API key')
         else:
             abort(400, 'no authentication method found')
+
+        if not user.active:
+            abort(403, 'inactive user')
 
         # handle session
         token = generate_token([user.id, random_token()],

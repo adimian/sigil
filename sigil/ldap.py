@@ -1,10 +1,10 @@
 import logging
 
 from flask import current_app as app
-from ldap3 import Server, Connection, ALL, SUBTREE
+from ldap3 import Server, Connection, ALL, SUBTREE, MODIFY_ADD
 
 from .api import db
-from .models import User
+from .models import User, VirtualGroup
 
 
 logger = logging.getLogger(__name__)
@@ -73,11 +73,27 @@ class LDAPConnection(object):
             name = 'ou={},{}'.format(name, self.root)
         return name
 
+    def group_dn(self, group):
+        return 'cn={},{}'.format(group.name,
+                                 self.ou_dn(app.config['LDAP_GROUPS_OU']))
+
     def add_user(self, user):
         where = self.user_dn(user)
         self.connection.delete(where)
 
         self.connection.add(where, 'inetOrgPerson', user.ldap)
+        self.check()
+
+    def add_group(self, group):
+        where = self.group_dn(group)
+        self.connection.delete(where)
+        attributes = {'uniqueMember': app.config['LDAP_BIND_DN']}
+        self.connection.add(where, 'groupOfUniqueNames', attributes)
+
+    def add_group_member(self, group, user):
+        where = self.group_dn(group)
+        what = {'uniqueMember': [(MODIFY_ADD, [self.user_dn(user)])]}
+        self.connection.modify(where, what)
         self.check()
 
 
@@ -102,5 +118,14 @@ def update_ldap():
     for removed_user in (ldap_users - db_users):
         logger.info('removing user "{}" from LDAP'.format(removed_user))
         con.delete(removed_user)
+
+    # sync groups
+    db_groups = set()
+    ldap_groups = set()
+    for group in db.session.query(VirtualGroup).all():
+        db_groups.add(con.group_dn(group))
+        con.add_group(group)
+        for user in group.members:
+            con.add_group_member(group, user)
 
     con.close()

@@ -21,7 +21,9 @@ def client(request):
     db.create_all()
 
     u1 = User('alice', 'test@test.com')
+    u1.password = 'test'
     u2 = User('bernard', 'test1@test.com')
+    u2.password = 'test'
     db.session.add(u1)
     db.session.add(u2)
     db.session.commit()

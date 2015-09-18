@@ -14,7 +14,7 @@ from ..api import db
 from ..models import AppContext, User, Need
 from ..multifactor import qr_code_for_user
 from ..signals import password_recovered, user_request_password_recovery
-from ..utils import current_user, read_token, md5, generate_token
+from ..utils import current_user, read_token, md5, generate_token, get_remote_ip
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,20 @@ class UserAPIKey(ManagedResource):
         return {'key': current_user.api_key}
 
 
-class UpdatePassword(AnonymousResource):
+class UserPassword(ManagedResource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('old_password', type=str, required=True)
+        parser.add_argument('new_password', type=str, required=True)
+        args = parser.parse_args()
+
+        if current_user.is_correct_password(args['old_password']):
+            current_user.password = args['new_password']
+            db.session.commit()
+            logger.info('user {} has changed password ({})'.format(current_user.username,
+                                                                   get_remote_ip()))
+
+class ValidateUser(AnonymousResource):
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, required=True)

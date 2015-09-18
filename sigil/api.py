@@ -29,8 +29,8 @@ def setup_endpoints():
     logger.info('setting up endpoints')
     from .endpoints.register import Register
     from .endpoints.login import Login
-    from .endpoints.user import (UserDetails, UserPermissions,
-                                 UpdatePassword, UserCatalog, UserAPIKey)
+    from .endpoints.user import (UserDetails, UserPermissions, UserPassword,
+                                 ValidateUser, UserCatalog, UserAPIKey)
     from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
     from .endpoints.containers import (VirtualGroupResource,
                                        VirtualGroupMembers, UserTeamResource,
@@ -47,7 +47,8 @@ def setup_endpoints():
     api.add_resource(Login, '/login')
     # user
     api.add_resource(Register, '/user/register')
-    api.add_resource(UpdatePassword, '/user/recover', '/user/validate')
+    api.add_resource(ValidateUser, '/user/recover', '/user/validate')
+    api.add_resource(UserPassword, '/user/password')
     api.add_resource(UserDetails, '/user/details')
     api.add_resource(UserAPIKey, '/user/key')
     api.add_resource(UserPermissions, '/user/permissions')

@@ -151,3 +151,11 @@ def test_reset_api_key(client):
     data = json.loads(rv.data.decode('utf-8'))
     assert data['key'] != key1
     assert data['key'] == User.query.get(client._user.id).api_key
+
+
+def test_change_password(client):
+    rv = client.post('/user/password', data={'old_password': 'test',
+                                             'new_password': 'hello'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    assert User.query.get(client._user.id).is_correct_password('hello')

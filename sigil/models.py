@@ -67,8 +67,17 @@ team_member = db.Table('team_member',
 class LDAPUserMixin(object):
     
     @property
-    def cn(self):
-        return 'cn={}'.format(self.username)
+    def ldap(self):
+        data = {'surname': self.surname,
+                'uid': self.username,
+                'givenName': self.firstname,
+                'displayName': self.display_name,
+                'mail': self.email}
+        if self.password:
+            data['userPassword'] = self.password
+        if self.mobile_number:
+            data['mobile'] = self.mobile_number
+        return data
 
 
 class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):

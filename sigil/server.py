@@ -17,20 +17,13 @@ def create_db():
     db.create_all()
     setup_default_permissions()
 
-
-class DebugShell(Shell):
-    def run(self, *args, **kwargs):
-        logging.basicConfig(level=logging.DEBUG)
-        return Shell.run(self, *args, **kwargs)
-
-
 manager = Manager(app)
 manager.add_command("runserver", Server(host=app.config['HOST'],
                                         port=app.config['PORT']))
-manager.add_command('shell', DebugShell())
-
 
 if app.config['DEBUG']:
+    logging.basicConfig(level=logging.DEBUG)
+
     @manager.command
     def reset():
         print('resetting the database')
@@ -50,10 +43,7 @@ if app.config['DEBUG']:
         print('user {} added with id {}'.format(user.username, user.id))
 
 
-@manager.command
-def force_ldap_update():
-    logging.basicConfig(level=logging.DEBUG)
-    update_ldap()
+manager.command(update_ldap)
 
 
 if __name__ == "__main__":

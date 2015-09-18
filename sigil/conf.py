@@ -57,6 +57,6 @@ def configure(app):
     set_default('LDAP_ROOT_DN', 'dc=mycorp,dc=com')
     set_default('LDAP_BIND_DN', 'cn=admin,dc=mycorp,dc=com')
     set_default('LDAP_BIND_PASSWORD', 's3cr3tpassw0rd')
-    set_default('LDAP_USERS_OU', 'ou=Users')
-    set_default('LDAP_GROUPS_OU', 'ou=Groups')
+    set_default('LDAP_USERS_OU', 'Users')
+    set_default('LDAP_GROUPS_OU', 'Groups')
 

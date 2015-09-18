@@ -40,6 +40,7 @@ class UserAPIKey(ManagedResource):
     def post(self):
         current_user.update_api_key()
         db.session.commit()
+        return {'key': current_user.api_key}
 
 
 class UpdatePassword(AnonymousResource):

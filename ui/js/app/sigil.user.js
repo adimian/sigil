@@ -10,6 +10,8 @@ var User = function() {
     self.email = ko.observable();
     self.active = ko.observable();
 
+    self.api_key = ko.observable();
+
     self.groups = ko.observableArray();
 
     self.permissions = ko.observableArray();
@@ -24,6 +26,19 @@ var User = function() {
 
     self.reset_totp = function() {
         // call sigil to reset totp
+    };
+
+    self.show_api_key = function() {
+        authed_request('GET', '/user/key', {}, function(data){
+            self.api_key(data.key);
+            $("#api_key_modal").modal('show');
+        });
+    };
+
+    self.reset_api_key = function() {
+        authed_request('POST', '/user/key', {}, function(data){
+            self.api_key(data.key);
+        });
     };
 
     self.load = function(item) {

@@ -96,6 +96,7 @@
 							class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a href="#" data-bind="click: $root.edit_me">Edit personal details</a></li>
+							<li><a href="#" data-bind="click: $root.current_user.show_api_key">Show my API key</a></li>
 							<li><a href="#">Change password</a></li>
 							<li><a href="#">Add 2FA device</a></li>
 							<li role="separator" class="divider"></li>
@@ -177,7 +178,7 @@
 					<input type="button" class="btn btn-success" data-bind="visible: $root.download_ready, click: $root.download" value="Download">
 					<span data-bind="visible: !$root.download_ready()">
 						<p>
-							Generating ... 
+							Generating ...
 						</p>
 						<img src="img/loading.gif" />
 					</span>
@@ -324,6 +325,37 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: $root.current_principal().persist_needs">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- API Key modal -->
+	<div class="modal fade" id="api_key_modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">My API Key</h4>
+				</div>
+				<div class="modal-body">
+					<div class="well">
+						API keys can be used to identify yourself without having to store your actual credentials, in a script for example.
+					</div>
+					<div class="form-group">
+						<label for="username">Key</label>
+						<p class="form-control-static" data-bind="text: $root.current_user.api_key"></p>
+					</div>
+					<button type="button" class="btn btn-warning btn-sm" data-bind="click: $root.current_user.reset_api_key">
+						<span class="glyphicon glyphicon-refresh"></span> Regenerate</button>
+						<div class="bg-danger">
+							Caution: generating a new API Key will invalidate the previous key
+						</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
 		</div>

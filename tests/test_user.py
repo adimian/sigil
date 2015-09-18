@@ -143,6 +143,8 @@ def test_reset_api_key(client):
     key1 = data['key']
     rv = client.post('/user/key', headers=client._auth_headers)
     assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['key']
 
     rv = client.get('/user/key', headers=client._auth_headers)
     assert rv.status_code == 200, str(rv.data)

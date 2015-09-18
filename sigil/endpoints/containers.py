@@ -13,7 +13,7 @@ from ..models import VirtualGroup, User, UserTeam
 class ContainerResource(ProtectedResource):
 
     def get_group(self):
-        with Permission(self.permission_type).require():
+        with Permission(self.permission_type).require(403):
             parser = reqparse.RequestParser()
             parser.add_argument('name', type=str, required=True)
             args = parser.parse_args()
@@ -23,7 +23,7 @@ class ContainerResource(ProtectedResource):
                 abort(404, 'group not found')
 
     def get(self):
-        with Permission(('groups', 'read')).require():
+        with Permission(('groups', 'read')).require(403):
             response = []
             for group in db.session.query(self.container_type).all():
                 response.append({'id': group.id,
@@ -40,7 +40,7 @@ class ContainerResource(ProtectedResource):
         db.session.commit()
 
     def post(self):
-        with Permission(('groups', 'write')).require():
+        with Permission(('groups', 'write')).require(403):
             parser = reqparse.RequestParser()
             parser.add_argument('name', type=str, required=True)
             args = parser.parse_args()
@@ -59,7 +59,7 @@ class ContainerResource(ProtectedResource):
 class ContainerMembers(ProtectedResource):
 
     def get_group(self):
-        with Permission(self.permission_type).require():
+        with Permission(self.permission_type).require(403):
             parser = reqparse.RequestParser()
             parser.add_argument('name', type=str, required=True)
             args = parser.parse_args()

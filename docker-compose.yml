@@ -30,7 +30,7 @@ sigil:
     - ENABLE_2FA=no
     - TOTP_DOMAIN=docker.dev
     - API_URL_PREFIX=/sigil-api
-    - SESSION_TOKEN_MAX_AGE=300
+    - SESSION_TOKEN_MAX_AGE=1800
     - MAIL_SUPPRESS_SEND=no
     - MAIL_SERVER=smtp-adimian.alwaysdata.net
     - MAIL_USERNAME=sigil@adimian.com

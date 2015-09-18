@@ -11,7 +11,7 @@ from ..models import User
 class Register(ProtectedResource):
 
     def post(self):
-        with Permission(('users', 'write')).require():
+        with Permission(('users', 'write')).require(403):
             parser = reqparse.RequestParser()
             parser.add_argument('username', type=str, required=True)
             parser.add_argument('email', type=str, required=True)

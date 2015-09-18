@@ -131,7 +131,7 @@ class UserCatalog(ProtectedResource):
         parser.add_argument('context', type=str)
         args = parser.parse_args()
 
-        with Permission(('users', 'read')).require():
+        with Permission(('users', 'read')).require(403):
             users = []
             if not args['query']:
                 for user in User.query.all():

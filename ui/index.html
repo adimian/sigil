@@ -33,7 +33,7 @@
 					<span data-bind="text: error_message"></span>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: function(){window.location=location.origin+location.pathname}">Ok</button>
 				</div>
 			</div>
 		</div>
@@ -350,9 +350,9 @@
 					</div>
 					<button type="button" class="btn btn-warning btn-sm" data-bind="click: $root.current_user.reset_api_key">
 						<span class="glyphicon glyphicon-refresh"></span> Regenerate</button>
-						<div class="bg-danger">
-							Caution: generating a new API Key will invalidate the previous key
-						</div>
+					<div class="bg-danger">
+						Caution: generating a new API Key will invalidate the previous key
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

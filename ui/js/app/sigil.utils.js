@@ -21,7 +21,11 @@ var authed_request = function(verb, url, data, success) {
         if (data.status == 401)  {
             app.current_user.auth_token(null);
         } else {
-            if (data.status == 502 || data.responseJSON === undefined)  {
+            if (data.status == 403){
+                app.error_message("You don't have the sufficient permissions to perform this action");
+                $("#error_popup").modal('show');
+            }
+            if (data.status == 502 && data.responseJSON === undefined)  {
                 app.login_error_message('application server unreachable, please retry later')
                 app.current_user.auth_token(null);
             } else {

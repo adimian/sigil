@@ -55,6 +55,9 @@ class UserPassword(ManagedResource):
             db.session.commit()
             logger.info('user {} has changed password ({})'.format(current_user.username,
                                                                    get_remote_ip()))
+        else:
+            abort(400, 'wrong old password')
+
 
 class ValidateUser(AnonymousResource):
     def get(self):
@@ -64,7 +67,7 @@ class ValidateUser(AnonymousResource):
 
         try:
             user = db.session.query(User).filter_by(email=args['email']).one()
-        except sqlalchemy.orm.exc.NoResultFound as err:
+        except sqlalchemy.orm.exc.NoResultFound:
             abort(404, 'user not found')
 
         token = generate_token([user.id, md5(user.email)],

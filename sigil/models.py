@@ -35,6 +35,8 @@ class AccountMixin(object):
         self._password = ldap_sha512_crypt.encrypt(plaintext)
 
     def is_correct_password(self, plaintext):
+        if not self._password:  # no password defined (new user)
+            return False
         if ldap_sha512_crypt.verify(plaintext, self._password):
             return True
         return False

@@ -12,6 +12,10 @@ var User = function() {
 
     self.api_key = ko.observable();
 
+    // for password update
+    self.old_password = ko.observable();
+    self.new_password = ko.observable();
+
     self.groups = ko.observableArray();
 
     self.permissions = ko.observableArray();
@@ -20,23 +24,40 @@ var User = function() {
         return self.display_name();
     }, this);
 
-    self.reset_password = function() {
-        // call sigil to reset password
+    self.change_password = function() {
+        if (! self.old_password()){
+            alert('Missing old password');
+            return;
+        }
+        if (! self.new_password()){
+            alert('Missing new password');
+            return;
+        }
+        authed_request('POST', '/user/password', {
+            old_password: self.old_password(),
+            new_password: self.new_password()
+        }, function(){});
     };
+
+    self.request_password_change = function() {
+        $("#change_password_modal").modal('show');
+    };
+
+
 
     self.reset_totp = function() {
         // call sigil to reset totp
     };
 
     self.show_api_key = function() {
-        authed_request('GET', '/user/key', {}, function(data){
+        authed_request('GET', '/user/key',   {}, function(data) {
             self.api_key(data.key);
             $("#api_key_modal").modal('show');
         });
     };
 
     self.reset_api_key = function() {
-        authed_request('POST', '/user/key', {}, function(data){
+        authed_request('POST', '/user/key',   {}, function(data) {
             self.api_key(data.key);
         });
     };

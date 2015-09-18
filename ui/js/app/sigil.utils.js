@@ -21,17 +21,20 @@ var authed_request = function(verb, url, data, success) {
         if (data.status == 401)  {
             app.current_user.auth_token(null);
         } else {
-            if (data.status == 403){
+            if (data.status == 403) {
                 app.error_message("You don't have the sufficient permissions to perform this action");
                 $("#error_popup").modal('show');
+                return;
             }
-            if (data.status == 502 && data.responseJSON === undefined)  {
+            if (data.status == 502)  {
                 app.login_error_message('application server unreachable, please retry later')
                 app.current_user.auth_token(null);
-            } else {
-                app.error_message(data.responseJSON.message);
-                $("#error_popup").modal('show');
+                return;
             }
+            console.log(data.responseJSON.message);
+            app.error_message(data.responseJSON.message || 'unknown error');
+            $("#error_popup").modal('show');
+
         }
     });
 };
@@ -49,14 +52,16 @@ var ServerOptions = function() {
 };
 
 var urlParams;
-(window.onpopstate = function () {
+(window.onpopstate = function() {
     var match,
-        pl     = /\+/g,  // Regex for replacing addition symbol with a space
+        pl = /\+/g, // Regex for replacing addition symbol with a space
         search = /([^&=]+)=?([^&]*)/g,
-        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
-        query  = window.location.search.substring(1);
+        decode = function(s) {
+            return decodeURIComponent(s.replace(pl, " "));
+        },
+        query = window.location.search.substring(1);
 
     urlParams = {};
     while (match = search.exec(query))
-       urlParams[decode(match[1])] = decode(match[2]);
+        urlParams[decode(match[1])] = decode(match[2]);
 })();

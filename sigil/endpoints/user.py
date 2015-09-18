@@ -33,8 +33,16 @@ def get_target_user():
     return user
 
 
-class UpdatePassword(AnonymousResource):
+class UserAPIKey(ManagedResource):
+    def get(self):
+        return {'key': current_user.api_key}
 
+    def post(self):
+        current_user.update_api_key()
+        db.session.commit()
+
+
+class UpdatePassword(AnonymousResource):
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('email', type=str, required=True)

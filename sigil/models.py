@@ -126,6 +126,12 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
         except sqlalchemy.orm.exc.NoResultFound:
             return None
 
+    def update_api_key(self):
+        api_key = random_token()
+        while self.__class__.query.filter_by(api_key=api_key).all():
+            api_key = random_token()
+        self.api_key = api_key
+
     def __init__(self, username, email, mobile_number=None):
         super(User, self).__init__()
         assert username
@@ -134,10 +140,8 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
         self.email = email
         self.mobile_number = mobile_number
 
-        api_key = random_token()
-        while self.__class__.query.filter_by(api_key=api_key).all():
-            api_key = random_token()
-        self.api_key = api_key
+        # generate a new api key
+        self.update_api_key()
 
     @property
     def sn(self):

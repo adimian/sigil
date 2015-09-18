@@ -30,7 +30,7 @@ def setup_endpoints():
     from .endpoints.register import Register
     from .endpoints.login import Login
     from .endpoints.user import (UserDetails, UserPermissions,
-                                 UpdatePassword, UserCatalog)
+                                 UpdatePassword, UserCatalog, UserAPIKey)
     from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
     from .endpoints.containers import (VirtualGroupResource,
                                        VirtualGroupMembers, UserTeamResource,
@@ -49,6 +49,7 @@ def setup_endpoints():
     api.add_resource(Register, '/user/register')
     api.add_resource(UpdatePassword, '/user/recover', '/user/validate')
     api.add_resource(UserDetails, '/user/details')
+    api.add_resource(UserAPIKey, '/user/key')
     api.add_resource(UserPermissions, '/user/permissions')
     api.add_resource(UserCatalog, '/user', '/user/search')
     # containers

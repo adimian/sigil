@@ -127,3 +127,25 @@ def test_delete_permissions(client):
     assert rv.status_code == 200, str(rv.data)
     data = json.loads(rv.data.decode('utf-8'))
     assert sorted(data['provides']) == sorted([['permissions', 'read']])
+
+
+def test_get_api_key(client):
+    rv = client.get('/user/key', headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['key'] == User.query.get(client._user.id).api_key
+
+
+def test_reset_api_key(client):
+    rv = client.get('/user/key', headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    key1 = data['key']
+    rv = client.post('/user/key', headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.get('/user/key', headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['key'] != key1
+    assert data['key'] == User.query.get(client._user.id).api_key

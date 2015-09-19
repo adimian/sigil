@@ -37,7 +37,6 @@ if app.config['DEBUG']:
     def superuser(username, email):
         user = User(username, email)
         user.active = True
-        user.must_change_password = False
         user.password = prompt_pass('password')
         db.session.add(user)
         db.session.commit()

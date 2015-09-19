@@ -70,8 +70,8 @@ def test_validate_twice(client):
     assert rv.status_code == 200
 
     rv = client.post('/user/validate', data={'token': data['token'],
-                                             'password': 'something'})
-    assert rv.status_code == 409
+                                             'password': 'somethingelse'})
+    assert rv.status_code == 200
 
 
 def test_register_existing(client):

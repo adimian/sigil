@@ -1,4 +1,6 @@
 import json
+
+from sigil.api import mail
 from sigil.models import User
 from sigil.multifactor import get_code
 
@@ -8,7 +10,6 @@ def preload_user(client):
     user = User(username='eric',
                 email='eric@adimian.com')
     user.password = 'secret'
-    user.must_change_password = False
     user.active = True
     session.add(user)
     session.commit()
@@ -70,15 +71,11 @@ def test_token(client):
     assert rv.status_code == 200
 
 
-def test_alias_password(client):
-    pass
-
-
 def test_recover_account(client):
-    preload_user(client)
-    rv = client.get('/user/recover', data={'email': 'eric@adimian.com'})
-    assert rv.status_code == 200, str(rv.data)
-    session = client._db.session
-    user = session.query(User).filter_by(email='eric@adimian.com').one()
-    assert user.must_change_password is True
-
+    with mail.record_messages() as outbox:
+        preload_user(client)
+        rv = client.get('/user/recover', data={'email': 'eric@adimian.com'})
+        assert rv.status_code == 200, str(rv.data)
+        session = client._db.session
+        user = session.query(User).filter_by(email='eric@adimian.com').one()
+        assert outbox[0].send_to == set(['eric@adimian.com'])

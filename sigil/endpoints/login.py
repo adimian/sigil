@@ -37,8 +37,9 @@ class Login(AnonymousResource):
                 logger.info('login by credentials: {}'.format(user.username))
             except sqlalchemy.orm.exc.NoResultFound:
                 abort(403, 'invalid user: {}'.format(args['username']))
-            if user.must_change_password:
-                abort(403, 'your password needs to be changed now')
+            if not user.password:
+                abort(403, ('you need to activate your account now, '
+                            'please use the link you received by e-mail'))
             if not user.is_correct_password(args['password']):
                 abort(403, 'invalid password')
             if app.config['ENABLE_2FA']:

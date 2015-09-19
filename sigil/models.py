@@ -84,7 +84,7 @@ class LDAPUserMixin(object):
 
 class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
     PROTECTED = ('id', 'created_at', 'validated_at',
-                 'must_change_password', 'totp_secret', 'username',
+                 'totp_secret', 'username',
                  'password', 'api_key', 'groups', 'permissions', 'teams')
     # accounting fields
     id = db.Column(db.Integer, primary_key=True)
@@ -92,7 +92,6 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
     created_at = db.Column(db.DateTime(),
                            default=datetime.datetime.utcnow)
     validated_at = db.Column(db.DateTime())
-    must_change_password = db.Column(db.Boolean(), default=True)
     totp_secret = db.Column(db.String(256), default=new_user_secret)
 
     # object fields

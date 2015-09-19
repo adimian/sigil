@@ -76,7 +76,6 @@ class ValidateUser(AnonymousResource):
         user_request_password_recovery.send(app._get_current_object(),
                                             user=user,
                                             token=token)
-        user.must_change_password = True
         db.session.commit()
         return {'token': token}
 
@@ -94,12 +93,9 @@ class ValidateUser(AnonymousResource):
 
         user = db.session.query(User).filter_by(id=uid).one()
 
-        if not user.must_change_password:
-            abort(409, 'password already updated')
         if md5(user.email) == email:
             user.validated_at = datetime.datetime.utcnow()
             user.password = args['password']
-            user.must_change_password = False
             db.session.commit()
             password_recovered.send(app._get_current_object(), user=user)
         else:
@@ -107,9 +103,7 @@ class ValidateUser(AnonymousResource):
                   'you main e-mail address has been changed since '
                   'the request has been issued, you should start again')
 
-        response = {'message': 'password updated !'}
-        response['qrcode'] = qr_code_for_user(user)
-        return response
+        return {'qrcode':  qr_code_for_user(user)}
 
 
 class UserDetails(ManagedResource):

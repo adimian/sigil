@@ -2,7 +2,7 @@ from flask_mail import Message
 from .utils import current_user
 
 from .api import app, mail
-from .signals import user_registered
+from .signals import user_registered, user_request_password_recovery
 
 from jinja2 import Environment, PackageLoader
 env = Environment(loader=PackageLoader('sigil', 'templates'))
@@ -26,3 +26,22 @@ def setup_emails():
             print(msg.html)
         else:
             mail.send(msg)
+
+    @user_request_password_recovery.connect_via(app)
+    def send_recover_email(sender, user, token):
+        msg = Message("Sigil: password recovery",
+                      recipients=[user.email])
+        template = env.get_template('email_recover.html')
+
+        base_url = '/'.join((app.config['UI_BASE_URL'],
+                            'validate.html'))
+
+        msg.html = template.render(creator=current_user,
+                                   token=token,
+                                   user=user,
+                                   validate_url=base_url)
+        if app.config['DEBUG'] and not app.config['TESTING']:
+            print(msg.html)
+        else:
+            mail.send(msg)
+

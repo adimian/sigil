@@ -50,13 +50,12 @@ class ExcelExport(ProtectedResource):
 
 class ExcelDownload(AnonymousResource):
     def get(self):
-        with Permission(('users', 'read')).require(403):
-            parser = reqparse.RequestParser()
-            parser.add_argument('token', type=str, required=True)
-            args = parser.parse_args()
-            filename, _ = read_token(args['token'],
-                                     app.config['FILE_DOWNLOAD_SALT'])
-            return send_from_directory(directory=DIRECTORY,
-                                       filename=filename,
-                                       as_attachment=True,
-                                       attachment_filename=osp.basename(filename))
+        parser = reqparse.RequestParser()
+        parser.add_argument('token', type=str, required=True)
+        args = parser.parse_args()
+        filename, _ = read_token(args['token'],
+                                 app.config['FILE_DOWNLOAD_SALT'])
+        return send_from_directory(directory=DIRECTORY,
+                                   filename=filename,
+                                   as_attachment=True,
+                                   attachment_filename=osp.basename(filename))

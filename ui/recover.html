@@ -11,17 +11,38 @@
 		  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 		  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 		<![endif]-->
-		<link rel="stylesheet" href="sigil.css">
+		<link rel="stylesheet" href="css/sigil.css">
     </head>
     <body>
+    
+        <div class="modal fade" id="recover-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        A recovery mail has been sent.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal" data-bind="click: $root.redirect">Take me back</button>
+                </div>
+            	</div>
+        	</div>
+    	</div>
     
 	    <div class="container">
 	      <form class="form-recovery" id="form-recovery">
 	        <h2 class="form-heading">Password recovery</h2>
 	        <label for="username" class="sr-only">E-mail</label>
-	        <input type="email" name="email" class="form-control" placeholder="E-mail" required autofocus>
+	        <input type="email" name="email" class="form-control" placeholder="E-mail" required autofocus data-bind="value: user_account.email">
 	        
-	        <button class="btn btn-lg btn-primary btn-block" data-bind="#">Send email</button>
+	        <button class="btn btn-lg btn-primary btn-block" data-bind="click: $root.recover">Send email</button>
 	      </form>
 	    </div>
   
@@ -29,8 +50,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
-		<script src="js.cookie-2.0.3.min.js"></script>
-		<script src="sammy.min.js"></script>
-		<script src="sigil.js"></script>
+        <script type="text/javascript" src="js/app/sigil.utils.js"></script>
+        <script type="text/javascript" src="js/app/recover.js"></script>
     </body>
 </html>

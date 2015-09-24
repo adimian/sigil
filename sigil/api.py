@@ -21,8 +21,12 @@ logger = logging.getLogger(__name__)
 db = SQLAlchemy(app)
 mail = Mail(app)
 
+sentry = None
 if app.config['SENTRY_DSN']:
+    logger.info('Sentry is active')
     sentry = Sentry(app)
+else:
+    logger.info('Sentry is inactive')
 
 
 def setup_endpoints():

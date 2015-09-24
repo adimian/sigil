@@ -8,6 +8,7 @@ from itsdangerous import URLSafeTimedSerializer
 import itsdangerous
 import sqlalchemy
 from werkzeug.local import LocalProxy
+from .api import sentry
 
 
 def get_remote_ip():
@@ -83,6 +84,11 @@ def requires_authentication(func):
 
         _request_ctx_stack.top.user = user
         g.identity = Identity(user.id)
+        # adding the user to the sentry context
+        if sentry:
+            data = user.public()
+            data['provides'] = tuple(p.as_tuple() for p in user.permissions)
+            sentry.user_context(data)
 
         identity_loaded.send(app._get_current_object(),
                              identity=g.identity)

@@ -1,6 +1,8 @@
 import json
 
 from sigil.api import mail
+from sigil.models import User
+from sigil.multifactor import get_code
 
 
 def test_register_user(client):
@@ -42,6 +44,39 @@ def test_validate_2fa(client):
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['qrcode']
+
+
+def test_validate_2fa_bad_code(client):
+    client.application.config['ENABLE_2FA'] = True
+    rv = client.post('/user/register', data={'username': 'eric',
+                                             'email': 'eric@adimian.com',
+                                             'mobile_number': '1234'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['token']
+
+    rv = client.post('/user/2fa/confirm', data={'token': data['token'],
+                                                'totp': '1111'})
+    assert rv.status_code == 400, str(rv.data)
+
+
+def test_validate_2fa_good_code(client):
+    client.application.config['ENABLE_2FA'] = True
+    rv = client.post('/user/register', data={'username': 'eric',
+                                             'email': 'eric@adimian.com',
+                                             'mobile_number': '1234'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['token']
+
+    user = User.by_username('eric')
+    code = get_code(user.totp_secret)
+    rv = client.post('/user/2fa/confirm', data={'token': data['token'],
+                                                'totp': code})
+    assert rv.status_code == 200, str(rv.data)
+    assert User.by_username('eric').totp_configured
 
 
 def test_validate_error(client):

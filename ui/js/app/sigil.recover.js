@@ -9,15 +9,15 @@ var RecoverAccountApplication = function() {
     self.server_options = new ServerOptions();
     self.user_account = new UserAccount();
 
-    self.redirect = function() {
-        window.location = location.origin;
+    self.redirect = function()  {
+        window.location = app_root_redirect();
     }
 
     self.recover = function() {
         var data = {
             email: self.user_account.email()
         };
-        
+
         var success = function(data) {
             $('#recover-modal').modal('show');
         };
@@ -27,7 +27,7 @@ var RecoverAccountApplication = function() {
             url: SIGIL_API + '/user/recover',
             data: data,
             success: success
-        }).error(function(data){
+        }).error(function(data) {
             console.log(data);
         });
     };

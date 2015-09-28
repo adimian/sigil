@@ -40,6 +40,9 @@ sigil:
     - MAIL_DEFAULT_SENDER=sigil@adimian.com
     - UI_BASE_URL=http://docker.dev/sigil
     - LDAP_HOST=slapd
+    - OVH_ENDPOINT=ovh-eu
+    - OVH_APPLICATION_KEY=XBbhIOWmiSjT4Rie
+    - OVH_APPLICATION_SECRET=t09iG14mPpMAmeFuKK0MSZYnrHJNeaiw
   volumes:
     - .:/sigil
   links:

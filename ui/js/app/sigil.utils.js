@@ -31,13 +31,16 @@ var authed_request = function(verb, url, data, success) {
                 app.current_user.auth_token(null);
                 return;
             }
-            console.log(data.responseJSON.message);
             app.error_message(data.responseJSON.message || 'unknown error');
             $("#error_popup").modal('show');
 
         }
     });
 };
+
+var app_root_redirect = function()  {
+    return location.origin + location.pathname.substring(0, location.pathname.lastIndexOf('/'))
+}
 
 var ServerOptions = function() {
     var self = this;

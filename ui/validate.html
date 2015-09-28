@@ -25,15 +25,9 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
                     <h4 class="modal-title">Multi-factor setup</h4>
                 </div>
-                <div class="modal-body">
-                    <p class="bg-danger">
-                        This screen will only be shown <em>once</em>. Make sure you read it completely before dismissing it.
-                    </p>
+                <div class="modal-body" style="max-height: 840px;">
                     <p>
                         Sigil uses <a href="https://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a> to secure your account against password theft.
                     </p>
@@ -44,9 +38,32 @@
                         If you have installed <a href="https://support.google.com/accounts/answer/1066447?hl=en">Google Authenticator</a> you can now use the QR code below to setup your new account.
                     </p>
                     <pre class="qrcode" data-bind="text: user_account.qr_code"></pre>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-primary" data-bind="click: $root.send_sms">Send me a SMS instead</button>
+                        </div>
+
+                        <div class="col-md-4">
+                            <span data-bind="text: sms_message"></span>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-warning" data-dismiss="modal" data-bind="click: $root.redirect">I have configured my device</button>
+                    <div class="alert alert-danger fade in" data-bind="visible: confirmation_message">
+                        <p data-bind="text: confirmation_message"></p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-4">
+                            <input type="text" data-bind="value: confirmation_code" id="pin_code" placeholder="Enter PIN here" class="form-control input-lg">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-success btn-lg" data-bind="click: $root.confirm_method">I have configured my device</button>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
                 </div>
             </div>
         </div>

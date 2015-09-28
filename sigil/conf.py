@@ -51,6 +51,12 @@ def configure(app):
     set_default('TOTP_EXPIRATION', 30 * 86400)  # 1 month
     set_default('TOTP_DOMAIN', 'docker.dev')
 
+    # OVH (SMS)
+    set_default('OVH_ENDPOINT', '')
+    set_default('OVH_APPLICATION_KEY', '')
+    set_default('OVH_APPLICATION_SECRET', '')
+    set_default('OVH_CONSUMER_KEY', '')
+
     # LDAP
     set_default('LDAP_HOST', 'docker.dev')
     set_default('LDAP_PORT', 389)

@@ -93,6 +93,7 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
                            default=datetime.datetime.utcnow)
     validated_at = db.Column(db.DateTime())
     totp_secret = db.Column(db.String(256), default=new_user_secret)
+    totp_configured = db.Column(db.Boolean(), default=False)
 
     # object fields
     description = db.Column(db.Text)

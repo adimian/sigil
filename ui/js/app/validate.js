@@ -11,8 +11,46 @@ var ValidateAccountApplication = function() {
     self.server_options = new ServerOptions();
     self.user_account = new UserAccount();
 
-    self.redirect = function() {
-        window.location = location.origin;
+    self.confirmation_code = ko.observable();
+    self.confirmation_message = ko.observable();
+    self.sms_message = ko.observable();
+
+    self.redirect = function()  {
+        window.location = app_root_redirect();
+    }
+
+    self.send_sms = function() {
+        self.sms_message("Let's pretend it's sending a SMS right now ...")
+    };
+
+    self.confirm_method = function() {
+
+        if (self.confirmation_code() === undefined || !self.confirmation_code().length) {
+            self.confirmation_message('Please enter your PIN code');
+            $("#pin_code").focus();
+            return;
+        }
+
+        var data = {
+            token: self.user_account.token(),
+            totp: self.confirmation_code()
+        };
+
+        var success = function(data) {
+            $('#2FA_modal').modal('hide');
+            self.confirmation_message('');
+        };
+
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: SIGIL_API + '/user/2fa/confirm',
+            data: data,
+            success: success
+        }).error(function() {
+            self.confirmation_message('Sorry but ' + data.totp + ' was not accepted, remember that codes expire quickly');
+            console.log(data);
+        });
     }
 
     self.validate = function() {
@@ -34,7 +72,7 @@ var ValidateAccountApplication = function() {
             url: SIGIL_API + '/user/validate',
             data: data,
             success: success
-        }).error(function(data){
+        }).error(function(data) {
             console.log(data);
         });
     };

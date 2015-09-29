@@ -31,7 +31,11 @@ var authed_request = function(verb, url, data, success) {
                 app.current_user.auth_token(null);
                 return;
             }
-            app.error_message(data.responseJSON.message || 'unknown error');
+            if (data.responseJSON !== undefined){
+                app.error_message('unknown error');
+            } else {
+                app.error_message(data.responseJSON.message);
+            }
             $("#error_popup").modal('show');
 
         }
@@ -47,10 +51,12 @@ var ServerOptions = function() {
     self.use_totp = ko.observable();
     self.auth_token_name = ko.observable();
     self.version = ko.observable('loading ...');
+    self.application_name = ko.observable('Sigil');
     $.getJSON(SIGIL_API + '/options', function(data) {
         self.use_totp(data.use_totp == "1");
         self.auth_token_name(data.auth_token);
         self.version(data.version);
+        self.application_name(data.application_name);
     });
 };
 

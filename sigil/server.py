@@ -1,5 +1,6 @@
 import logging
 
+from flask_alembic.cli.script import manager as alembic_manager
 from flask_script import Manager, Server, prompt_pass
 
 from sigil.api import app, db, setup_endpoints
@@ -21,6 +22,8 @@ def create_db():
 manager = Manager(app)
 manager.add_command("runserver", Server(host=app.config['HOST'],
                                         port=app.config['PORT']))
+
+manager.add_command('db', alembic_manager)
 
 if app.config['DEBUG']:
     logging.basicConfig(level=logging.DEBUG)

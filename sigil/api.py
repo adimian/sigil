@@ -2,6 +2,7 @@ import logging
 import sys
 
 from flask import Flask
+from flask_alembic import Alembic
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from raven.contrib.flask import Sentry
@@ -20,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 db = SQLAlchemy(app)
 mail = Mail(app)
+alembic = Alembic(app)
 
 sentry = None
 if app.config['SENTRY_DSN']:

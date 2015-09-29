@@ -80,8 +80,8 @@ def test_validate_2fa_good_code(client):
 
 
 def test_send_sms_no_number(client):
-    rv = client.get('/user/2fa/sms',
-                    data={'username': client._user.username})
+    rv = client.post('/user/2fa/sms',
+                     data={'username': client._user.username})
     assert rv.status_code == 404, str(rv.data)
 
 

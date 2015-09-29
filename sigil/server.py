@@ -3,7 +3,7 @@ import logging
 from flask_alembic.cli.script import manager as alembic_manager
 from flask_script import Manager, Server, prompt_pass
 
-from sigil.api import app, db, setup_endpoints
+from sigil.api import app, db, setup_endpoints, alembic
 from sigil.emails import setup_emails
 from sigil.ldap import update_ldap
 from sigil.models import User
@@ -32,7 +32,7 @@ if app.config['DEBUG']:
     def reset():
         print('resetting the database')
         db.drop_all()
-        db.create_all()
+        alembic.upgrade()
         setup_default_permissions()
         print('reset done')
 

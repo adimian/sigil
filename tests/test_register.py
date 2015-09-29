@@ -79,6 +79,30 @@ def test_validate_2fa_good_code(client):
     assert User.by_username('eric').totp_configured
 
 
+def test_send_sms_no_number(client):
+    rv = client.get('/user/2fa/sms',
+                    data={'username': client._user.username})
+    assert rv.status_code == 404, str(rv.data)
+
+
+def test_send_sms_with_number(client):
+    client.application.config['ENABLE_2FA'] = True
+    rv = client.post('/user/register', data={'username': 'eric',
+                                             'email': 'eric@adimian.com',
+                                             'mobile_number': '1234'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+
+    rv = client.post('/user/2fa/sms',
+                     data={'username': 'eric'})
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/user/2fa/sms',
+                     data={'token': data['token']})
+    assert rv.status_code == 200, str(rv.data)
+
+
 def test_validate_error(client):
     rv = client.post('/user/register', data={'username': 'eric',
                                              'password': 'secret',

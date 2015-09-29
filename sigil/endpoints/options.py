@@ -7,5 +7,6 @@ from ..endpoints import AnonymousResource
 class ServerOptions(AnonymousResource):
     def get(self):
         return {'use_totp': app.config['ENABLE_2FA'],
+                'application_name': app.config['APPLICATION_NAME'],
                 'auth_token': app.config['SESSION_TOKEN_HEADER'],
                 'version': __version__}

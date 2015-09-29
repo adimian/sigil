@@ -73,6 +73,9 @@
     <!-- Welcome screen -->
 
     <div class="container" style="width: 768px;">
+        <div class="alert alert-danger fade in" data-bind="visible: validation_message">
+            <p data-bind="text: validation_message"></p>
+        </div>
         <form class="form form-horizontal" action="#" method="post">
             <h2 class="form-heading">Validate account</h2>
             <label for="password" class="sr-only">New password</label>

@@ -35,7 +35,7 @@ def setup_endpoints():
     from .endpoints.login import Login
     from .endpoints.user import (UserDetails, UserPermissions, UserPassword,
                                  ValidateUser, UserCatalog, UserAPIKey,
-                                 MultifactorMethodConfirm)
+                                 MultifactorMethodConfirm, MultifactorSendSMS)
     from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
     from .endpoints.containers import (VirtualGroupResource,
                                        VirtualGroupMembers, UserTeamResource,
@@ -53,6 +53,7 @@ def setup_endpoints():
     # user
     api.add_resource(Register, '/user/register')
     api.add_resource(MultifactorMethodConfirm, '/user/2fa/confirm')
+    api.add_resource(MultifactorSendSMS, '/user/2fa/sms')
     api.add_resource(ValidateUser, '/user/recover', '/user/validate')
     api.add_resource(UserPassword, '/user/password')
     api.add_resource(UserDetails, '/user/details')

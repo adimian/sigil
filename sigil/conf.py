@@ -21,6 +21,8 @@ def configure(app):
     set_default('HOST', '0.0.0.0')
     set_default('PORT', 5000)
     set_default('SERVER_NAME', None)
+    set_default('ERROR_404_HELP', False)
+    set_default('APPLICATION_NAME', 'Sigil')
     set_default('UI_BASE_URL', 'http://docker.dev/sigil')
     set_default('API_URL_PREFIX', '')
     set_default('SQLALCHEMY_DATABASE_URI', 'sqlite:///')
@@ -56,6 +58,8 @@ def configure(app):
     set_default('OVH_APPLICATION_KEY', '')
     set_default('OVH_APPLICATION_SECRET', '')
     set_default('OVH_CONSUMER_KEY', '')
+    set_default('OVH_SMS_SENDER', '')
+    set_default('OVH_SMS_SERVICE', '')
 
     # LDAP
     set_default('LDAP_HOST', 'docker.dev')

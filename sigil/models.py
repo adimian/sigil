@@ -123,6 +123,7 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
 
     @classmethod
     def by_username(cls, username):
+        username = username.strip().lower()
         try:
             return db.session.query(cls).filter_by(username=username).one()
         except sqlalchemy.orm.exc.NoResultFound:
@@ -138,8 +139,8 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
         super(User, self).__init__()
         assert username
         assert email
-        self.username = username
-        self.email = email
+        self.username = username.strip().lower()
+        self.email = email.strip().lower()
         self.mobile_number = mobile_number
 
         # generate a new api key

@@ -14,13 +14,33 @@ var ValidateAccountApplication = function() {
     self.confirmation_code = ko.observable();
     self.confirmation_message = ko.observable();
     self.sms_message = ko.observable();
+    self.validation_message = ko.observable();
 
     self.redirect = function()  {
         window.location = app_root_redirect();
     }
 
     self.send_sms = function() {
-        self.sms_message("Let's pretend it's sending a SMS right now ...")
+        var data = {
+            token: self.user_account.token()
+        };
+
+        var success = function(data) {
+            self.sms_message('SMS sent !');
+        };
+
+        self.sms_message("Sending a SMS right now ...")
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: SIGIL_API + '/user/2fa/sms',
+            data: data,
+            success: success
+        }).error(function(data) {
+            self.sms_message('Sorry but we are not able to send you a SMS now: ' + data.responseJSON.message);
+            console.log(data);
+        });
+
     };
 
     self.confirm_method = function() {
@@ -39,6 +59,7 @@ var ValidateAccountApplication = function() {
         var success = function(data) {
             $('#2FA_modal').modal('hide');
             self.confirmation_message('');
+            self.redirect();
         };
 
         $.ajax({
@@ -73,7 +94,7 @@ var ValidateAccountApplication = function() {
             data: data,
             success: success
         }).error(function(data) {
-            console.log(data);
+            self.validation_message('An error occured, unable to update your password for now, please retry later')
         });
     };
 };

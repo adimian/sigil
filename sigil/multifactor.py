@@ -2,6 +2,7 @@ import io
 import time
 
 from flask import current_app as app
+import ovh
 import pyotp
 import qrcode
 
@@ -51,3 +52,21 @@ def qr_code_for_user(user):
                     domain=app.config['TOTP_DOMAIN'],
                     user_secret=user.totp_secret)
     return ascii_qr_code(uri, invert=False)
+
+
+def send_sms_code(user):
+    code = get_code(user.totp_secret)
+    sender = app.config['OVH_SMS_SENDER']
+    service_name = app.config['OVH_SMS_SERVICE']
+    options = {'sender': sender,
+               'message': 'Your {} activation code is {}'.format(app.config['APPLICATION_NAME'],
+                                                                 code),
+               'receivers': [user.mobile_number]}
+    if app.config['DEBUG'] or app.config['TESTING']:
+        print(options)
+    else:
+        client = ovh.Client(endpoint=app.config['OVH_ENDPOINT'],
+                            application_key=app.config['OVH_APPLICATION_KEY'],
+                            application_secret=app.config['OVH_APPLICATION_SECRET'],
+                            consumer_key=app.config['OVH_CONSUMER_KEY'])
+        client.post('/sms/%s/jobs' % service_name, **options)

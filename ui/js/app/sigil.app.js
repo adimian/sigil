@@ -41,6 +41,7 @@ var SigilApplication = function() {
 
     self.edited_user = ko.observable(new User());
     self.edited_app = ko.observable(new AppContext());
+    self.edited_group = ko.observable(new VirtualGroup());
 
     self.all_apps = ko.observableArray([]);
     self.current_principal = ko.observable(new User());
@@ -122,6 +123,10 @@ SigilApplication.prototype.add_new = function(data) {
     if (tab == 'applications')  {
         app.edited_app(new AppContext());
         $("#app_add_modal").modal('show');
+    };
+    if (tab == 'groups')  {
+        app.edited_group(new VirtualGroup());
+        $("#group_add_modal").modal('show');
     };
 };
 

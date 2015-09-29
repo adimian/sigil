@@ -121,7 +121,8 @@ class GroupProcessor(SheetProcessor):
         for item in self.data:
             user_groups = memberships.setdefault(item['username'], [])
             for group_name in group_names:
-                if item[group_name].strip().lower() in TRUES:
+                if (item.get(group_name) and
+                        item[group_name].strip().lower() in TRUES):
                     user_groups.append(group_name)
 
         return added, updated, deactivated, memberships

@@ -1,7 +1,7 @@
 import logging
 
 from flask_alembic.cli.script import manager as alembic_manager
-from flask_script import Manager, Server, prompt_pass
+from flask_script import Manager, prompt_pass
 
 from sigil.api import app, db, setup_endpoints, alembic
 from sigil.emails import setup_emails
@@ -36,8 +36,10 @@ def superuser(username, email):
 
 @manager.command
 def runserver():
-    if app.config['DEBUG']:
-        Server(host=app.config['HOST'], port=app.config['PORT'])
+    if app.config['DEBUG'] and not app.config['STANDALONE']:
+        app.run(host=app.config['HOST'],
+                port=app.config['PORT'],
+                debug=app.config['DEBUG'])
     else:
         from tornado.wsgi import WSGIContainer
         from tornado.httpserver import HTTPServer

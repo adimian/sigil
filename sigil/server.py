@@ -6,7 +6,7 @@ from flask_script import Manager, prompt_pass
 from sigil.api import app, db, setup_endpoints, alembic
 from sigil.emails import setup_emails
 from sigil.ldap import update_ldap
-from sigil.models import User
+from sigil.models import User, AppContext
 from sigil.permissions import setup_default_permissions
 
 
@@ -24,6 +24,9 @@ def superuser(username, email):
     user.active = True
     user.password = prompt_pass('password')
     db.session.add(user)
+    sigil_ctx = AppContext.by_name(app.config['ROOT_APP_CTX'])
+    for need in sigil_ctx.needs:
+        user.permissions.append(need)
     db.session.commit()
     print('user {} added with id {}'.format(user.username, user.id))
 

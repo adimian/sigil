@@ -13,12 +13,6 @@ from sigil.permissions import setup_default_permissions
 setup_endpoints()
 setup_emails()
 
-
-@app.before_first_request
-def create_db():
-    db.create_all()
-    setup_default_permissions()
-
 manager = Manager(app)
 
 manager.add_command('db', alembic_manager)
@@ -48,6 +42,13 @@ def runserver():
         http_server = HTTPServer(WSGIContainer(app))
         http_server.listen(app.config['PORT'], address=app.config['HOST'])
         IOLoop.instance().start()
+
+
+@manager.command
+def init():
+    logging.basicConfig(level=logging.INFO)
+    alembic.upgrade()
+    setup_default_permissions()
 
 if app.config['DEBUG']:
     logging.basicConfig(level=logging.DEBUG)

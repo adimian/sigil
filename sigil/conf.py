@@ -27,7 +27,7 @@ def configure(app):
     set_default('UI_BASE_URL', 'http://docker.dev/sigil')
     set_default('API_URL_PREFIX', '')
     set_default('SERVE_STATIC', False)
-    set_default('UI_URL_PREFIX', '/')
+    set_default('UI_URL_PREFIX', '')
     set_default('SQLALCHEMY_DATABASE_URI', 'sqlite:///')
     set_default('SECRET_KEY', 'secret-key')
     set_default('UPDATE_PASSWORD_TOKEN_SALT', 'register-salt')

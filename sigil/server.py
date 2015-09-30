@@ -25,6 +25,27 @@ manager.add_command("runserver", Server(host=app.config['HOST'],
 
 manager.add_command('db', alembic_manager)
 
+
+@manager.command
+def superuser(username, email):
+    user = User(username, email)
+    user.active = True
+    user.password = prompt_pass('password')
+    db.session.add(user)
+    db.session.commit()
+    print('user {} added with id {}'.format(user.username, user.id))
+
+
+@manager.command
+def start():
+    from tornado.wsgi import WSGIContainer
+    from tornado.httpserver import HTTPServer
+    from tornado.ioloop import IOLoop
+
+    http_server = HTTPServer(WSGIContainer(app))
+    http_server.listen(app.config['PORT'], address=app.config['HOST'])
+    IOLoop.instance().start()
+
 if app.config['DEBUG']:
     logging.basicConfig(level=logging.DEBUG)
 
@@ -36,17 +57,7 @@ if app.config['DEBUG']:
         setup_default_permissions()
         print('reset done')
 
-    @manager.command
-    def superuser(username, email):
-        user = User(username, email)
-        user.active = True
-        user.password = prompt_pass('password')
-        db.session.add(user)
-        db.session.commit()
-        print('user {} added with id {}'.format(user.username, user.id))
-
-
-manager.command(update_ldap)
+    manager.command(update_ldap)
 
 
 if __name__ == "__main__":

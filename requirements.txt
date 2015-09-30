@@ -17,3 +17,4 @@ qrcode==5.1
 openpyxl==2.2.5
 passlib==1.6.5
 ovh==0.3.5
+tornado==4.2.1

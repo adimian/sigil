@@ -33,6 +33,19 @@ def get_target_user():
     return user
 
 
+def user_by_token(token):
+    try:
+        uid, email = read_token(token,
+                                salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
+    except itsdangerous.BadSignature:
+        abort(400, 'invalid token')
+    try:
+        user = db.session.query(User).filter_by(id=uid).one()
+    except sqlalchemy.orm.exc.NoResultFound:
+        abort(404, 'unknown user')
+    return user, email
+
+
 class UserAPIKey(ManagedResource):
     def get(self):
         return {'key': current_user.api_key}
@@ -69,13 +82,7 @@ class MultifactorSendSMS(AnonymousResource):
         if args['username']:
             user = User.by_username(args['username'])
         elif args['token']:
-            try:
-                uid, email = read_token(args['token'],
-                                        salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
-            except itsdangerous.BadSignature:
-                abort(400, 'invalid token')
-
-            user = db.session.query(User).filter_by(id=uid).one()
+            user, _ = user_by_token(args['token'])
 
         if not user:
             abort(404, 'unknown user')
@@ -93,13 +100,7 @@ class MultifactorMethodConfirm(AnonymousResource):
         parser.add_argument('totp', type=str, required=True)
         args = parser.parse_args()
 
-        try:
-            uid, email = read_token(args['token'],
-                                    salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
-        except itsdangerous.BadSignature:
-            abort(400, 'invalid token')
-
-        user = db.session.query(User).filter_by(id=uid).one()
+        user, email = user_by_token(args['token'])
 
         if md5(user.email) == email:
             if check_code(user.totp_secret, args['totp']):
@@ -139,13 +140,7 @@ class ValidateUser(AnonymousResource):
         parser.add_argument('password', type=str, required=True)
         args = parser.parse_args()
 
-        try:
-            uid, email = read_token(args['token'],
-                                    salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
-        except itsdangerous.BadSignature:
-            abort(400, 'invalid token')
-
-        user = db.session.query(User).filter_by(id=uid).one()
+        user, email = user_by_token(args['token'])
 
         if md5(user.email) == email:
             user.validated_at = datetime.datetime.utcnow()

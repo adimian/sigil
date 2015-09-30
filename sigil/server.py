@@ -20,8 +20,6 @@ def create_db():
     setup_default_permissions()
 
 manager = Manager(app)
-manager.add_command("runserver", Server(host=app.config['HOST'],
-                                        port=app.config['PORT']))
 
 manager.add_command('db', alembic_manager)
 
@@ -37,14 +35,17 @@ def superuser(username, email):
 
 
 @manager.command
-def start():
-    from tornado.wsgi import WSGIContainer
-    from tornado.httpserver import HTTPServer
-    from tornado.ioloop import IOLoop
+def runserver():
+    if app.config['DEBUG']:
+        Server(host=app.config['HOST'], port=app.config['PORT'])
+    else:
+        from tornado.wsgi import WSGIContainer
+        from tornado.httpserver import HTTPServer
+        from tornado.ioloop import IOLoop
 
-    http_server = HTTPServer(WSGIContainer(app))
-    http_server.listen(app.config['PORT'], address=app.config['HOST'])
-    IOLoop.instance().start()
+        http_server = HTTPServer(WSGIContainer(app))
+        http_server.listen(app.config['PORT'], address=app.config['HOST'])
+        IOLoop.instance().start()
 
 if app.config['DEBUG']:
     logging.basicConfig(level=logging.DEBUG)

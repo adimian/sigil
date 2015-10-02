@@ -48,6 +48,9 @@ def configure(app):
     set_default('MAIL_USE_TLS', True)
     set_default('MAIL_PASSWORD', '')
     set_default('MAIL_DEFAULT_SENDER', 'sigil@local')
+    set_default('MAIL_TEMPLATE_FOLDER', '')
+    set_default('MAIL_TEMPLATES', {'REGISTER': 'email_register.html',
+                                   'RECOVER': 'email_recover.html'})
 
     # 2FA
     set_default('ENABLE_2FA', False)

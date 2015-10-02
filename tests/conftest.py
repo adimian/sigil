@@ -1,3 +1,5 @@
+import os
+import shutil
 import pytest
 
 from sigil.api import app, db, setup_endpoints
@@ -9,6 +11,34 @@ from sigil.utils import generate_token
 
 setup_endpoints()
 setup_emails()
+
+ROOT_DIR = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+
+
+@pytest.fixture(scope="function")
+def setup_templates(request):
+    reg = b"reg {{creator.username}} {{user.username}} {{validate_url}}"
+    rec = b"rec {{creator.username}} {{user.username}} {{validate_url}}"
+    t = {"reg.html": reg, "rec.html": rec}
+    root_path = os.path.join(ROOT_DIR, "templates")
+    os.mkdir(root_path)
+    for fn, content in t.items():
+        file_path = os.path.join(root_path, fn)
+        with open(file_path, 'wb+') as fh:
+                fh.write(content)
+
+    folder_orig_value = app.config['MAIL_TEMPLATE_FOLDER']
+    templates_orig_value = app.config['MAIL_TEMPLATES']
+    app.config['MAIL_TEMPLATE_FOLDER'] = root_path
+    app.config['MAIL_TEMPLATES'] = {'REGISTER': 'reg.html',
+                                    'RECOVER': 'rec.html'}
+
+    def finalize():
+        app.config['MAIL_TEMPLATE_FOLDER'] = folder_orig_value
+        app.config['MAIL_TEMPLATES'] = templates_orig_value
+        shutil.rmtree(root_path)
+    request.addfinalizer(finalize)
+    return True
 
 
 @pytest.fixture(scope='function')

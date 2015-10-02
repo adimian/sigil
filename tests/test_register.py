@@ -14,6 +14,16 @@ def test_register_user(client):
         data = json.loads(rv.data.decode('utf-8'))
         assert data['token'] in outbox[0].html
         assert outbox[0].send_to == set(['eric@adimian.com'])
+        assert "reg alice eric" not in outbox[0].html
+
+
+def test_register_user_with_custom_template(client, setup_templates):
+    with mail.record_messages() as outbox:
+        rv = client.post('/user/register', data={'username': 'eric',
+                                                 'email': 'eric@adimian.com'},
+                         headers=client._auth_headers)
+        assert rv.status_code == 200, str(rv.data)
+        assert "reg alice eric" in outbox[0].html
 
 
 def test_validate(client):

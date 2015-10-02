@@ -33,3 +33,13 @@ PUT/DELETE /haruba/permissions {'name': 'maarten',
                                     ['application.permissions', 'write'],
                                     ['application.permissions', 'read'],
                                 ]}
+
+Overwriting the registration and recovery templates
+===================================================
+
+define the folder the templates are located in:
+MAIL_TEMPLATE_FOLDER=/path/to/templates
+
+define your template names
+MAIL_TEMPLATES={'REGISTER': 'email_register.html',
+                'RECOVER': 'email_recover.html'}

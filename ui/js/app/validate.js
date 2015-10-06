@@ -103,6 +103,7 @@ var init = function() {
     var app = new ValidateAccountApplication();
     ko.applyBindings(app);
     window.app = app;
+    $("#password").pwfeedback()
 };
 
 $(init);

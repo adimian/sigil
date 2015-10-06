@@ -1,0 +1,45 @@
+.pwf-tooltip{
+  z-index: 999;
+  position: absolute;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #818181;
+}
+.pwf-tooltip-block{
+  position: relative;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  transform: rotate(45deg);
+  background-color: #fff;
+  width: 13px;
+  height: 13px;
+  float: left;
+  top: 3px;
+  left: -12px;
+  border-bottom: 1px solid #818181;
+  border-left: 1px solid #818181;
+}
+.pwf-tooltip-content{
+  float: left;
+  word-wrap: break-word;
+  cursor: pointer;
+  margin-right: 10px;
+}
+.pwf-color_red{
+	float: right;
+	color: #d9534f;
+}
+
+.pwf-color_green{
+	float: right;
+	color: #449d44;
+}
+.pwf-tooltip-content div{
+	padding: 3px;
+}
+.pwf-tooltip-content div span:first-of-type{
+	color: #bbbbbb;
+}
+.pwf-tooltip-content div span:nth-of-type(2){
+	margin-left: 5px;
+}

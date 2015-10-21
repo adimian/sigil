@@ -9,6 +9,7 @@ from .models import User, VirtualGroup
 
 
 logger = logging.getLogger(__name__)
+LDAP_PERSON_CLASS = "extendedInetPerson"
 
 
 class LDAPError(Exception):
@@ -77,8 +78,9 @@ class LDAPConnection(object):
     def add_user(self, user):
         where = self.user_dn(user)
         self.connection.delete(where)
-
-        self.connection.add(where, 'inetOrgPerson', user.ldap)
+        # removing all empty values, as it displeases the LDAP gods
+        ldap_dict = {key: value for (key, value) in user.ldap.items() if value}
+        self.connection.add(where, LDAP_PERSON_CLASS, ldap_dict)
         self.check()
 
     def add_group(self, group):
@@ -125,7 +127,7 @@ def update_ldap():
 
     logger.info('fetching LDAP users')
     for entry in con.search(con.ou_dn(app.config['LDAP_USERS_OU']),
-                            object_class='inetOrgPerson'):
+                            object_class=LDAP_PERSON_CLASS):
         ldap_users.add(entry['dn'])
 
     logger.info('removing pruned users from LDAP')

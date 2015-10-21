@@ -70,15 +70,20 @@ class LDAPUserMixin(object):
     
     @property
     def ldap(self):
-        data = {'surname': self.surname,
+        # LDAP needs surname and givenname, so enforcing it
+        data = {'surname': self.surname or self.username,
                 'uid': self.username,
-                'givenName': self.firstname,
+                'givenName': self.firstname or self.username,
                 'displayName': self.display_name,
                 'mail': self.email}
         if self.password:
             data['userPassword'] = self.password
         if self.mobile_number:
             data['mobile'] = self.mobile_number
+        if self.totp_secret:
+            data['totpSecret'] = self.totp_secret
+        if self.totp_configured:
+            data['totpEnabled'] = self.totp_configured
         return data
 
 

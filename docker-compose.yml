@@ -53,7 +53,7 @@ sigil:
     - slapd
     
 slapd:
-  image: nickstenning/slapd
+  image: registry.adimian.com/slapd/extendedslapd
   environment:
     - LDAP_DOMAIN=mycorp.com
     - LDAP_ORGANISATION="My Mega Corporation"

@@ -25,8 +25,9 @@ def superuser(username, email):
     user.password = prompt_pass('password')
     db.session.add(user)
     sigil_ctx = AppContext.by_name(app.config['ROOT_APP_CTX'])
-    for need in sigil_ctx.needs:
-        user.permissions.append(need)
+    if sigil_ctx:
+        for need in sigil_ctx.needs:
+            user.permissions.append(need)
     db.session.commit()
     print('user {} added with id {}'.format(user.username, user.id))
 

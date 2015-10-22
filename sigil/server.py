@@ -5,13 +5,14 @@ from flask_script import Manager, prompt_pass
 
 from sigil.api import app, db, setup_endpoints, alembic
 from sigil.emails import setup_emails
-from sigil.ldap import update_ldap
+from sigil.ldap import update_ldap, setup_auto_sync
 from sigil.models import User, AppContext
 from sigil.permissions import setup_default_permissions
 
-
 setup_endpoints()
 setup_emails()
+if app.config['LDAP_AUTO_UPDATE']:
+    setup_auto_sync()
 
 manager = Manager(app)
 

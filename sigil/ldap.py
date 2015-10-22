@@ -2,9 +2,10 @@ from collections import defaultdict
 import logging
 
 from flask import current_app as app
-from ldap3 import Server, Connection, ALL, SUBTREE, MODIFY_ADD, MODIFY_DELETE
-
 from .api import db
+from ldap3 import Server, Connection, ALL, SUBTREE, MODIFY_ADD, MODIFY_DELETE
+from sqlalchemy import event
+
 from .models import User, VirtualGroup
 
 
@@ -170,3 +171,11 @@ def update_ldap():
             con.remove_group_member(group_dn, removed_member)
 
     con.close()
+
+
+def setup_auto_sync():
+    @event.listens_for(db.session(), "after_transaction_end")
+    def on_models_committed(session, transaction, *args):
+        if session._model_changes:
+            logger.info('Commencing ldap auto sync')
+            update_ldap()

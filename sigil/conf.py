@@ -75,4 +75,5 @@ def configure(app):
     set_default('LDAP_BIND_PASSWORD', 's3cr3tpassw0rd')
     set_default('LDAP_USERS_OU', 'Users')
     set_default('LDAP_GROUPS_OU', 'Groups')
+    set_default('LDAP_AUTO_UPDATE', True)
 

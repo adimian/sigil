@@ -200,6 +200,13 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
         return set([x
                     for x in self._sa_class_manager.keys()
                     if not x.startswith('_')]) - set(self.PROTECTED)
+
+    def reset_otp(self):
+        self.totp_secret = new_user_secret()
+        self.totp_configured = False
+        db.session.add(self)
+        db.session.commit()
+
         
 
 

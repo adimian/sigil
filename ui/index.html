@@ -75,6 +75,56 @@
 		</div>
 	</div>
 
+<!-- 2FA Modal -->
+
+    <div class="modal fade" id="2FA_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Multi-factor setup</h4>
+                </div>
+                <div class="modal-body" style="max-height: 840px;">
+                    <p>
+                        Sigil uses <a href="https://en.wikipedia.org/wiki/Multi-factor_authentication">multi-factor authentication</a> to secure your account against password theft.
+                    </p>
+                    <p>
+                        It relies on a hardware code generator to produce time-based PIN codes to be used along with your traditional username/password login method.
+                    </p>
+                    <p>
+                        If you have installed <a href="https://support.google.com/accounts/answer/1066447?hl=en">Google Authenticator</a> you can now use the QR code below to setup your new account.
+                    </p>
+                    <pre class="qrcode" data-bind="text: $root.current_user.qr_code"></pre>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-primary" data-bind="click: $root.current_user.reset_totp_app.send_sms">Send me a SMS instead</button>
+                        </div>
+
+                        <div class="col-md-4">
+                            <span data-bind="text: $root.current_user.reset_totp_app.sms_message"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="alert alert-danger fade in" data-bind="visible: $root.current_user.reset_totp_app.confirmation_message">
+                        <p data-bind="text: $root.current_user.reset_totp_app.confirmation_message"></p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-4">
+                            <input type="text" data-bind="value: $root.current_user.reset_totp_app.confirmation_code" id="pin_code" placeholder="Enter PIN here" class="form-control input-lg">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-success btn-lg" data-bind="click: $root.current_user.reset_totp_app.confirm_method">I have configured my device</button>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 	<!-- Application Page -->
 	<nav class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container-fluid">
@@ -98,7 +148,7 @@
 							<li><a href="#" data-bind="click: $root.edit_me">Edit personal details</a></li>
 							<li><a href="#" data-bind="click: $root.current_user.show_api_key">Show my API key</a></li>
 							<li><a href="#" data-bind="click: $root.current_user.request_password_change">Change password</a></li>
-							<!-- TODO: <li><a href="#">Add 2FA device</a></li> -->
+							<li><a href="#" data-bind="click: $root.current_user.reset_totp">Reset 2FA device</a></li>
 							<li role="separator" class="divider"></li>
 							<li><a href="#" data-bind="click: $root.logout">Logout</a></li>
 						</ul>

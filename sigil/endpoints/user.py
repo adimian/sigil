@@ -155,6 +155,17 @@ class ValidateUser(AnonymousResource):
         return {'qrcode':  qr_code_for_user(user)}
 
 
+class Reset2FA(ProtectedResource):
+    def post(self):
+        user = get_target_user()
+        user.reset_otp()
+
+        token = generate_token([user.id, md5(user.email)],
+                               salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
+        return {'qrcode':  qr_code_for_user(user),
+                'token': token}
+
+
 class UserDetails(ManagedResource):
     def get(self):
         user = get_target_user()

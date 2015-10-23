@@ -1,4 +1,79 @@
 "use strict"
+
+var ResetTotpApplication = function(user_account) {
+    var self = this;
+    self.user_account = user_account;
+
+    self.confirmation_code = ko.observable();
+    self.confirmation_message = ko.observable();
+    self.sms_message = ko.observable();
+    self.validation_message = ko.observable();
+
+    self.send_sms = function() {
+        var data = {
+            token: self.user_account.token()
+        };
+
+        var success = function(data) {
+            self.sms_message('SMS sent !');
+        };
+
+        self.sms_message("Sending a SMS right now ...")
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: SIGIL_API + '/user/2fa/sms',
+            data: data,
+            success: success
+        }).error(function(data) {
+            self.sms_message('Sorry but we are not able to send you a SMS now: ' + data.responseJSON.message);
+        });
+
+    };
+
+    self.confirm_method = function() {
+
+        if (self.confirmation_code() === undefined || !self.confirmation_code().length) {
+            self.confirmation_message('Please enter your PIN code');
+            $("#pin_code").focus();
+            return;
+        }
+
+        var data = {
+            token: self.user_account.token(),
+            totp: self.confirmation_code()
+        };
+
+        var success = function(data) {
+            $('#2FA_modal').modal('hide');
+            self.confirmation_message('');
+        };
+
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: SIGIL_API + '/user/2fa/confirm',
+            data: data,
+            success: success
+        }).error(function() {
+            self.confirmation_message('Sorry but ' + data.totp + ' was not accepted, remember that codes expire quickly');
+            console.log(data);
+        });
+    }
+
+    self.reset = function() {
+        var success = function(data) {
+            if (data.qrcode) {
+                self.user_account.qr_code(data.qrcode);
+                self.user_account.token(data.token);
+                $('#2FA_modal').modal('show');
+            }
+        };
+
+        authed_request("POST", '/user/reset2fa', {}, success)
+    };
+};
+
 var User = function() {
     var self = this;
     self.user_id = ko.observable();
@@ -9,6 +84,9 @@ var User = function() {
     self.mobile_number = ko.observable();
     self.email = ko.observable();
     self.active = ko.observable();
+    self.qr_code = ko.observable();
+    self.token = ko.observable();
+    self.reset_totp_app = new ResetTotpApplication(self)
 
     self.api_key = ko.observable();
 
@@ -46,7 +124,7 @@ var User = function() {
 
 
     self.reset_totp = function() {
-        // call sigil to reset totp
+        self.reset_totp_app.reset();
     };
 
     self.show_api_key = function() {

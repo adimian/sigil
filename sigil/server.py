@@ -3,7 +3,7 @@ import logging
 from flask_alembic.cli.script import manager as alembic_manager
 from flask_script import Manager, prompt_pass
 
-from sigil.api import app, db, setup_endpoints, alembic
+from sigil.api import app, db, setup_endpoints, alembic, logger
 from sigil.emails import setup_emails
 from sigil.ldap import update_ldap, setup_auto_sync
 from sigil.models import User, AppContext
@@ -12,7 +12,10 @@ from sigil.permissions import setup_default_permissions
 setup_endpoints()
 setup_emails()
 if app.config['LDAP_AUTO_UPDATE']:
+    logger.info("LDAP auto sync enabled")
     setup_auto_sync()
+else:
+    logger.info("LDAP auto sync disabled")
 
 manager = Manager(app)
 

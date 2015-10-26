@@ -79,7 +79,7 @@
         <form class="form form-horizontal" action="#" method="post">
             <h2 class="form-heading">Validate account</h2>
             <label for="password" class="sr-only">New password</label>
-            <input type="password" name="password" id="password" class="form-control" placeholder="New password" required autofocus data-bind="value: user_account.password, valueUpdate: 'keyup'">
+            <input type="password" name="password" id="password" class="form-control" placeholder="New password" required data-bind="value: user_account.password, valueUpdate: 'keyup'">
             <button class="btn btn-lg btn-success" style="float: right; margin-top: 5px;" data-bind="click: $root.validate">Validate</button>
         </form>
     </div>
@@ -88,9 +88,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-min.js"></script>
+    <script src="js/app/sigil.pwfeedback.js"></script>
     <script src="js/app/sigil.utils.js"></script>
     <script src="js/app/validate.js"></script>
-    <script src="js/app/sigil.pwfeedback.js"></script>
 </body>
 
 </html>

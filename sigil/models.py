@@ -8,8 +8,9 @@ from passlib.hash import ldap_sha512_crypt
 from sqlalchemy import UniqueConstraint
 import sqlalchemy
 from sqlalchemy.ext.hybrid import hybrid_property
+from flask_sqlalchemy import Model
 
-from .api import db
+from .api import db, EXTRA_FIELDS
 from .multifactor import new_user_secret
 from .signals import user_registered
 from .utils import random_token, generate_token, md5
@@ -64,6 +65,14 @@ team_member = db.Table('team_member',
                        db.Column('member_id', db.Integer,
                                  db.ForeignKey('user.id')),
                        UniqueConstraint('team_id', 'member_id'),
+                       )
+
+extra_field = db.Table('extra_field',
+                       db.Column('extrafield_id', db.Integer,
+                                 db.ForeignKey('extrafield.id')),
+                       db.Column('member_id', db.Integer,
+                                 db.ForeignKey('user.id')),
+                       UniqueConstraint('extrafield_id', 'member_id'),
                        )
 
 class LDAPUserMixin(object):
@@ -125,6 +134,8 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
 
     teams = db.relationship('UserTeam', secondary=team_member,
                             backref=db.backref('members', lazy='dynamic'))
+    extra_fields = db.relationship('ExtraField', secondary=extra_field,
+                                   lazy='dynamic')
 
     @classmethod
     def by_username(cls, username):
@@ -150,6 +161,28 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
 
         # generate a new api key
         self.update_api_key()
+        db.session.add(self)
+
+    def __setattr__(self, key, value):
+        if key in EXTRA_FIELDS:
+            try:
+                field = self.extra_fields.filter_by(field_name=key).one()
+                field.value = value
+            except sqlalchemy.orm.exc.NoResultFound:
+                field = ExtraField(key, value)
+                self.extra_fields.append(field)
+        else:
+            super().__setattr__(key, value)
+
+    def __getattr__(self, key):
+        if key in EXTRA_FIELDS:
+            try:
+                field = self.extra_fields.filter_by(field_name=key).one()
+            except sqlalchemy.orm.exc.NoResultFound:
+                return None
+            return field.value
+        else:
+            return super().__getattribute__(key)
 
     @property
     def sn(self):
@@ -305,3 +338,14 @@ class UserTeam(db.Model):
 
     def __init__(self, name):
         self.name = name
+
+
+class ExtraField(db.Model):
+    __tablename__ = 'extrafield'
+    id = db.Column(db.Integer, primary_key=True)
+    field_name = db.Column(db.String(256))
+    value = db.Column(db.String(256))
+
+    def __init__(self, field_name, value):
+        self.field_name = field_name
+        self.value = value

@@ -50,19 +50,19 @@ def client(request):
     app.config['ENABLE_2FA'] = False
     db.create_all()
 
-    u1 = User('alice', 'test@test.com')
-    u1.password = 'test'
-    u2 = User('bernard', 'test1@test.com')
-    u2.password = 'test'
-    db.session.add(u1)
-    db.session.add(u2)
-    db.session.commit()
-
-    client = app.test_client()
-    client._db = db
-    client._app = app
-
     with app.app_context():
+        u1 = User('alice', 'test@test.com')
+        u1.password = 'test'
+        u2 = User('bernard', 'test1@test.com')
+        u2.password = 'test'
+        db.session.add(u1)
+        db.session.add(u2)
+        db.session.commit()
+
+        client = app.test_client()
+        client._db = db
+        client._app = app
+
         client._auth_token = generate_token([u1.id, 'abcdef'],
                                             app.config['SESSION_TOKEN_SALT'])
         headers = {app.config['SESSION_TOKEN_HEADER']: client._auth_token}

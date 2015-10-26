@@ -39,6 +39,7 @@ def configure(app):
     set_default('SESSION_TOKEN_HEADER', 'Sigil-Token')
     set_default('ROOT_APP_CTX', 'sigil')
     set_default('AUTO_ACTIVATE_NEW_USER', True)
+    set_default('EXTRA_FIELDS', 'department,company')
 
     # mail
     set_default('MAIL_SUPPRESS_SEND', True)

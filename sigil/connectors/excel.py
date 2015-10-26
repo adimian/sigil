@@ -1,17 +1,17 @@
 import logging
-import os
 import re
-import tempfile
 
 import openpyxl
 import sqlalchemy
 
 from ..models import User, VirtualGroup, AppContext, Need
+from ..api import EXTRA_FIELDS
 
 
 logger = logging.getLogger(__name__)
 
 TRUES = ('yes', 'y', 'no', 'n', 'x')
+USER_FIELDS = ('username', 'firstname', 'surname', 'mobile_number', 'email')
 
 
 class MissingFieldError(Exception):
@@ -155,6 +155,8 @@ class UserProcessor(SheetProcessor):
             if user.username not in actives:
                 deactivated.append(user)
 
+        allowed_fields = list(USER_FIELDS) + EXTRA_FIELDS
+
         # created
         added = []
         updated = []
@@ -169,7 +171,8 @@ class UserProcessor(SheetProcessor):
                 updated.append(entity)
 
             for key in item:
-                setattr(entity, key, item[key])
+                if key in allowed_fields:
+                    setattr(entity, key, item[key])
 
         return added, updated, deactivated
 
@@ -278,12 +281,12 @@ class ExcelConnector(object):
 
 class ExcelExporter(object):
 
-    USER_FIELDS = ('username', 'firstname', 'surname', 'mobile_number', 'email')
     HEADER_MAPPING = {'mobile_number': 'mobile'}
 
     def __init__(self, session, user):
         self.session = session
         self.user = user
+        self.user_fields = list(USER_FIELDS) + EXTRA_FIELDS
 
     def export(self, filename):
         workbook = openpyxl.Workbook(optimized_write=True)
@@ -294,9 +297,9 @@ class ExcelExporter(object):
 
     def export_users(self, workbook):
         sheet = workbook.create_sheet(title='users')
-        sheet.append([self.HEADER_MAPPING.get(f, f) for f in self.USER_FIELDS])
+        sheet.append([self.HEADER_MAPPING.get(f, f) for f in self.user_fields])
         for user in self.session.query(User).all():
-            sheet.append([getattr(user, f) for f in self.USER_FIELDS])
+            sheet.append([getattr(user, f) for f in self.user_fields])
 
     def export_groups(self, workbook):
         sheet = workbook.create_sheet(title='groups')

@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 db = SQLAlchemy(app)
 mail = Mail(app)
 alembic = Alembic(app)
+EXTRA_FIELDS = [v for v in app.config["EXTRA_FIELDS"].split(",") if v]
 
 sentry = None
 if app.config['SENTRY_DSN']:

@@ -71,10 +71,20 @@ def test_token(client):
     assert rv.status_code == 200
 
 
-def test_recover_account(client):
+def test_recover_account_by_email(client):
     with mail.record_messages() as outbox:
         preload_user(client)
         rv = client.get('/user/recover', data={'email': 'eric@adimian.com'})
+        assert rv.status_code == 200, str(rv.data)
+        session = client._db.session
+        user = session.query(User).filter_by(email='eric@adimian.com').one()
+        assert outbox[0].send_to == set(['eric@adimian.com'])
+
+
+def test_recover_account_by_username(client):
+    with mail.record_messages() as outbox:
+        preload_user(client)
+        rv = client.get('/user/recover', data={'email': 'eric'})
         assert rv.status_code == 200, str(rv.data)
         session = client._db.session
         user = session.query(User).filter_by(email='eric@adimian.com').one()

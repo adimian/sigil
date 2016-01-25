@@ -123,7 +123,9 @@ class ValidateUser(AnonymousResource):
         try:
             user = db.session.query(User).filter_by(email=args['email']).one()
         except sqlalchemy.orm.exc.NoResultFound:
-            abort(404, 'user not found')
+            user = User.by_username(args['email'])
+            if user is None:
+                abort(404, 'user not found')
 
         token = generate_token([user.id, md5(user.email)],
                                salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])

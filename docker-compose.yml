@@ -9,24 +9,13 @@ sigildb:
   volumes_from:
     - sigildb-data
   
-nginx:
-  image: nginx
-  volumes:
-   - ./nginx.conf:/etc/nginx/conf.d/default.conf
-   - .:/sigil
-  volumes_from:
-   - sigil
-  ports:
-   - "80:80"
-  links:
-   - sigil
-  
 sigil:
   build: .
   environment:
     - DEBUG=yes
     - STANDALONE=yes
     - HOST=0.0.0.0
+    - PORT=80
     - SQLALCHEMY_DATABASE_URI=postgres://postgres@sigildb
     - ENABLE_2FA=no
     - TOTP_DOMAIN=docker.dev
@@ -51,6 +40,8 @@ sigil:
   links:
     - sigildb 
     - slapd
+  ports:
+   - "80:80"
     
 slapd:
   image: registry.adimian.com/slapd/extendedslapd

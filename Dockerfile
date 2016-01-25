@@ -10,5 +10,7 @@ ADD requirements.txt /sigil/
 RUN pip install -U pip && pip install -r requirements.txt
 
 ADD . /sigil/
+ADD sigil_cmd /usr/local/bin/sigil
+RUN chmod +x /usr/local/bin/sigil
 
-CMD python3 sigil/server.py runserver
+CMD sigil runserver

@@ -151,6 +151,20 @@ var User = function() {
         self.mobile_number(item.mobile);
     };
 
+    self.check_all = function(node) {
+        var needs = node.needs();
+        for (var i = 0; i < needs.length; i++) {
+            needs[i].active(true);
+        }
+    }
+
+    self.uncheck_all = function(node) {
+        var needs = node.needs();
+        for (var i = 0; i < needs.length; i++) {
+            needs[i].active(false);
+        }
+    }
+
     self.load_needs = function() {
         authed_request('OPTIONS', '/user/permissions', {
             username: self.username()

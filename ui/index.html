@@ -376,9 +376,6 @@
 						<tbody>
 							<tr>
 								<th>
-									Application
-								</th>
-								<th>
 									Permission
 								</th>
 								<th>
@@ -386,10 +383,16 @@
 								</th>
 							</tr>
 							<!-- ko foreach: {data: permissions, as: 'application'} -->
+							<tr>
+								<td colspan="2">
+									<span class="glyphicon glyphicon-chevron-right">
+									<b></span> <span data-bind="text: application.name"></span></b>
+									(<a href="#" data-bind="click: $parent.check_all">all</a> | <a href="#" data-bind="click: $parent.uncheck_all">none</a>)
+								</td>
+							</tr>
 							<!-- ko foreach: {data: application.needs, as: 'need'} -->
 							<tr>
-								<th data-bind="text: $parent.name"></th>
-								<td data-bind="text: need.permission"></td>
+								<td style="padding-left: 2em;"data-bind="text: need.permission"></td>
 								<td>
 									<input type="checkbox" data-bind="checked: need.active">
 								</td>
@@ -400,7 +403,7 @@
 					</table>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: $root.current_principal().persist_needs">Close</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: $root.current_principal().persist_needs">Save & close</button>
 				</div>
 			</div>
 		</div>

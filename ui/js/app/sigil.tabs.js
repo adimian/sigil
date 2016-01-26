@@ -6,7 +6,7 @@ var build_tabs = function() {
 
     var s = app.current_user.s;
 
-    if (s.can('users.write')) {
+    if (s.can('users.write') && s.can('users.read')) {
         tabs.push(new TabItem('users', 'Users', {
             searchable: true,
             can_add: true,
@@ -16,7 +16,7 @@ var build_tabs = function() {
 
     }
 
-    if (s.can('groups.write')) {
+    if (s.can('groups.write') && s.can('groups.read')) {
         tabs.push(new TabItem('groups', 'Virtual Groups', {
             searchable: true,
             can_add: true,
@@ -26,7 +26,7 @@ var build_tabs = function() {
 
     }
 
-    if (s.can('appcontexts.write')) {
+    if (s.can('appcontexts.write') && s.can('appcontexts.read')) {
         tabs.push(new TabItem('applications', 'Applications', {
             searchable: true,
             can_add: true,
@@ -34,7 +34,7 @@ var build_tabs = function() {
         }));
     }
 
-    if (s.can('users.write')) {
+    if (s.can('users.write') && s.can('users.read')) {
         tabs.push(new TabItem('import', 'Import from Excel', {}));
         tabs.push(new TabItem('export', 'Export to Excel', {}));
     }

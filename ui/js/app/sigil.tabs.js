@@ -1,31 +1,43 @@
 "use strict"
 
-var build_tabs = function(user) {
+var build_tabs = function() {
     //searchable, can_add, can_toggle, has_permissions
-    console.log(user);
-    var tabs = [
+    var tabs = [new TabItem('overview', 'Overview', {})]
 
-    new TabItem('overview', 'Overview', {}),
-        new TabItem('users', 'Users', {
+    var s = app.current_user.s;
+
+    if (s.can('users.write')) {
+        tabs.push(new TabItem('users', 'Users', {
             searchable: true,
             can_add: true,
             can_toggle: true,
             has_permissions: true
-        }),
-        //new TabItem('teams', 'User Teams', {searchable:true, can_add:true, can_toggle:true, has_permissions:true}), // feature not completed yet
-        new TabItem('groups', 'Virtual Groups', {
+        }));
+
+    }
+
+    if (s.can('groups.write')) {
+        tabs.push(new TabItem('groups', 'Virtual Groups', {
             searchable: true,
             can_add: true,
             can_toggle: true,
             has_permissions: false
-        }),
-        new TabItem('applications', 'Applications', {
+        }));
+
+    }
+
+    if (s.can('appcontexts.write')) {
+        tabs.push(new TabItem('applications', 'Applications', {
             searchable: true,
             can_add: true,
             has_permissions: false
-        }),
-        new TabItem('import', 'Import from Excel', {}),
-        new TabItem('export', 'Export to Excel', {})
-    ]
+        }));
+    }
+
+    if (s.can('users.write')) {
+        tabs.push(new TabItem('import', 'Import from Excel', {}));
+        tabs.push(new TabItem('export', 'Export to Excel', {}));
+    }
+
     return tabs
 }

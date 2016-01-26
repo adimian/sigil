@@ -2,6 +2,7 @@
 
 var SIGIL_API = '/sigil-api';
 var SIGIL_TOKEN_HEADER = 'Sigil-Token';
+var TOKEN_PLACEHOLDER = 'placeholder';
 
 var get_auth_headers = function() {
     var headers = {};

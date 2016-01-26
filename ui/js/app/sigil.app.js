@@ -2,6 +2,9 @@
 
 var SigilApplication = function() {
     var self = this;
+    window.app = this;
+
+    self.tabs = ko.observableArray([]);
 
     self.searchbar = ko.observable();
 
@@ -11,12 +14,16 @@ var SigilApplication = function() {
     self.server_options = new ServerOptions();
     self.current_user = new LoggedInUser();
 
-    self.tabs = build_tabs(self.current_user);
-    self.tabmap = {};
-    for (var i = 0; i < self.tabs.length; i++) {
-        var tab = self.tabs[i];
-        self.tabmap[tab.key] = tab;
+    self.refresh_tabs = function() {
+        self.tabs(build_tabs());
+        self.tabmap = {};
+        for (var i = 0; i < self.tabs().length; i++) {
+            var tab = self.tabs()[i];
+            self.tabmap[tab.key] = tab;
+        }
     }
+
+    self.refresh_tabs();
 
     self.edited_user = ko.observable(new User());
     self.edited_app = ko.observable(new AppContext());
@@ -32,7 +39,7 @@ var SigilApplication = function() {
     // download
     self.download_ready = ko.observable(true);
 
-    var initial_tab = (self.tabmap[location.hash.replace('#', '')] || self.tabs[0]);
+    var initial_tab = (self.tabmap[location.hash.replace('#', '')] || self.tabs()[0]);
     self.current_tab = ko.observable(initial_tab);
 
     self.authenticated = ko.computed(function() {

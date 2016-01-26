@@ -244,17 +244,54 @@ var User = function() {
 
 };
 
+var Security = function(user) {
+    var self = this;
+
+    self.permissions = ko.observableArray();
+
+    self.refresh = function(){
+        if (user.auth_token() !== TOKEN_PLACEHOLDER) {
+            authed_request('GET', '/user/permissions', {context: 'sigil'}, function(data) {
+                for (var i = 0; i < data.provides.length; i++) {
+                    var scope = data.provides[i];
+                    var need = new Need('sigil', scope);
+                    self.permissions.push(need);
+                }
+            });
+        }
+    }
+
+    self.can = function(name) {
+        for (var i=0; i < self.permissions().length; i++) {
+            if (self.permissions()[i].permission === name) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    self.permissions.subscribe(function(new_value) {
+        app.refresh_tabs();
+    });
+
+}
+
 var LoggedInUser = function() {
     var self = this;
     self.password = ko.observable();
     self.totp = ko.observable();
 
-    self.auth_token = ko.observable("placeholder");
+    self.auth_token = ko.observable(TOKEN_PLACEHOLDER);
+
+    self.s = new Security(self);
 
     self.get_info = function() {
         authed_request('GET', '/user/details', null, function(data) {
             self.load(data);
         });
+
+        self.s.refresh();
+
     };
 };
 LoggedInUser.prototype = new User();

@@ -45,6 +45,7 @@ def setup_templates(request):
 def client(request):
     app.config['DEBUG'] = True
     app.config['TESTING'] = True
+    app.config['WINDMILL'] = False
     app.config['URL_PREFIX'] = ''
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
     app.config['ENABLE_2FA'] = False

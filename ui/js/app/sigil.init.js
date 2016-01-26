@@ -21,6 +21,7 @@ var init = function() {
 
         this.get('#overview', function() {
             app.data_view.collection(null);
+            app.current_user.load_needs();
         });
         this.get('#teams', function() {
             authed_request('GET', '/team', null, function(data) {

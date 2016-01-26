@@ -218,6 +218,26 @@
 					</table>
 				</div>
 
+				<!-- Overview -->
+				<div class="container-fluid" data-bind="visible: current_tab().key == 'overview', with: $root.current_user">
+					<h2>Welcome, <span data-bind="text: display_name"></span></h2>
+
+					<div class="container-fluid">
+						<h3>Groups you belong to:</h3>
+						<ul data-bind="foreach: groups">
+							<li data-bind="text: $data"></li>
+						</ul>
+						<span data-bind="visible: !groups().length">None</span>
+
+						<h3>Teams you belong to:</h3>
+						<ul data-bind="foreach: teams">
+							<li data-bind="text: $data"></li>
+						</ul>
+						<span data-bind="visible: !teams().length">None</span>
+					</div>
+
+				</div>
+
 				<!-- Excel import view -->
 				<div class="container" data-bind="visible: current_tab().key == 'import'">
 					<form action="/file-upload" class="drop dropzone" id="import-file-dropzone"></form>

@@ -223,7 +223,9 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
                   'username': self.username,
                   'displayname': self.display_name,
                   'mobile': self.mobile_number,
-                  'id': self.id}
+                  'id': self.id,
+                  'groups': [g.name for g in self.groups],
+                  'teams': [g.name for g in self.teams]}
         if context:
             result['provides'] = self.provides(context)
         return result

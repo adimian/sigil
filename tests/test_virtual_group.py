@@ -52,6 +52,13 @@ def test_add_members(client):
     user = client._db.session.query(User).filter_by(username='alice').one()
     assert [g.name for g in user.groups] == ['jabber']
 
+    rv = client.get('/user/details',
+                    headers=client._auth_headers)
+
+    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert data['groups'] == ['jabber']
+
 
 def test_add_too_many_members(client):
     rv = client.post('/group',

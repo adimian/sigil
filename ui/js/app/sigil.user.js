@@ -95,6 +95,7 @@ var User = function() {
     self.new_password = ko.observable();
 
     self.groups = ko.observableArray();
+    self.teams = ko.observableArray();
 
     self.permissions = ko.observableArray();
 
@@ -149,6 +150,9 @@ var User = function() {
         self.email(item.email);
         self.active(item.active);
         self.mobile_number(item.mobile);
+
+        self.groups(item.groups);
+        self.teams(item.teams);
     };
 
     self.check_all = function(node) {

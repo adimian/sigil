@@ -272,6 +272,7 @@ var Security = function(user) {
 
     self.permissions.subscribe(function(new_value) {
         app.refresh_tabs();
+        app.set_current_tab(app.tabmap[location.hash.replace('#', '')]);
     });
 
 }

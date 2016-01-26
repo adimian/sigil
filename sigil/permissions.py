@@ -21,8 +21,8 @@ def on_identity_loaded(sender, identity):
     for need in current_user.provides(app.config['ROOT_APP_CTX']):
         identity.provides.add(need)
 
-    if app.config['DEBUG'] and not app.config['TESTING']:
-        logging.warning('running in DEBUG mode, all users automatically '
+    if app.config['WINDMILL']:
+        logging.warning('running in WINDMILL mode, all users automatically '
                         'get full permissions '
                         '(do not use this setting in production)')
         for need in Need.query.all():

@@ -89,6 +89,7 @@ SigilApplication.prototype.login = function() {
         }).error(function(data) {
         self.login_error_message(data.responseJSON.message);
     });
+    this.current_user.password(null);
 };
 
 SigilApplication.prototype.edit_me = function() {

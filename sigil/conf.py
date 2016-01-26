@@ -20,6 +20,7 @@ def configure(app):
     set_default('DEBUG', False)
     set_default('HOST', '0.0.0.0')
     set_default('PORT', 5000)
+    set_default('WINDMILL', False)  # everyone gets all permissions
     set_default('STANDALONE', False)
     set_default('SERVER_NAME', None)
     set_default('ERROR_404_HELP', False)

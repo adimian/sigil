@@ -127,13 +127,13 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
     home_number = db.Column(db.String(256))
 
     permissions = db.relationship('Need', secondary=permissions,
-                                  backref=db.backref('users', lazy='dynamic'))
+                                  backref=db.backref('users'))
 
     groups = db.relationship('VirtualGroup', secondary=group_member,
-                             backref=db.backref('members', lazy='dynamic'))
+                             backref=db.backref('members'))
 
     teams = db.relationship('UserTeam', secondary=team_member,
-                            backref=db.backref('members', lazy='dynamic'))
+                            backref=db.backref('members'))
     extra_fields = db.relationship('ExtraField', secondary=extra_field,
                                    lazy='dynamic')
 
@@ -271,7 +271,7 @@ class Need(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     app_id = db.Column(db.Integer, db.ForeignKey('appcontext.id'))
     app_context = db.relationship('AppContext',
-                                  backref=db.backref('needs', lazy='dynamic'))
+                                  backref=db.backref('needs'))
     method = db.Column(db.String(256))
     value = db.Column(db.String(256))
     resource = db.Column(db.String(256))

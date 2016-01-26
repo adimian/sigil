@@ -4,7 +4,6 @@ import logging
 from flask_principal import identity_loaded
 
 from .api import app
-from .models import Need
 from .utils import current_user
 
 

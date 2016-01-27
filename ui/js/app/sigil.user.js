@@ -104,18 +104,18 @@ var User = function() {
     }, this);
 
     self.change_password = function() {
-        if (! self.old_password()){
+        if (!self.old_password()) {
             alert('Missing old password');
             return;
         }
-        if (! self.new_password()){
+        if (!self.new_password()) {
             alert('Missing new password');
             return;
         }
         authed_request('POST', '/user/password', {
             old_password: self.old_password(),
             new_password: self.new_password()
-        }, function(){});
+        }, function() {});
     };
 
     self.request_password_change = function() {
@@ -128,10 +128,10 @@ var User = function() {
         $.confirm({
             title: "Confirmation required",
             text: "This will re-generate a new 2FA code, and invalidate the current one, do you want to proceed ?",
-            confirm: function(){
+            confirm: function() {
                 self.reset_totp_app.reset();
             },
-            cancel: function(){
+            cancel: function() {
                 // nothing
             }
         });
@@ -166,14 +166,14 @@ var User = function() {
 
     self.check_all = function(node) {
         var needs = node.needs();
-        for (var i = 0; i < needs.length; i++) {
+        for (var i = 0; i < needs.length; i++)  {
             needs[i].active(true);
         }
     }
 
     self.uncheck_all = function(node) {
         var needs = node.needs();
-        for (var i = 0; i < needs.length; i++) {
+        for (var i = 0; i < needs.length; i++)  {
             needs[i].active(false);
         }
     }
@@ -250,7 +250,22 @@ var User = function() {
             mobile_number: self.mobile_number()
         };
         authed_request('POST', '/user/register', update, function(data) {
-            alert('New user created');
+            noty({
+                text: 'User ' + self.username() + ' created',
+                timeout: 2000,
+                type: 'success',
+                layout: 'topCenter',
+                animation: {
+                    open: {
+                        height: 'toggle'
+                    }, // jQuery animate function property object
+                    close: {
+                        height: 'toggle'
+                    }, // jQuery animate function property object
+                    easing: 'swing', // easing
+                    speed: 500 // opening & closing animation speed
+                }
+            });
         });
         $("#user_add_modal").modal('hide');
     };
@@ -262,9 +277,11 @@ var Security = function(user) {
 
     self.permissions = ko.observableArray();
 
-    self.refresh = function(){
+    self.refresh = function() {
         if (user.auth_token() !== TOKEN_PLACEHOLDER) {
-            authed_request('GET', '/user/permissions', {context: 'sigil'}, function(data) {
+            authed_request('GET', '/user/permissions', {
+                context: 'sigil'
+            }, function(data) {
                 for (var i = 0; i < data.provides.length; i++) {
                     var scope = data.provides[i];
                     var need = new Need('sigil', scope);
@@ -275,7 +292,7 @@ var Security = function(user) {
     }
 
     self.can = function(name) {
-        for (var i=0; i < self.permissions().length; i++) {
+        for (var i = 0; i < self.permissions().length; i++)  {
             if (self.permissions()[i].permission === name) {
                 return true;
             }

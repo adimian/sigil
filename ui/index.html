@@ -490,9 +490,12 @@
 						<input type="password" id="new_password" class="form-control" data-bind="value: current_user.new_password">
 					</div>
 				</div>
+				<div class="alert alert-danger" data-bind="visible: password_error_message">
+					<span data-bind="text: password_error_message"></span>
+				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-success" data-dismiss="modal" data-bind="click: $root.current_user.change_password">Ok</button>
+					<button type="button" class="btn btn-success" data-bind="click: $root.current_user.change_password">Ok</button>
 				</div>
 			</div>
 		</div>

@@ -159,3 +159,11 @@ def test_change_password(client):
                      headers=client._auth_headers)
     assert rv.status_code == 200, str(rv.data)
     assert User.query.get(client._user.id).is_correct_password('hello')
+
+
+def test_change_password_bad_old(client):
+    rv = client.post('/user/password', data={'old_password': 'not-that-one',
+                                             'new_password': 'hello'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 400, str(rv.data)
+    assert User.query.get(client._user.id).is_correct_password('test')

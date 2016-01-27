@@ -105,24 +105,27 @@ var User = function() {
 
     self.change_password = function() {
         if (!self.old_password()) {
-            alert('Missing old password');
+            app.password_error_message('missing old password');
             return;
         }
         if (!self.new_password()) {
-            alert('Missing new password');
+            app.password_error_message('missing new password');
             return;
         }
         authed_request('POST', '/user/password', {
             old_password: self.old_password(),
             new_password: self.new_password()
-        }, function() {});
+        }, function() {
+            app.password_error_message(null);
+            self.new_password(null);
+            self.old_password(null);
+        });
+        $("#change_password_modal").modal('hide');
     };
 
     self.request_password_change = function() {
         $("#change_password_modal").modal('show');
     };
-
-
 
     self.reset_totp = function() {
         $.confirm({

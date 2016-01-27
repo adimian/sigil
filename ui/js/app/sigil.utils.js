@@ -32,7 +32,7 @@ var authed_request = function(verb, url, data, success) {
                 app.current_user.auth_token(null);
                 return;
             }
-            if (data.responseJSON !== undefined){
+            if (data.responseJSON === undefined){
                 app.error_message('unknown error');
             } else {
                 app.error_message(data.responseJSON.message);

@@ -10,6 +10,7 @@ var SigilApplication = function() {
 
     self.login_error_message = ko.observable();
     self.error_message = ko.observable();
+    self.password_error_message = ko.observable();
 
     self.server_options = new ServerOptions();
     self.current_user = new LoggedInUser();

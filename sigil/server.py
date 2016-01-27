@@ -23,6 +23,13 @@ manager.add_command('db', alembic_manager)
 
 
 @manager.command
+def activate(username):
+    user = User.by_username(username)
+    user.active = True
+    db.session.commit()
+    print('user {} activated'.format(username))
+
+@manager.command
 def superuser(username, email):
     user = User(username, email)
     user.active = True

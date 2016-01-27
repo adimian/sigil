@@ -1,11 +1,12 @@
 import logging
 import re
 
+from flask import current_app as app
 import openpyxl
 import sqlalchemy
 
-from ..models import User, VirtualGroup, AppContext, Need
 from ..api import EXTRA_FIELDS
+from ..models import User, VirtualGroup, AppContext, Need
 
 
 logger = logging.getLogger(__name__)
@@ -165,6 +166,7 @@ class UserProcessor(SheetProcessor):
             if not entity:
                 entity = User(username=item['username'],
                               email=item['email'],
+                              active=app.config['AUTO_ACTIVATE_NEW_USER'],
                               mobile_number=item['mobile'])
                 added.append(entity)
             else:
@@ -253,30 +255,34 @@ class ExcelConnector(object):
         pass
 
     def process(self, fobj):
-        with self.session.no_autoflush:
-            wb = openpyxl.load_workbook(fobj.stream, read_only=True,
-                                        use_iterators=True,
-                                        data_only=True)
+        try:
+            with self.session.no_autoflush:
+                wb = openpyxl.load_workbook(fobj.stream, read_only=True,
+                                            use_iterators=True,
+                                            data_only=True)
 
-            sheets = set(wb.sheetnames)
+                sheets = set(wb.sheetnames)
 
-            # objects
-            for sheetname in ('users', 'groups', 'teams'):
-                if sheetname in sheets:
-                    f_name = 'process_{}'.format(sheetname)
-                    f = getattr(self, f_name)
-                    if not f:
-                        raise Exception('{} not found'.format(f_name))
-                    logger.info('handling {} change'.format(sheetname))
-                    f(wb[sheetname])
-                    logger.info('done handling {} change'.format(sheetname))
-                    sheets.remove(sheetname)
+                # objects
+                for sheetname in ('users', 'groups', 'teams'):
+                    if sheetname in sheets:
+                        f_name = 'process_{}'.format(sheetname)
+                        f = getattr(self, f_name)
+                        if not f:
+                            raise Exception('{} not found'.format(f_name))
+                        logger.info('handling {} change'.format(sheetname))
+                        f(wb[sheetname])
+                        logger.info('done handling {} change'.format(sheetname))
+                        sheets.remove(sheetname)
 
-            # permissions
-            for context in sheets:
-                logger.info('handling permission change for {}'.format(context))
+                # permissions
+                for context in sheets:
+                    logger.info('handling permission change for {}'.format(context))
 
-            self.session.commit()
+                self.session.commit()
+        except:
+            self.session.rollback()
+            raise
 
 
 class ExcelExporter(object):

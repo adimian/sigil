@@ -27,7 +27,7 @@ def get_template(template_name, default_template_name):
 def setup_emails():
     @user_registered.connect_via(app)
     def send_register_email(sender, user, token):
-        msg = Message("Welcome to Sigil",
+        msg = Message("Welcome to {}".format(app.config['APPLICATION_NAME']),
                       recipients=[user.email])
         template_name = app.config['MAIL_TEMPLATES']['REGISTER']
         template = get_template(template_name, "email_register.html")
@@ -46,8 +46,8 @@ def setup_emails():
 
     @user_request_password_recovery.connect_via(app)
     def send_recover_email(sender, user, token):
-        msg = Message("Sigil: password recovery",
-                      recipients=[user.email])
+        title = "{}: password recovery".format(app.config['APPLICATION_NAME'])
+        msg = Message(title, recipients=[user.email])
         template_name = app.config['MAIL_TEMPLATES']['RECOVER']
         template = get_template(template_name, "email_recover.html")
 

@@ -4,6 +4,10 @@ var init = function() {
     ko.applyBindings(app);
     window.app = app;
 
+    // make sure there is nothing in the collection
+    // so table won't show up initially
+    app.data_view.collection(null);
+
     Sammy(function() {
         this.get('/', function() {});
         this.get('#users', function() {

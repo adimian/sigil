@@ -27,7 +27,7 @@ def get_template(template_name, default_template_name):
 def setup_emails():
     @user_registered.connect_via(app)
     def send_register_email(sender, user, token):
-        msg = Message("Welcome to {}".format(app.config['APPLICATION_NAME']),
+        msg = Message("New account created for {}".format(app.config['APPLICATION_NAME']),
                       recipients=[user.email])
         template_name = app.config['MAIL_TEMPLATES']['REGISTER']
         template = get_template(template_name, "email_register.html")
@@ -35,18 +35,21 @@ def setup_emails():
         base_url = '/'.join((app.config['UI_BASE_URL'],
                             'validate.html'))
 
-        msg.html = template.render(creator=current_user,
-                                   token=token,
-                                   user=user,
-                                   validate_url=base_url)
+        url = '{}?token={}'.format(base_url, token)
+        msg.html = template.render(creator=current_user.username,
+                                   user=user.username,
+                                   app_name=app.config['APPLICATION_NAME'],
+                                   url=url)
         if app.config['DEBUG'] and not app.config['TESTING']:
+            print(msg.subject)
             print(msg.html)
         else:
             mail.send(msg)
 
     @user_request_password_recovery.connect_via(app)
     def send_recover_email(sender, user, token):
-        title = "{}: password recovery".format(app.config['APPLICATION_NAME'])
+        title = "{}: password recovery for {}".format(app.config['APPLICATION_NAME'],
+                                                      user.username)
         msg = Message(title, recipients=[user.email])
         template_name = app.config['MAIL_TEMPLATES']['RECOVER']
         template = get_template(template_name, "email_recover.html")
@@ -54,11 +57,12 @@ def setup_emails():
         base_url = '/'.join((app.config['UI_BASE_URL'],
                             'validate.html'))
 
-        msg.html = template.render(creator=current_user,
-                                   token=token,
-                                   user=user,
-                                   validate_url=base_url)
+        url = '{}?token={}'.format(base_url, token)
+        msg.html = template.render(user=user.username,
+                                   app_name=app.config['APPLICATION_NAME'],
+                                   url=url)
         if app.config['DEBUG'] and not app.config['TESTING']:
+            print(msg.subject)
             print(msg.html)
         else:
             mail.send(msg)

@@ -2,16 +2,16 @@
 
 <body>
     <div class="header">
-        <h1>Recover your password</h1>
+        <h1>Recover your password for {{user}}</h1>
     </div>
     <div class="container">
         <p>It appears you have forgotten your password. No problem.</p>
-        <p>You can re-activate your account using <a href="{{validate_url}}?token={{token}}">the following link</a></p>
+        <p>You can re-activate your account using <a href="{{url}}">the following link</a></p>
         <p>In case you want to reconfigure your 2 factor authentication, you will be presented with necessary information after setting up your password. This is an optional operation as your 2 factor authentication has not been modified.</p>
     </div>
     <div class="footer">
         <p>
-            Thanks for using Sigil.
+            Thanks for using {{app_name}}.
         </p>
     </div>
 </body>

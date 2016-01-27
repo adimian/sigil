@@ -298,15 +298,15 @@ class ExcelExporter(object):
     def export_users(self, workbook):
         sheet = workbook.create_sheet(title='users')
         sheet.append([self.HEADER_MAPPING.get(f, f) for f in self.user_fields])
-        for user in self.session.query(User).all():
-            sheet.append([getattr(user, f) for f in self.user_fields])
+        for user in self.session.query(User).order_by(User.username).all():
+            sheet.append([getattr(user, f, '') for f in self.user_fields])
 
     def export_groups(self, workbook):
         sheet = workbook.create_sheet(title='groups')
-        all_groups = self.session.query(VirtualGroup).all()
+        all_groups = self.session.query(VirtualGroup).order_by(VirtualGroup.name).all()
 
         sheet.append(['username'] + [g.name for g in all_groups])
-        for user in self.session.query(User).all():
+        for user in self.session.query(User).order_by(User.username).all():
             row = [user.username]
             for group in all_groups:
                 row.append('yes' if group in user.groups else None)
@@ -318,7 +318,7 @@ class ExcelExporter(object):
             all_needs = self.session.query(Need).filter_by(app_context=ctx).all()
 
             sheet.append(['username'] + [n.dotted for n in all_needs])
-            for user in self.session.query(User).all():
+            for user in self.session.query(User).order_by(User.username).all():
                 row = [user.username]
                 for need in all_needs:
                     row.append('yes' if need in user.permissions else None)

@@ -119,6 +119,13 @@ var User = function() {
             app.password_error_message(null);
             self.new_password(null);
             self.old_password(null);
+            noty({
+                text: 'You password has been changed',
+                timeout: 2000,
+                type: 'success',
+                layout: 'topCenter',
+            });
+
         });
         $("#change_password_modal").modal('hide');
     };
@@ -258,16 +265,6 @@ var User = function() {
                 timeout: 2000,
                 type: 'success',
                 layout: 'topCenter',
-                animation: {
-                    open: {
-                        height: 'toggle'
-                    }, // jQuery animate function property object
-                    close: {
-                        height: 'toggle'
-                    }, // jQuery animate function property object
-                    easing: 'swing', // easing
-                    speed: 500 // opening & closing animation speed
-                }
             });
         });
         $("#user_add_modal").modal('hide');

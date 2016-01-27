@@ -125,7 +125,16 @@ var User = function() {
 
 
     self.reset_totp = function() {
-        self.reset_totp_app.reset();
+        $.confirm({
+            title: "Confirmation required",
+            text: "This will re-generate a new 2FA code, and invalidate the current one, do you want to proceed ?",
+            confirm: function(){
+                self.reset_totp_app.reset();
+            },
+            cancel: function(){
+                // nothing
+            }
+        });
     };
 
     self.show_api_key = function() {

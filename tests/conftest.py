@@ -48,6 +48,7 @@ def client(request):
     app.config['URL_PREFIX'] = ''
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///:memory:"
     app.config['ENABLE_2FA'] = False
+    app.config['LDAP_HOST'] = 'mocked.server'
     db.create_all()
 
     with app.app_context():

@@ -20,3 +20,4 @@ d2to1==0.2.11
 ovh==0.3.5
 tornado==4.2.1
 pytest==2.8.2
+pytest-mock==0.9.0

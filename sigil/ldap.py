@@ -150,6 +150,7 @@ def update_ldap():
         for user in group.members:
             db_group_members[group_dn].add(con.user_dn(user))
             con.add_group_member(group, user)
+            logger.debug('adding {} to group {}'.format(user, group))
 
     logger.info('fetching LDAP groups and group members')
     for entry in con.search(con.ou_dn(app.config['LDAP_GROUPS_OU']),

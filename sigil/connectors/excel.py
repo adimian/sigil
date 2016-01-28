@@ -166,8 +166,9 @@ class UserProcessor(SheetProcessor):
             if not entity:
                 entity = User(username=item['username'],
                               email=item['email'],
-                              active=app.config['AUTO_ACTIVATE_NEW_USER'],
                               mobile_number=item['mobile'])
+                if app.config['AUTO_ACTIVATE_NEW_USER']:
+                    entity.active = True
                 added.append(entity)
             else:
                 updated.append(entity)

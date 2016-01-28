@@ -1,14 +1,16 @@
 # @PydevCodeAnalysisIgnore
 import datetime
 import logging
+import re
 
 from flask import current_app as app
 from flask_login import UserMixin
+from flask_sqlalchemy import Model
 from passlib.hash import ldap_sha512_crypt
 from sqlalchemy import UniqueConstraint
 import sqlalchemy
+from sqlalchemy.event import listen
 from sqlalchemy.ext.hybrid import hybrid_property
-from flask_sqlalchemy import Model
 
 from .api import db, EXTRA_FIELDS
 from .multifactor import new_user_secret
@@ -351,3 +353,30 @@ class ExtraField(db.Model):
     def __init__(self, field_name, value):
         self.field_name = field_name
         self.value = value
+
+
+def validate_phone(target, value, oldvalue, initiator):
+    if not value:
+        return value
+    return re.sub(r'[^+0-9]', '', value)
+
+def validate_email(target, value, oldvalue, initiator):
+    if "@" not in value or '.' not in value:
+        raise ValueError('invalid email address')
+    return value.lower().strip()
+
+def force_lowercase(target, value, oldvalue, initiator):
+    return value.lower().strip()
+
+listen(User.mobile_number, 'set', validate_phone, retval=True)
+listen(User.home_number, 'set', validate_phone, retval=True)
+listen(User.phone_number, 'set', validate_phone, retval=True)
+listen(User.email, 'set', validate_email, retval=True)
+
+listen(User.username, 'set', force_lowercase, retval=True)
+listen(VirtualGroup.name, 'set', force_lowercase, retval=True)
+listen(UserTeam.name, 'set', force_lowercase, retval=True)
+listen(ExtraField.field_name, 'set', force_lowercase, retval=True)
+listen(AppContext.name, 'set', force_lowercase, retval=True)
+listen(Need.method, 'set', force_lowercase, retval=True)
+listen(Need.resource, 'set', force_lowercase, retval=True)

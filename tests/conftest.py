@@ -17,8 +17,8 @@ ROOT_DIR = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 
 @pytest.fixture(scope="function")
 def setup_templates(request):
-    reg = b"reg {{creator.username}} {{user.username}} {{validate_url}}"
-    rec = b"rec {{creator.username}} {{user.username}} {{validate_url}}"
+    reg = b"reg {{creator}} {{user}} {{url}}"
+    rec = b"rec {{creator}} {{user}} {{url}}"
     t = {"reg.html": reg, "rec.html": rec}
     root_path = os.path.join(ROOT_DIR, "templates")
     os.mkdir(root_path)

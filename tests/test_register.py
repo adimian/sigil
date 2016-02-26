@@ -140,7 +140,9 @@ def test_validate_twice(client):
 
     rv = client.post('/user/validate', data={'token': data['token'],
                                              'password': 'somethingelse'})
-    assert rv.status_code == 200
+    data = json.loads(rv.data.decode('utf-8'))
+    assert rv.status_code == 400
+    assert 'replaced' in data['message']
 
 
 def test_register_existing(client):

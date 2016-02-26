@@ -36,7 +36,7 @@ def setup_emails():
                             'validate.html'))
 
         url = '{}?token={}'.format(base_url, token)
-        msg.html = template.render(creator=current_user.username,
+        msg.html = template.render(creator=current_user.display_name,
                                    user=user.username,
                                    app_name=app.config['APPLICATION_NAME'],
                                    url=url)
@@ -58,7 +58,7 @@ def setup_emails():
                             'validate.html'))
 
         url = '{}?token={}'.format(base_url, token)
-        msg.html = template.render(user=user.username,
+        msg.html = template.render(user=user.display_name,
                                    app_name=app.config['APPLICATION_NAME'],
                                    url=url)
         if app.config['DEBUG'] and not app.config['TESTING']:

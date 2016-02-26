@@ -82,9 +82,9 @@ class LDAPUserMixin(object):
     @property
     def ldap(self):
         # LDAP needs surname and givenname, so enforcing it
-        data = {'surname': self.surname or self.username,
+        data = {'surname': self.sn,
                 'uid': self.username,
-                'givenName': self.firstname or self.username,
+                'givenName': self.fn,
                 'displayName': self.display_name,
                 'mail': self.email}
         if self.password:
@@ -108,6 +108,7 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
     created_at = db.Column(db.DateTime(),
                            default=datetime.datetime.utcnow)
     validated_at = db.Column(db.DateTime())
+    token_gen_date = db.Column(db.DateTime())
     totp_secret = db.Column(db.String(256), default=new_user_secret)
     totp_configured = db.Column(db.Boolean(), default=False)
 
@@ -196,7 +197,12 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
 
     @property
     def display_name(self):
-        return self.display or '{0} {1}'.format(self.fn, self.sn)
+        if self.display:
+            return self.display
+        elif self.firstname and self.surname:
+            return '{} {}'.format(self.firstname, self.surname)
+        else:
+            return self.username
 
     def provides(self, context):
         return tuple(p.as_tuple() for p in self.permissions

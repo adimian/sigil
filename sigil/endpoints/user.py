@@ -35,14 +35,17 @@ def get_target_user():
 
 def user_by_token(token):
     try:
-        uid, email = read_token(token,
-                                salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
+        salt = app.config['UPDATE_PASSWORD_TOKEN_SALT']
+        (uid, email), timestamp = read_token(token, salt=salt,
+                                             return_timestamp=True)
     except itsdangerous.BadSignature:
         abort(400, 'invalid token')
     try:
         user = db.session.query(User).filter_by(id=uid).one()
     except sqlalchemy.orm.exc.NoResultFound:
         abort(404, 'unknown user')
+    if user.token_gen_date is not None and timestamp < user.token_gen_date:
+        abort(400, 'replaced token')
     return user, email
 
 
@@ -127,6 +130,9 @@ class ValidateUser(AnonymousResource):
             if user is None:
                 abort(404, 'user not found')
 
+        # invalidate all previously emitted tokens
+        user.token_gen_date = datetime.datetime.utcnow()
+
         token = generate_token([user.id, md5(user.email)],
                                salt=app.config['UPDATE_PASSWORD_TOKEN_SALT'])
 
@@ -147,6 +153,8 @@ class ValidateUser(AnonymousResource):
         if md5(user.email) == email:
             user.validated_at = datetime.datetime.utcnow()
             user.password = args['password']
+            # invalidate all existing tokens
+            user.token_gen_date = datetime.datetime.utcnow()
             db.session.commit()
             password_recovered.send(app._get_current_object(), user=user)
         else:

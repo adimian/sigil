@@ -8,6 +8,7 @@ from itsdangerous import URLSafeTimedSerializer
 import itsdangerous
 import sqlalchemy
 from werkzeug.local import LocalProxy
+
 from .api import sentry
 
 
@@ -22,10 +23,11 @@ def generate_token(data, salt):
     return serializer.dumps(data)
 
 
-def read_token(data, salt, max_age=None):
+def read_token(data, salt, max_age=None, return_timestamp=False):
     serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'],
                                         salt=salt)
-    return serializer.loads(data, max_age=max_age)
+    return serializer.loads(data, max_age=max_age,
+                            return_timestamp=return_timestamp)
 
 
 def md5(string):

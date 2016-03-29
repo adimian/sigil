@@ -58,9 +58,14 @@ def send_sms_code(user):
     code = get_code(user.totp_secret)
     sender = app.config['OVH_SMS_SENDER']
     service_name = app.config['OVH_SMS_SERVICE']
+
+    message = ('In order to authenticate your account "{}" on {}, '
+               'please use the following activation code: {}')
+
     options = {'sender': sender,
-               'message': 'Your {} activation code is {}'.format(app.config['APPLICATION_NAME'],
-                                                                 code),
+               'message': message.format(user.display_name,
+                                         app.config['APPLICATION_NAME'],
+                                         code),
                'receivers': [user.mobile_number]}
     if app.config['DEBUG'] or app.config['TESTING']:
         print(options)
@@ -69,4 +74,8 @@ def send_sms_code(user):
                             application_key=app.config['OVH_APPLICATION_KEY'],
                             application_secret=app.config['OVH_APPLICATION_SECRET'],
                             consumer_key=app.config['OVH_CONSUMER_KEY'])
-        client.post('/sms/%s/jobs' % service_name, **options)
+
+        try:
+            client.post('/sms/%s/jobs' % service_name, **options)
+        except ovh.exceptions.ResourceNotFoundError:
+            print(client.get('/sms'))

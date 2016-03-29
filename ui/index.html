@@ -62,7 +62,18 @@
 						</div>
 						<div class="form-group" data-bind="visible: server_options.use_totp()">
 							<label for="totp" class="control-label">PIN code</label>
-							<input type="text" name="totp" class="form-control" placeholder="PIN" required data-bind="value: current_user.totp">
+
+							<div class="row">
+							   <div class="col-md-8">
+							     <input type="text" name="totp" class="form-control" placeholder="PIN" data-bind="value: current_user.totp">
+							   </div>
+							   <div class="col-md-4">
+							     <button data-bind="click: $root.send_sms" class="btn btn-default btn-lg">Send SMS <span class="glyphicon glyphicon-phone"></span></button>
+							   </div>
+							</div>
+
+
+
 						</div>
 
 					</div>

@@ -94,6 +94,8 @@ class MultifactorSendSMS(AnonymousResource):
 
         send_sms_code(user)
 
+        return {'message': 'SMS sent !'}
+
 
 class MultifactorMethodConfirm(AnonymousResource):
 

@@ -42,7 +42,7 @@ class Login(AnonymousResource):
                             'please use the link you received by e-mail'))
             if not user.is_correct_password(args['password']):
                 abort(403, 'invalid password')
-            if app.config['ENABLE_2FA']:
+            if app.config['ENABLE_2FA'] and user.totp_configured:
                 if not args['totp']:
                     abort(400, 'TOTP code required')
                 if not check_code(user.totp_secret, args['totp']):

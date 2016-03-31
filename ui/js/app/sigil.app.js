@@ -65,36 +65,34 @@ var SigilApplication = function() {
 
 SigilApplication.prototype.send_sms = function() {
     var self = this;
-    self.send_sms = function() {
-        var data = {
-            username: this.current_user.username(),
-        };
-
-        var success = function(data) {
-            noty({
-                text: 'SMS sent !',
-                timeout: 2000,
-                type: 'success',
-                layout: 'topCenter',
-            });
-        };
-
-        $.ajax({
-            method: "POST",
-            dataType: "json",
-            url: SIGIL_API + '/user/2fa/sms',
-            data: data,
-            success: success
-        }).error(function(data) {
-            noty({
-                text: 'Sorry but we are not able to send you a SMS now: ' + data.responseJSON.message,
-                timeout: 2000,
-                type: 'error',
-                layout: 'topCenter',
-            });
-        });
-
+    var data = {
+        username: this.current_user.username(),
     };
+
+    var success = function(data) {
+        noty({
+            text: 'SMS sent !',
+            timeout: 2000,
+            type: 'success',
+            layout: 'topCenter',
+        });
+    };
+
+    $.ajax({
+        method: "POST",
+        dataType: "json",
+        url: SIGIL_API + '/user/2fa/sms',
+        data: data,
+        success: success
+    }).error(function(data) {
+        noty({
+            text: 'Sorry but we are not able to send you a SMS now: ' + data.responseJSON.message,
+            timeout: 2000,
+            type: 'error',
+            layout: 'topCenter',
+        });
+    });
+
 }
 
 SigilApplication.prototype.login = function() {

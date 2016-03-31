@@ -1,4 +1,5 @@
 import json
+import os.path as osp
 
 
 def register_app(client):
@@ -11,6 +12,9 @@ def register_app(client):
 
 def test_register_app(client):
     register_app(client)
+
+    keyfile = osp.join(client._app.config['APP_KEYS_FOLDER'], 'newapp.appkey')
+    assert osp.isfile(keyfile)
 
 
 def test_list_apps(client):

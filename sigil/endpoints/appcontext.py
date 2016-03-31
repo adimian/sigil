@@ -1,6 +1,7 @@
 from itertools import product
 import json
 import logging
+import os
 
 from flask import abort
 from flask_principal import Permission
@@ -51,11 +52,19 @@ class ApplicationContext(ProtectedResource):
                 current_user.permissions.append(need)
             try:
                 db.session.commit()
-            except sqlalchemy.exc.IntegrityError as err:
+            except sqlalchemy.exc.IntegrityError:
                 abort(409, 'an application with the same name already exists')
 
-            return {'application-key': generate_token([ctx.id, md5(ctx.name)],
-                                                      salt=app.config['APPLICATION_KEY_SALT'])}
+            app_key = generate_token([ctx.id, md5(ctx.name)],
+                                     salt=app.config['APPLICATION_KEY_SALT'])
+
+            if app.config['APP_KEYS_FOLDER']:
+                keyfile = os.path.join(app.config['APP_KEYS_FOLDER'],
+                                       '{}.appkey'.format(ctx.name))
+                with open(keyfile, 'w') as f:
+                    f.write(app_key)
+
+            return {'application-key': app_key}
         else:
             abort(403)
 

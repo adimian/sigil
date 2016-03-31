@@ -40,6 +40,7 @@ def configure(app):
     set_default('ROOT_APP_CTX', 'sigil')
     set_default('AUTO_ACTIVATE_NEW_USER', True)
     set_default('EXTRA_FIELDS', 'department,company')
+    set_default('APP_KEYS_FOLDER', '')
 
     # mail
     set_default('MAIL_SUPPRESS_SEND', True)

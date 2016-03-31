@@ -107,10 +107,10 @@ SigilApplication.prototype.login = function() {
         function(data) {
             self.current_user.auth_token(data.token);
             Cookies.set('token', data.token)
+            this.current_user.password(null);
         }).error(function(data) {
-        self.login_error_message(data.responseJSON.message);
+            self.login_error_message(data.responseJSON.message);
     });
-    this.current_user.password(null);
 };
 
 SigilApplication.prototype.edit_me = function() {

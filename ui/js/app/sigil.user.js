@@ -319,10 +319,8 @@ var LoggedInUser = function() {
     self.get_info = function() {
         authed_request('GET', '/user/details', null, function(data) {
             self.load(data);
+            self.s.refresh();
         });
-
-        self.s.refresh();
-
     };
 };
 LoggedInUser.prototype = new User();

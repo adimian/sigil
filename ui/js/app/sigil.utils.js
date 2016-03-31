@@ -35,7 +35,7 @@ var authed_request = function(verb, url, data, success) {
             if (data.responseJSON === undefined){
                 app.error_message('unknown error');
             } else {
-                app.error_message(data.responseJSON.message);
+                app.error_message(JSON.stringify(data.responseJSON.message));
             }
             $("#error_popup").modal('show');
 

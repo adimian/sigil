@@ -6,8 +6,8 @@ RUN mkdir /sigil
 VOLUME /sigil
 
 WORKDIR /sigil
-ADD requirements.txt /sigil/
-RUN pip install -U pip && pip install -r requirements.txt
+ADD requirements.txt /tmp/requirements.txt
+RUN pip install -U pip && pip install -r /tmp/requirements.txt
 
 ADD . /sigil/
 ADD sigil_cmd /usr/local/bin/sigil

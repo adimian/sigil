@@ -6,6 +6,7 @@ from flask import Flask, send_from_directory, safe_join
 from flask_alembic import Alembic
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from raven.contrib.flask import Sentry
 
 import flask_restful as restful
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 db = SQLAlchemy(app)
 mail = Mail(app)
 alembic = Alembic(app)
-EXTRA_FIELDS = [v for v in app.config["EXTRA_FIELDS"].split(",") if v]
+cors = CORS(app)
 
 sentry = None
 if app.config['SENTRY_DSN']:

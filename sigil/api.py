@@ -24,7 +24,12 @@ logger = logging.getLogger(__name__)
 db = SQLAlchemy(app)
 mail = Mail(app)
 alembic = Alembic(app)
-cors = CORS(app)
+if app.config['CORS_ORIGINS']:
+    logger.info('configuring CORS for {}'.format(app.config['CORS_ORIGINS']))
+    cors = CORS(app, resources=app.config['CORS_ORIGINS'],
+                supports_credentials=True,
+                allow_headers='Content-Type',
+                send_wildcard=True)
 
 sentry = None
 if app.config['SENTRY_DSN']:

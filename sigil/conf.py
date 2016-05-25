@@ -22,7 +22,6 @@ def configure(app):
     set_default('PORT', 5000)
     set_default('STANDALONE', False)
     set_default('SERVER_NAME', None)
-    set_default('CORS_ORIGINS', '')
     set_default('ERROR_404_HELP', False)
     set_default('APPLICATION_NAME', 'Sigil')
     set_default('UI_BASE_URL', 'http://docker.dev/sigil')

@@ -53,7 +53,6 @@ permissions = db.Table('permssions',
                        )
 
 group_member = db.Table('group_member',
-                        
                         db.Column('group_id', db.Integer,
                                   db.ForeignKey('virtualgroup.id')),
                         db.Column('member_id', db.Integer,
@@ -67,6 +66,14 @@ team_member = db.Table('team_member',
                        db.Column('member_id', db.Integer,
                                  db.ForeignKey('user.id')),
                        UniqueConstraint('team_id', 'member_id'),
+                       )
+
+team_permissions = db.Table('team_permssions',
+                       db.Column('team_id', db.Integer,
+                                 db.ForeignKey('userteam.id')),
+                       db.Column('need_id', db.Integer,
+                                 db.ForeignKey('need.id')),
+                       UniqueConstraint('team_id', 'need_id'),
                        )
 
 extra_field = db.Table('extra_field',
@@ -345,9 +352,19 @@ class UserTeam(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), unique=True)
     active = db.Column(db.Boolean(), default=True)
+    permissions = db.relationship('Need', secondary=team_permissions,
+                                  backref=db.backref('userteam'))
 
     def __init__(self, name):
         self.name = name
+        
+    @classmethod
+    def by_name(cls, name):
+        try:
+            return db.session.query(cls).filter_by(name=name).one()
+        except sqlalchemy.orm.exc.NoResultFound:
+            return None
+
 
 
 class ExtraField(db.Model):

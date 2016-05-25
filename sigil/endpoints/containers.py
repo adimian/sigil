@@ -8,6 +8,7 @@ import sqlalchemy
 from . import ProtectedResource
 from ..api import db
 from ..models import VirtualGroup, User, UserTeam
+from .permissions import ResourcePermissions
 
 
 class ContainerResource(ProtectedResource):
@@ -118,3 +119,20 @@ class VirtualGroupMembers(ContainerMembers):
 class UserTeamMembers(ContainerMembers):
     container_type = UserTeam
     permission_type = ('teams', 'write')
+
+
+def get_target_team():
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', type=str, required=True)
+    args = parser.parse_args()
+
+    team = UserTeam.by_name(args['name'])
+    if team is None:
+        abort(404, 'unknown team {}'.format(args['name']))
+    return team
+
+
+class UserTeamPermissions(ResourcePermissions):
+
+    def get_target(self):
+        return get_target_team()

@@ -15,6 +15,7 @@ from ..models import AppContext, User, Need
 from ..multifactor import qr_code_for_user, check_code, send_sms_code
 from ..signals import password_recovered, user_request_password_recovery
 from ..utils import current_user, read_token, md5, generate_token, get_remote_ip
+from .permissions import ResourcePermissions
 
 logger = logging.getLogger(__name__)
 
@@ -230,65 +231,7 @@ class UserCatalog(ProtectedResource):
             return {'users': users}
 
 
-class UserPermissions(ManagedResource):
-    def options(self):
-        user = get_target_user()
-        response = {}
-        for context in db.session.query(AppContext).all():
-            response[context.name] = user.permission_catalog(context.name)
-        return response
+class UserPermissions(ResourcePermissions):
 
-    def get(self):
-        user = get_target_user()
-        parser = reqparse.RequestParser()
-        parser.add_argument('context', type=str, required=True)
-        args = parser.parse_args()
-        return {'provides': user.provides(args['context'])}
-
-    def update_permissions(self, mode):
-        user = get_target_user()
-        parser = reqparse.RequestParser()
-        parser.add_argument('context', type=str, required=True)
-        parser.add_argument('needs', type=str, required=True)
-        args = parser.parse_args()
-
-        try:
-            ctx = AppContext.query.filter_by(name=args['context']).one()
-        except sqlalchemy.orm.exc.NoResultFound as err:
-            abort(400, 'application not found')
-
-        request_needs = set(map(tuple, json.loads(args['needs'])))
-        selected_needs = []
-        for need in Need.query.filter_by(app_context=ctx).all():
-            nat = need.as_tuple()
-            if nat in request_needs:
-                selected_needs.append(need)
-                request_needs.remove(nat)
-
-        if request_needs:
-            abort(400,
-                  'permissions {} were not found'.format(repr(request_needs)))
-
-        for need in selected_needs:
-            if mode == 'add':
-                if need not in user.permissions:
-                    logger.debug('adding {}, was not in {}'.format(need, user.permissions))
-                    user.permissions.append(need)
-                else:
-                    logger.debug('asked to add {}, but is already there, ignoring'.format(need))
-            elif mode == 'delete':
-                if need in user.permissions:
-                    logger.debug('removing {}, was in {}'.format(need, user.permissions))
-                    user.permissions.remove(need)
-                else:
-                    logger.debug('asked to remove {}, but is not there, ignoring'.format(need))
-
-        db.session.commit()
-
-        return {'provides': user.provides(args['context'])}
-
-    def post(self):
-        return self.update_permissions(mode='add')
-
-    def delete(self):
-        return self.update_permissions(mode='delete')
+    def get_target(self):
+        return get_target_user()

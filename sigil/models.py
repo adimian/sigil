@@ -365,6 +365,10 @@ class UserTeam(db.Model):
         except sqlalchemy.orm.exc.NoResultFound:
             return None
 
+    def provides(self, context):
+        return tuple(p.as_tuple() for p in self.permissions
+                     if p.app_context.name == context)
+
 
 
 class ExtraField(db.Model):

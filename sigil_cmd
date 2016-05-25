@@ -1,2 +1,3 @@
 #!/bin/bash
+python3 /sigil/sigil/server.py db init
 python3 /sigil/sigil/server.py $*

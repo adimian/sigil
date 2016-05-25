@@ -26,6 +26,16 @@ var build_tabs = function() {
 
     }
 
+    if (s.can('teams.write') && s.can('teams.read')) {
+        tabs.push(new TabItem('teams', 'User Teams', {
+            searchable: true,
+            can_add: true,
+            can_toggle: true,
+            has_permissions: true
+        }));
+
+    }
+
     if (s.can('appcontexts.write') && s.can('appcontexts.read')) {
         tabs.push(new TabItem('applications', 'Applications', {
             searchable: true,

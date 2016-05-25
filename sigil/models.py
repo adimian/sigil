@@ -212,8 +212,15 @@ class User(UserMixin, AccountMixin, LDAPUserMixin, db.Model):
             return self.username
 
     def provides(self, context):
-        return tuple(p.as_tuple() for p in self.permissions
-                     if p.app_context.name == context)
+        permissions = set()
+        permissions.update(tuple(p.as_tuple() for p in self.permissions
+                                 if p.app_context.name == context))
+
+        for team in self.teams:
+            permissions.update(team.provides(context))
+
+        return tuple(permissions)
+
 
     def permission_catalog(self, context):
         ctx = AppContext.by_name(context)

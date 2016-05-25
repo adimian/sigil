@@ -230,3 +230,47 @@ def test_get_permissions(client):
     assert rv.status_code == 200, str(rv.data)
     data = json.loads(rv.data.decode('utf-8'))
     assert sorted(data['provides']) == sorted([['permissions', 'read'], ])
+
+
+def test_combine_permissions(client):
+    rv = client.post('/app/register', data={'name': 'newapp'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/user/permissions',
+                     data={'context': 'newapp',
+                           'username': 'bernard',
+                           'needs': json.dumps([['permissions', 'read']])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert sorted(data['provides']) == sorted([['permissions', 'read']])
+
+    rv = client.post('/team',
+                     data={'name': 'sysadmins'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/team/permissions',
+                     data={'context': 'newapp',
+                           'name': 'sysadmins',
+                           'needs': json.dumps([['permissions', 'write']])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/team/members',
+                     data={'name': 'sysadmins',
+                           'usernames': json.dumps(['alice', 'bernard'])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.get('/user/permissions',
+                    data={'context': 'newapp',
+                          'username': 'bernard'},
+                    headers=client._auth_headers)
+
+    assert rv.status_code == 200, str(rv.data)
+    data = json.loads(rv.data.decode('utf-8'))
+    assert sorted(data['provides']) == sorted([['permissions', 'read'],
+                                               ['permissions', 'write'], ])
+

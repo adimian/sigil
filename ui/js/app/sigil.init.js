@@ -17,8 +17,7 @@ var init = function() {
                     new DataColumn('id', 'ID'),
                     new DataColumn('username', 'Username'),
                     new DataColumn('displayname', 'Display Name'),
-                    new DataColumn('email', 'E-mail'),
-                    new DataColumn('active', 'Active')
+                    new DataColumn('email', 'E-mail')
                 ]);
             });
         });
@@ -29,11 +28,10 @@ var init = function() {
         });
         this.get('#teams', function() {
             authed_request('GET', '/team', null, function(data) {
-                app.data_view.collection(data['groups']);
+                app.data_view.collection(data['teams']);
                 app.data_view.columns([
                     new DataColumn('id', 'ID'),
                     new DataColumn('name', 'Name'),
-                    new DataColumn('active', 'Active')
                 ]);
             });
         });
@@ -42,8 +40,7 @@ var init = function() {
                 app.data_view.collection(data['groups']);
                 app.data_view.columns([
                     new DataColumn('id', 'ID'),
-                    new DataColumn('name', 'Name'),
-                    new DataColumn('active', 'Active')
+                    new DataColumn('name', 'Name')
                 ]);
             });
         });

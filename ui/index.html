@@ -646,6 +646,65 @@
 		</div>
 	</div>
 
+	<!-- Team Members modal -->
+	<div class="modal fade" id="team_popup" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span>&times;</span>
+					</button>
+					<h4 class="modal-title">Team members</h4>
+				</div>
+				<div class="modal-body">
+
+					<form class="form-horizontal" action="#">
+						<div class="input-append btn-group" data-bind="css: {open: team_view.new_users().length}">
+							<input class="span2" type="text" data-bind="value: team_view.add_user, valueUpdate: 'keyup', css: {'text-danger': !team_view.new_users().length}" placeholder="Username ...">
+							<a class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown" href="#">
+								<span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu" data-bind="foreach: team_view.new_users">
+								<li>
+									<a data-bind="click: $root.team_view.add_selected">
+										<span data-bind="text: username" class="text-muted"></span>
+										<span data-bind="text: displayname"></span>
+										<span data-bind="text: '('+email+')'" class="text-info"></span>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</form>
+
+
+					<table class="table table-hover" data-bind="visible: team_view.collection, with: team_view">
+						<thead>
+							<tr>
+								<!-- ko foreach: headers -->
+								<th style="cursor: pointer" data-bind="text: name, click:$parent.sortby"></th>
+								<!-- /ko -->
+								<th></th>
+							</tr>
+						</thead>
+						<tbody data-bind="foreach: {data: collection, as: 'line'}">
+							<tr>
+								<!-- ko foreach: $parent.columns -->
+								<td data-bind="text: line[key]"></td>
+								<!-- /ko -->
+								<td>
+									<a class="btn btn-xs btn-success" data-bind="click: $parent.remove_selected">Remove</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<iframe id="download_frame" height="0" width="0"></iframe>
 
 	<!-- JS imports -->

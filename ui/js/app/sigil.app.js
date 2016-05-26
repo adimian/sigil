@@ -36,7 +36,8 @@ var SigilApplication = function() {
 
     // generic view
     self.data_view = new GenericDataView(self);
-    self.group_view = new GroupDataView(self);
+    self.group_view = new GroupDataView(self, 'group');
+    self.team_view = new GroupDataView(self, 'team');
 
     // download
     self.download_ready = ko.observable(true);

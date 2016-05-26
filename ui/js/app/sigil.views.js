@@ -159,6 +159,21 @@ var GenericDataView = function(parent) {
             $("#group_popup").modal('show');
         };
 
+        if (tab == 'teams') {
+            authed_request('GET', '/team/members', {
+                'name': item.name
+            }, function(data) {
+                app.group_view.collection(data['users']);
+                app.group_view.active(data['active']);
+                app.group_view.columns([
+                    new DataColumn('id', 'ID'),
+                    new DataColumn('username', 'Username'),
+                    new DataColumn('displayname', 'Display Name')
+                ]);
+            });
+            $("#team_popup").modal('show');
+        };
+
         if (tab == 'users') {
             authed_request('GET', '/user/details', {
                 'username': item.username
@@ -187,8 +202,10 @@ var GenericDataView = function(parent) {
 };
 
 
-var GroupDataView = function() {
+var GroupDataView = function(parent, resource_type) {
     var self = this;
+    self.parent_app = parent;
+    self.resource_type = resource_type;
     self.active = ko.observable();
     self.name = ko.observable();
 
@@ -216,7 +233,7 @@ var GroupDataView = function() {
 
     self.remove_selected = function(item) {
         self.collection.remove(item);
-        authed_request('DELETE', '/group/members', {
+        authed_request('DELETE', '/'+self.resource_type+'/members', {
             'name': app.data_view.cursor().name,
             'usernames': JSON.stringify([item.username])
         }, function() {});
@@ -224,12 +241,13 @@ var GroupDataView = function() {
 
     self.add_selected = function(item) {
         self.add_user(null);
+        var url = '/'+self.resource_type+'/members';
         if ($.inArray(item.username, self.usernames()) === -1) {
             self.collection.push(item);
-            authed_request('POST', '/group/members', {
+            authed_request('POST', url, {
                 'name': app.data_view.cursor().name,
                 'usernames': JSON.stringify([item.username])
-            }, function() {});
+            }, function() {}).error(function(error){console.log(url);});
         }
     };
 };

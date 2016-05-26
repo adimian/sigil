@@ -21,16 +21,16 @@ class ContainerResource(ProtectedResource):
             try:
                 return db.session.query(self.container_type).filter_by(name=args['name']).one()
             except sqlalchemy.orm.exc.NoResultFound:
-                abort(404, 'group not found')
+                abort(404, '{} not found'.format(self.resource_type))
 
     def get(self):
-        with Permission(('groups', 'read')).require(403):
+        with Permission(self.permission_type).require(403):
             response = []
             for group in db.session.query(self.container_type).all():
                 response.append({'id': group.id,
                                  'name': group.name,
                                  'active': group.active})
-            return {'groups': response}
+            return {'{}s'.format(self.resource_type): response}
 
     def patch(self):
         group = self.get_group()
@@ -41,7 +41,7 @@ class ContainerResource(ProtectedResource):
         db.session.commit()
 
     def post(self):
-        with Permission(('groups', 'write')).require(403):
+        with Permission(self.permission_type).require(403):
             parser = reqparse.RequestParser()
             parser.add_argument('name', type=str, required=True)
             args = parser.parse_args()
@@ -67,7 +67,7 @@ class ContainerMembers(ProtectedResource):
             try:
                 return db.session.query(self.container_type).filter_by(name=args['name']).one()
             except sqlalchemy.orm.exc.NoResultFound:
-                abort(404, 'group not found')
+                abort(404, '{} not found'.format(self.resource_type))
 
     def post(self):
         self.update_members(mode='add')
@@ -102,21 +102,25 @@ class ContainerMembers(ProtectedResource):
 
 
 class VirtualGroupResource(ContainerResource):
+    resource_type = 'group'
     container_type = VirtualGroup
     permission_type = ('groups', 'write')
 
 
 class UserTeamResource(ContainerResource):
+    resource_type = 'team'
     container_type = UserTeam
     permission_type = ('teams', 'write')
 
 
 class VirtualGroupMembers(ContainerMembers):
+    resource_type = 'group'
     container_type = VirtualGroup
     permission_type = ('groups', 'write')
 
 
 class UserTeamMembers(ContainerMembers):
+    resource_type = 'group'
     container_type = UserTeam
     permission_type = ('teams', 'write')
 

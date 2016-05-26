@@ -6,7 +6,7 @@ import openpyxl
 import sqlalchemy
 
 from ..api import EXTRA_FIELDS
-from ..models import User, VirtualGroup, AppContext, Need
+from ..models import User, VirtualGroup, AppContext, Need, UserTeam
 
 
 logger = logging.getLogger(__name__)
@@ -104,16 +104,16 @@ class GroupProcessor(SheetProcessor):
         group_names = set(headers) - set(['username'])
 
         # deactivated
-        for group in VirtualGroup.query.all():
+        for group in self.object_class.query.all():
             if group.name not in group_names:
                 deactivated.append(group)
 
         # added
         for group_name in group_names:
-            group = VirtualGroup.by_name(group_name)
+            group = self.object_class.by_name(group_name)
 
             if not group:
-                group = VirtualGroup(name=group_name)
+                group = self.object_class(name=group_name)
                 added.append(group)
             else:
                 updated.append(group)
@@ -127,6 +127,10 @@ class GroupProcessor(SheetProcessor):
                     user_groups.append(group_name)
 
         return added, updated, deactivated, memberships
+
+
+class UserTeamProcessor(GroupProcessor):
+    object_class = UserTeam
 
 
 class UserProcessor(SheetProcessor):
@@ -216,7 +220,13 @@ class ExcelConnector(object):
             user.generate_token()
 
     def process_groups(self, sheet):
-        p = GroupProcessor(sheet)
+        self._process_container(sheet, VirtualGroup, GroupProcessor, 'groups')
+
+    def process_teams(self, sheet):
+        self._process_container(sheet, UserTeam, UserTeamProcessor, 'teams')
+
+    def _process_container(self, sheet, model, processor, label):
+        p = processor(sheet)
         added, updated, deactivated, memberships = p.read()
 
         for group in added:
@@ -231,12 +241,15 @@ class ExcelConnector(object):
 
         for username, groups in memberships.items():
             user = User.by_username(username)
+            if not user and model == VirtualGroup:
+                user = UserTeam.by_name(username)
             if not user:
                 msg = ('unable to add {} to '
-                       'groups, user unknown').format(username)
+                       '{}, user/team unknown').format(username, label)
                 raise UnknownUserError(msg)
+            collection = getattr(user, label)
             for name in groups:
-                group = VirtualGroup.by_name(name)
+                group = model.by_name(name)
                 if not group:
                     # maybe a new group
                     for new_group in added:
@@ -248,12 +261,9 @@ class ExcelConnector(object):
                                'group {}, group unknown').format(username,
                                                                  name)
                         raise UnknownGroupError(msg)
-                user.groups.append(group)
+                collection.append(group)
 
         self.session.commit()
-
-    def process_teams(self, sheet):
-        pass
 
     def process(self, fobj):
         try:
@@ -265,7 +275,7 @@ class ExcelConnector(object):
                 sheets = set(wb.sheetnames)
 
                 # objects
-                for sheetname in ('users', 'groups', 'teams'):
+                for sheetname in ('users', 'teams', 'groups'):
                     if sheetname in sheets:
                         f_name = 'process_{}'.format(sheetname)
                         f = getattr(self, f_name)
@@ -299,6 +309,7 @@ class ExcelExporter(object):
         workbook = openpyxl.Workbook(optimized_write=True)
         self.export_users(workbook)
         self.export_groups(workbook)
+        self.export_teams(workbook)
         self.export_permissions(workbook)
         workbook.save(filename)
 
@@ -317,6 +328,17 @@ class ExcelExporter(object):
             row = [user.username]
             for group in all_groups:
                 row.append('yes' if group in user.groups else None)
+            sheet.append(row)
+
+    def export_teams(self, workbook):
+        sheet = workbook.create_sheet(title='teams')
+        all_teams = self.session.query(UserTeam).order_by(UserTeam.name).all()
+
+        sheet.append(['username'] + [t.name for t in all_teams])
+        for user in self.session.query(User).order_by(User.username).all():
+            row = [user.username]
+            for team in all_teams:
+                row.append('yes' if team in user.teams else None)
             sheet.append(row)
 
     def export_permissions(self, workbook):

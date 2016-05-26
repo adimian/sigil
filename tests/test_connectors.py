@@ -23,6 +23,9 @@ def test_import_excel(client):
     assert sorted([g.name for g in
                    User.by_username('eric').groups]) == sorted(['jabber',
                                                                 'jenkins'])
+    assert sorted([g.name for g in
+                   User.by_username('eric').teams]) == sorted(['adimian',
+                                                               'auditors'])
     assert len(User.by_username('eric').extra_fields.all()) == 2
     assert User.by_username('eric').company == 'Adimian'
     assert User.by_username('eric').department == 'Belgium'

@@ -60,6 +60,14 @@ group_member = db.Table('group_member',
                         UniqueConstraint('group_id', 'member_id'),
                         )
 
+team_group_member = db.Table('team_group_member',
+                             db.Column('group_id', db.Integer,
+                                       db.ForeignKey('virtualgroup.id')),
+                             db.Column('member_id', db.Integer,
+                                       db.ForeignKey('userteam.id')),
+                             UniqueConstraint('group_id', 'member_id'),
+                             )
+
 team_member = db.Table('team_member',
                        db.Column('team_id', db.Integer,
                                  db.ForeignKey('userteam.id')),
@@ -361,6 +369,8 @@ class UserTeam(db.Model):
     active = db.Column(db.Boolean(), default=True)
     permissions = db.relationship('Need', secondary=team_permissions,
                                   backref=db.backref('userteam'))
+    groups = db.relationship('VirtualGroup', secondary=team_group_member,
+                             backref=db.backref('teams'))
 
     def __init__(self, name):
         self.name = name

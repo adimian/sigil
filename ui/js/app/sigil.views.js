@@ -116,7 +116,11 @@ var GenericDataView = function(parent) {
         }
 
         if (tab == 'teams') {
-            // TODO
+            var team = new UserTeam();
+            team.load(item);
+            team.load_needs();
+            app.current_principal(team);
+            $('#assigned_permissions_modal').modal('show');
         }
     }
 
@@ -124,6 +128,14 @@ var GenericDataView = function(parent) {
         var tab = self.tabname();
         if (tab == 'groups') {
             authed_request('PATCH', '/group', {
+                'name': item.name,
+                'active': !item.active
+            }, function(data) {
+                location.reload(false);
+            });
+        };
+        if (tab == 'teams') {
+            authed_request('PATCH', '/team', {
                 'name': item.name,
                 'active': !item.active
             }, function(data) {
@@ -151,7 +163,6 @@ var GenericDataView = function(parent) {
                 app.group_view.collection(data['users']);
                 app.group_view.active(data['active']);
                 app.group_view.columns([
-                    new DataColumn('id', 'ID'),
                     new DataColumn('username', 'Username'),
                     new DataColumn('displayname', 'Display Name')
                 ]);
@@ -166,7 +177,6 @@ var GenericDataView = function(parent) {
                 app.group_view.collection(data['users']);
                 app.group_view.active(data['active']);
                 app.group_view.columns([
-                    new DataColumn('id', 'ID'),
                     new DataColumn('username', 'Username'),
                     new DataColumn('displayname', 'Display Name')
                 ]);

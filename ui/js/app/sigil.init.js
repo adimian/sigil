@@ -14,7 +14,6 @@ var init = function() {
             authed_request('GET', '/user', null, function(data) {
                 app.data_view.collection(data['users']);
                 app.data_view.columns([
-                    new DataColumn('id', 'ID'),
                     new DataColumn('username', 'Username'),
                     new DataColumn('displayname', 'Display Name'),
                     new DataColumn('email', 'E-mail')
@@ -30,7 +29,6 @@ var init = function() {
             authed_request('GET', '/team', null, function(data) {
                 app.data_view.collection(data['teams']);
                 app.data_view.columns([
-                    new DataColumn('id', 'ID'),
                     new DataColumn('name', 'Name'),
                 ]);
             });
@@ -39,7 +37,6 @@ var init = function() {
             authed_request('GET', '/group', null, function(data) {
                 app.data_view.collection(data['groups']);
                 app.data_view.columns([
-                    new DataColumn('id', 'ID'),
                     new DataColumn('name', 'Name')
                 ]);
             });
@@ -54,7 +51,6 @@ var init = function() {
             authed_request('GET', '/app', null, function(data) {
                 app.data_view.collection(data['apps']);
                 app.data_view.columns([
-                    new DataColumn('id', 'ID'),
                     new DataColumn('name', 'Name'),
                 ]);
             });

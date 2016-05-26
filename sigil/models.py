@@ -376,6 +376,14 @@ class UserTeam(db.Model):
         return tuple(p.as_tuple() for p in self.permissions
                      if p.app_context.name == context)
 
+    def permission_catalog(self, context):
+        ctx = AppContext.by_name(context)
+        assert ctx, 'no context {}'.format(context)
+
+        current_permissions = self.provides(context)
+        return tuple([(p, p in current_permissions)
+                      for p in ctx.declared_needs()])
+
 
 
 class ExtraField(db.Model):

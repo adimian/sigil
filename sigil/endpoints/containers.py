@@ -1,6 +1,6 @@
 import json
 
-from flask import abort
+from flask import abort, request
 from flask_principal import Permission
 from flask_restful import reqparse
 import sqlalchemy
@@ -82,24 +82,43 @@ class ContainerMembers(ProtectedResource):
 
     def update_members(self, mode):
         parser = reqparse.RequestParser()
-        parser.add_argument('usernames', type=str, required=True)
+        parser.add_argument('usernames', type=str)
+        parser.add_argument('teams', type=str)
         args = parser.parse_args()
 
+        if not (args['usernames'] or args['teams']):
+            abort(400, 'Missing "teams" or "usernames" key')
+
         group = self.get_group()
-        for username in set(json.loads(args['usernames'])):
-            try:
-                user = db.session.query(User).filter_by(username=username).one()
-            except sqlalchemy.orm.exc.NoResultFound:
-                abort(404, 'user {} not found'.format(username))
+        if args['usernames']:
+            for username in set(json.loads(args['usernames'])):
+                try:
+                    user = db.session.query(User).filter_by(username=username).one()
+                except sqlalchemy.orm.exc.NoResultFound:
+                    abort(404, 'user {} not found'.format(username))
 
-            if mode == 'add':
-                if user not in group.members:
-                    group.members.append(user)
-            elif mode == 'delete':
-                if user in group.members:
-                    group.members.remove(user)
+                if mode == 'add':
+                    if user not in group.members:
+                        group.members.append(user)
+                elif mode == 'delete':
+                    if user in group.members:
+                        group.members.remove(user)
+
+        if self.resource_type == 'group' and args['teams']:
+            for name in set(json.loads(args['teams'])):
+                try:
+                    team = db.session.query(UserTeam).filter_by(name=name).one()
+                except sqlalchemy.orm.exc.NoResultFound:
+                    abort(404, 'team {} not found'.format(name))
+
+                if mode == 'add':
+                    if team not in group.teams:
+                        group.teams.append(team)
+                elif mode == 'delete':
+                    if team in group.teams:
+                        group.teams.remove(team)
+
         db.session.commit()
-
 
 class VirtualGroupResource(ContainerResource):
     resource_type = 'group'

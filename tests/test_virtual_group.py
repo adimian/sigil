@@ -1,6 +1,6 @@
 import json
 
-from sigil.models import VirtualGroup, User
+from sigil.models import VirtualGroup, User, UserTeam
 
 
 def test_create_group(client):
@@ -58,6 +58,28 @@ def test_add_members(client):
     assert rv.status_code == 200
     data = json.loads(rv.data.decode('utf-8'))
     assert data['groups'] == ['jabber']
+
+
+def test_add_teams_as_members(client):
+    rv = client.post('/team',
+                     data={'name': 'sysadmins'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/group',
+                     data={'name': 'jabber'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/group/members',
+                     data={'name': 'jabber',
+                           'usernames': json.dumps(['alice', 'bernard']),
+                           'teams': json.dumps(['sysadmins', ])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    user = client._db.session.query(UserTeam).filter_by(name='sysadmins').one()
+    assert [g.name for g in user.groups] == ['jabber']
 
 
 def test_add_too_many_members(client):

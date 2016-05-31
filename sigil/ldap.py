@@ -152,6 +152,18 @@ def update_ldap():
             con.add_group_member(group, user)
             logger.debug('adding {} to group {}'.format(user, group))
 
+        for team in group.teams:
+            for user in team.members:
+                try:
+                    db_group_members[group_dn].add(con.user_dn(user))
+                    con.add_group_member(group, user)
+                    logger.debug('adding {} to group {} '
+                                 '(from team {})'.format(user, group, team))
+                except LDAPError:
+                    logger.warning('skipping addition of user {} '
+                                   'to group {} (duplicate)'.format(user,
+                                                                    group))
+
     logger.info('fetching LDAP groups and group members')
     for entry in con.search(con.ou_dn(app.config['LDAP_GROUPS_OU']),
                             object_class='groupOfUniqueNames',

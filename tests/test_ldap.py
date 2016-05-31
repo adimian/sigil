@@ -4,6 +4,21 @@ from unittest.mock import call
 from sigil.ldap import setup_auto_sync, update_ldap
 
 
+def test_adding_user_both_group_and_team(client, mocker):
+    rv = client.post('/team',
+                     data={'name': 'sysadmins'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    rv = client.post('/team/members',
+                     data={'name': 'sysadmins',
+                           'usernames': json.dumps(['alice', 'bernard'])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    # TODO: finish this when we have an API to add a team to a group
+
+
 def test_update_ldap_user(client, mocker):
     setup_auto_sync()
 

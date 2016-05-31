@@ -251,7 +251,7 @@ class ExcelConnector(object):
             for name in groups:
                 group = model.by_name(name)
                 if not group:
-                    # maybe a new group
+                    # maybe a new group/team
                     for new_group in added:
                         if new_group.name == name:
                             group = new_group

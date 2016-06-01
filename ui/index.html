@@ -610,7 +610,7 @@
 									<a data-bind="click: $root.group_view.add_selected">
 										<span data-bind="text: username" class="text-muted"></span>
 										<span data-bind="text: displayname"></span>
-										<span data-bind="text: '('+email+')'" class="text-info"></span>
+										<span data-bind="text: '('+email+')', visible: email" class="text-info"></span>
 									</a>
 								</li>
 							</ul>

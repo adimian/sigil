@@ -242,8 +242,6 @@ var GroupDataView = function(parent, resource_type) {
     self.usernames = ko.computed(function() {
         var res = [];
         for (var i = 0; i < self.collection().length; i++) {
-            console.log('collection: ' + self.collection().length);
-            console.log(self.collection());
             res.push(self.collection()[i].username || self.collection()[i].name);
         }
         return res;

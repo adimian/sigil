@@ -16,7 +16,28 @@ def test_adding_user_both_group_and_team(client, mocker):
                      headers=client._auth_headers)
     assert rv.status_code == 200, str(rv.data)
 
-    # TODO: finish this when we have an API to add a team to a group
+    rv = client.post('/group',
+                     data={'name': 'jabber'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    setup_auto_sync()
+
+    connect = mocker.patch('sigil.ldap.LDAPConnection._connect')
+    mocker.patch('sigil.ldap.LDAPConnection.check')
+
+    rv = client.post('/group/members',
+                     data={'name': 'jabber',
+                           'teams': json.dumps(['sysadmins', ])},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, str(rv.data)
+
+    modify = connect().modify
+
+    modify.assert_has_calls((call('cn=jabber,ou=Groups,dc=mycorp,dc=com',
+                                  {'uniqueMember': [('MODIFY_ADD', ['cn=alice,ou=Users,dc=mycorp,dc=com'])]}),
+                             call('cn=jabber,ou=Groups,dc=mycorp,dc=com',
+                                  {'uniqueMember': [('MODIFY_ADD', ['cn=bernard,ou=Users,dc=mycorp,dc=com'])]})))
 
 
 def test_update_ldap_user(client, mocker):

@@ -330,6 +330,12 @@ class ExcelExporter(object):
                 row.append('yes' if group in user.groups else None)
             sheet.append(row)
 
+        for team in self.session.query(UserTeam).order_by(UserTeam.name).all():
+            row = [team.name]
+            for group in all_groups:
+                row.append('yes' if group in team.groups else None)
+            sheet.append(row)
+
     def export_teams(self, workbook):
         sheet = workbook.create_sheet(title='teams')
         all_teams = self.session.query(UserTeam).order_by(UserTeam.name).all()

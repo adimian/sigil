@@ -58,7 +58,8 @@ def setup_endpoints():
     from .endpoints.appcontext import ApplicationContext, ApplicationNeeds
     from .endpoints.containers import (VirtualGroupResource,
                                        VirtualGroupMembers, UserTeamResource,
-                                       UserTeamMembers, UserTeamPermissions)
+                                       UserTeamMembers, UserTeamPermissions,
+                                       VirtualGroupCatalog, UserTeamCatalog)
     from .endpoints.options import ServerOptions
     from .endpoints.connectors import ExcelImport, ExcelExport, ExcelDownload
 
@@ -82,8 +83,10 @@ def setup_endpoints():
     api.add_resource(UserCatalog, '/user', '/user/search')
     # containers
     api.add_resource(VirtualGroupResource, '/group')
+    api.add_resource(VirtualGroupCatalog, '/group/search')
     api.add_resource(VirtualGroupMembers, '/group/members')
     api.add_resource(UserTeamResource, '/team')
+    api.add_resource(UserTeamCatalog, '/team/search')
     api.add_resource(UserTeamMembers, '/team/members')
     api.add_resource(UserTeamPermissions, '/team/permissions')
     # connectors

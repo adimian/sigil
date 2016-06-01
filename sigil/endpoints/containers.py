@@ -120,6 +120,28 @@ class ContainerMembers(ProtectedResource):
 
         db.session.commit()
 
+
+class ContainerCatalog(ProtectedResource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('query', type=str)
+        args = parser.parse_args()
+
+        with Permission(self.permission_type).require(403):
+            response = []
+            if not args['query']:
+                for c in self.container_type.query.all():
+                    response.append(c.public())
+            else:
+                text = '%{}%'.format(args['query'])
+
+                query = self.container_type.query.filter(self.container_type.name.ilike(text))
+                for c in query.all():
+                    response.append(c.public())
+
+            return {'{}s'.format(self.resource_type): response}
+
+
 class VirtualGroupResource(ContainerResource):
     resource_type = 'group'
     container_type = VirtualGroup
@@ -137,11 +159,29 @@ class VirtualGroupMembers(ContainerMembers):
     container_type = VirtualGroup
     permission_type = ('groups', 'write')
 
+    def get(self):
+        group = self.get_group()
+        return {'users': [u.public() for u in group.members],
+                'teams': [u.public() for u in group.teams],
+                'active': group.active}
+
 
 class UserTeamMembers(ContainerMembers):
-    resource_type = 'group'
+    resource_type = 'team'
     container_type = UserTeam
     permission_type = ('teams', 'write')
+
+
+class UserTeamCatalog(ContainerCatalog):
+    resource_type = 'team'
+    container_type = UserTeam
+    permission_type = ('teams', 'read')
+
+
+class VirtualGroupCatalog(ContainerCatalog):
+    resource_type = 'group'
+    container_type = VirtualGroup
+    permission_type = ('groups', 'read')
 
 
 def get_target_team():

@@ -160,7 +160,24 @@ var GenericDataView = function(parent) {
             authed_request('GET', '/group/members', {
                 'name': item.name
             }, function(data) {
-                app.group_view.collection(data['users']);
+                console.log(data);
+                app.group_view.collection([]);
+                for(var i=0; i<data['users'].length;i++){
+                    var o = {
+                        username: data['users'][i].username,
+                        displayname: data['users'][i].displayname,
+                        type: 'user'
+                    };
+                    app.group_view.collection.push(o);
+                }
+                for(var i=0; i<data['teams'].length;i++){
+                    var o = {
+                        username: data['teams'][i].name,
+                        displayname: '(TEAM)',
+                        type: 'team'
+                    };
+                    app.group_view.collection.push(o);
+                }
                 app.group_view.active(data['active']);
                 app.group_view.columns([
                     new DataColumn('username', 'Username'),
@@ -225,7 +242,9 @@ var GroupDataView = function(parent, resource_type) {
     self.usernames = ko.computed(function() {
         var res = [];
         for (var i = 0; i < self.collection().length; i++) {
-            res.push(self.collection()[i].username);
+            console.log('collection: ' + self.collection().length);
+            console.log(self.collection());
+            res.push(self.collection()[i].username || self.collection()[i].name);
         }
         return res;
     }, this);
@@ -236,28 +255,76 @@ var GroupDataView = function(parent, resource_type) {
             authed_request('GET', '/user/search', {
                 'query': new_value
             }, function(data) {
-                self.new_users(data['users']);
+
+                self.new_users([]);
+
+                for (var i = 0; i < data['users'].length; i++) {
+                    var user = data['users'][i];
+                    var o = {
+                        username: user.username,
+                        displayname: user.displayname,
+                        email: user.email,
+                        type: 'user'
+                    }
+                    self.new_users.push(o)
+                }
+
+                if (self.resource_type == 'group') {
+                    authed_request('GET', '/team/search', {
+                        'query': new_value
+                    }, function(data) {
+                        for (var i = 0; i < data['teams'].length; i++) {
+                            var team = data['teams'][i];
+                            var o = {
+                                username: team.name,
+                                displayname: '(TEAM)',
+                                email: '',
+                                type: 'team'
+                            }
+                            self.new_users.push(o)
+                        }
+                    });
+                }
             });
         };
     });
 
     self.remove_selected = function(item) {
         self.collection.remove(item);
-        authed_request('DELETE', '/'+self.resource_type+'/members', {
+
+        var destination = 'usernames';
+        if (item.type == 'team') {
+            var destination = 'teams';
+        }
+        var payload = {
             'name': app.data_view.cursor().name,
-            'usernames': JSON.stringify([item.username])
-        }, function() {});
+        }
+        payload[destination] = JSON.stringify([item.username]);
+
+        authed_request('DELETE', '/' + self.resource_type + '/members',
+            payload,
+            function() {});
     }
 
     self.add_selected = function(item) {
         self.add_user(null);
-        var url = '/'+self.resource_type+'/members';
+        var url = '/' + self.resource_type + '/members';
         if ($.inArray(item.username, self.usernames()) === -1) {
             self.collection.push(item);
-            authed_request('POST', url, {
+
+            var destination = 'usernames';
+            if (item.type == 'team') {
+                var destination = 'teams';
+            }
+
+            var payload = {
                 'name': app.data_view.cursor().name,
-                'usernames': JSON.stringify([item.username])
-            }, function() {}).error(function(error){console.log(url);});
+            }
+            payload[destination] = JSON.stringify([item.username]);
+
+            authed_request('POST', url, payload, function() {}).error(function(error) {
+                console.log(url);
+            });
         }
     };
 };

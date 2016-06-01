@@ -361,6 +361,11 @@ class VirtualGroup(db.Model):
     def __init__(self, name):
         self.name = name
 
+    def public(self):
+        return dict(id=self.id,
+                    name=self.name,
+                    active=self.active)
+
 
 class UserTeam(db.Model):
     __tablename__ = 'userteam'
@@ -393,6 +398,11 @@ class UserTeam(db.Model):
         current_permissions = self.provides(context)
         return tuple([(p, p in current_permissions)
                       for p in ctx.declared_needs()])
+
+    def public(self):
+        return dict(id=self.id,
+                    name=self.name,
+                    active=self.active)
 
 
 

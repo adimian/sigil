@@ -215,7 +215,7 @@ var GenericDataView = function(parent) {
 var GroupDataView = function(parent, resource_type) {
     var self = this;
     self.parent_app = parent;
-    self.resource_type = resource_type;
+    self.resource_type = resource_type; // "group" or "team"
     self.active = ko.observable();
     self.name = ko.observable();
 

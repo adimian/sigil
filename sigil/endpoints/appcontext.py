@@ -53,6 +53,7 @@ class ApplicationContext(ProtectedResource):
             try:
                 db.session.commit()
             except sqlalchemy.exc.IntegrityError:
+                db.session.rollback()
                 abort(409, 'an application with the same name already exists')
 
             app_key = generate_token([ctx.id, md5(ctx.name)],

@@ -10,6 +10,16 @@ def register_app(client):
     return data['application-key']
 
 
+def test_register_app_twice(client):
+    rv = client.post('/app/register', data={'name': 'newapp'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 200, 'unable to register app'
+
+    rv = client.post('/app/register', data={'name': 'newapp'},
+                     headers=client._auth_headers)
+    assert rv.status_code == 409, str(rv.data)
+
+
 def test_register_app(client):
     register_app(client)
 

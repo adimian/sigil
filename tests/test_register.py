@@ -95,6 +95,11 @@ def test_send_sms_no_number(client):
     assert rv.status_code == 404, str(rv.data)
 
 
+def test_send_sms_no_payload(client):
+    rv = client.post('/user/2fa/sms')
+    assert rv.status_code == 400, str(rv.data)
+
+
 def test_send_sms_with_number(client):
     client.application.config['ENABLE_2FA'] = True
     rv = client.post('/user/register', data={'username': 'eric',

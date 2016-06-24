@@ -87,6 +87,8 @@ class MultifactorSendSMS(AnonymousResource):
             user = User.by_username(args['username'])
         elif args['token']:
             user, _ = user_by_token(args['token'])
+        else:
+            abort(400, 'username or token must be provided')
 
         if not user:
             abort(404, 'unknown user')

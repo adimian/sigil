@@ -2,11 +2,11 @@ from collections import defaultdict
 import logging
 
 from flask import current_app as app
-from .api import db
+from ..api import db
 from ldap3 import Server, Connection, ALL, SUBTREE, MODIFY_ADD, MODIFY_DELETE
 from sqlalchemy import event
 
-from .models import User, VirtualGroup
+from ..models import User, VirtualGroup
 
 
 logger = logging.getLogger(__name__)

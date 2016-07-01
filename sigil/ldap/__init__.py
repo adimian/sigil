@@ -3,8 +3,13 @@ import logging
 
 from flask import current_app as app
 from ..api import db
-from ldap3 import Server, Connection, ALL, SUBTREE, MODIFY_ADD, MODIFY_DELETE
+from ldap3 import (Server, Connection, ALL, SUBTREE, MODIFY_ADD, MODIFY_DELETE,
+                   SASL)
 from sqlalchemy import event
+
+from .memberof import (install_overlay, install_refint1,
+                       install_refint2, load_module)
+from .extended import install_extended
 
 from ..models import User, VirtualGroup
 
@@ -22,9 +27,17 @@ class LDAPConnection(object):
         self._connection = None
 
     def _connect(self):
-        server = Server(app.config['LDAP_HOST'], get_info=ALL)
-        conn = Connection(server, user=app.config['LDAP_BIND_DN'],
-                          password=app.config['LDAP_BIND_PASSWORD'])
+        hostname = app.config['LDAP_HOST']
+
+        if hostname.startswith('ldapi'):
+            server = Server(hostname.replace('ldapi://', ''))
+            conn = Connection(server, authentication=SASL,
+                              sasl_mechanism='EXTERNAL', sasl_credentials='')
+        else:
+            server = Server(hostname, get_info=ALL)
+            conn = Connection(server, user=app.config['LDAP_BIND_DN'],
+                              password=app.config['LDAP_BIND_PASSWORD'])
+
         logger.info(conn)
         logger.info('ldap connected: {}'.format(conn.bind()))
         return conn
@@ -60,8 +73,9 @@ class LDAPConnection(object):
 
     def check(self):
         if int(self.result['result']):
+            reason = self.result['message'] or self.result['description']
             raise LDAPError('Code: {} = {}'.format(self.result['result'],
-                                                   self.result['message']))
+                                                   reason))
 
     def user_dn(self, user):
         return 'cn={},{}'.format(user.username,
@@ -192,3 +206,32 @@ def setup_auto_sync():
         if session._model_changes:
             logger.info('Commencing ldap auto sync')
             update_ldap()
+
+
+def setup_memberof():
+    logger.info('setting up memberOf relation')
+    logger.info('connecting to LDAP')
+    con = LDAPConnection()
+    logger.info('loading module')
+    load_module(con.connection)
+    con.check()
+    logger.info('applying overlay')
+    install_overlay(con.connection)
+    con.check()
+    logger.info('setting up refint 1')
+    install_refint1(con.connection)
+    con.check()
+    logger.info('setting up refint 2')
+    install_refint2(con.connection)
+    con.check()
+    logger.info('setting up memberOf relation: done')
+
+
+def setup_extended():
+    logger.info('setting up extendedInetPerson')
+    logger.info('connecting to LDAP')
+    con = LDAPConnection()
+    logger.info('installing schema extension')
+    install_extended(con.connection)
+    con.check()
+    logger.info('setting up extendedInetPerson: done')

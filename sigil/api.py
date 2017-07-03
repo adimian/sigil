@@ -8,7 +8,7 @@ from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from raven.contrib.flask import Sentry
 
-import flask_restful as restful
+import flask_restplus as restful
 
 from .conf import configure
 

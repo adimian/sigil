@@ -1,5 +1,5 @@
-import flask_restful as restful
-from flask_restful import reqparse
+import flask_restplus as restful
+from flask_restplus import reqparse
 
 from ..utils import requires_authentication, requires_anonymous, self_or_manager
 

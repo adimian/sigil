@@ -8,7 +8,7 @@ Flask-Mail==0.9.1
 Flask-Cors==2.1.2
 Jinja2==2.8
 ipdb==0.8.1
-ldap3==0.9.8.7
+ldap3>=0.9.8.7
 blinker==1.4
 raven==5.5.0
 psycopg2==2.6.1
